@@ -16,15 +16,20 @@ if (!app.requestSingleInstanceLock()) {
 let win: BrowserWindow | null = null
 
 async function createWindow() {
-  win = new BrowserWindow({
-    icon: join(__dirname, '../renderer/images/icon.png'),
-    title: 'Main window',
+  let winConfig = {
+    title: 'PhoeniX',
     width: 1100,
     height: 800,
     webPreferences: {
       preload: join(__dirname, '../preload/index.cjs'),
     },
-  })
+  }
+  if (!app.isPackaged) {
+    Object.assign(winConfig, {
+      icon: join(__dirname, '../renderer/images/icon.png'),
+    })
+  }
+  win = new BrowserWindow(winConfig)
 
   // implement cross origin
   win.webContents.session.webRequest.onBeforeSendHeaders(
