@@ -18,9 +18,26 @@ let win: BrowserWindow | null = null
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
+    width: 1100,
+    height: 800,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.cjs')
+      preload: join(__dirname, '../preload/index.cjs'),
     },
+  })
+
+  // implement cross origin
+  win.webContents.session.webRequest.onBeforeSendHeaders(
+    (details, callback) => {
+      callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } })
+    }
+  )
+  win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        'Access-Control-Allow-Origin': ['*'],
+        ...details.responseHeaders,
+      },
+    })
   })
 
   if (app.isPackaged) {
@@ -35,7 +52,7 @@ async function createWindow() {
 
   // Test active push message to Renderer-process
   win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', (new Date).toLocaleString())
+    win?.webContents.send('main-process-message', new Date().toLocaleString())
   })
 
   // Make all links open with the browser, not with the application

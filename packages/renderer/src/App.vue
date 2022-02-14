@@ -1,22 +1,31 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import HelloWorld from './components/HelloWorld.vue'
+import { useRoute, useRouter } from 'vue-router'
+import { request } from './utils/request'
+import { ref } from 'vue'
+
+const router = useRouter()
+const route = useRoute()
+
+const jump = () => {
+  let to = route.path === '/' ? '/login' : '/'
+  router.push(to)
+}
+
+const data = ref('')
+
+const render = async () => {
+  let res = await request.get('swagger/index.html')
+  data.value = res.data.substring(1, 20)
+}
 </script>
 
 <template>
-  <div class="logo-box">
-    <img style="height:140px;" src="./assets/electron.png" >
-    <span/>
-    <img style="height:140px;" src="./assets/vite.svg" >
-    <span/>
-    <img style="height:140px;" src="./assets/vue.png" >
-  </div>
-  <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
-  <div class="static-public">
-    Place static files into the <code>src/renderer/public</code> folder
-    <img style="width:90px;" :src="'./images/node.png'" >
-  </div>
+  <n-button type="info" @click="jump" style="margin-right: 5px">跳转</n-button>
+  <n-button type="info" @click="render">渲染</n-button>
+  <div>{{ data }}</div>
+  <router-view />
 </template>
 
 <style>
