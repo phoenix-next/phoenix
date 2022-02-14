@@ -17,6 +17,7 @@ let win: BrowserWindow | null = null
 
 async function createWindow() {
   win = new BrowserWindow({
+    icon: join(__dirname, '../renderer/images/icon.png'),
     title: 'Main window',
     width: 1100,
     height: 800,

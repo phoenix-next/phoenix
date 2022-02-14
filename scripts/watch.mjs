@@ -19,13 +19,15 @@ function watchMain(server) {
   return build({
     configFile: 'packages/main/vite.config.ts',
     mode: 'development',
-    plugins: [{
-      name: 'electron-main-watcher',
-      writeBundle() {
-        electronProcess && electronProcess.kill()
-        electronProcess = spawn(electron, ['.'], { stdio: 'inherit', env })
+    plugins: [
+      {
+        name: 'electron-main-watcher',
+        writeBundle() {
+          electronProcess && electronProcess.kill()
+          electronProcess = spawn(electron, ['.'], { stdio: 'inherit', env })
+        },
       },
-    }],
+    ],
     build: {
       watch: true,
     },
@@ -39,12 +41,14 @@ function watchPreload(server) {
   return build({
     configFile: 'packages/preload/vite.config.ts',
     mode: 'development',
-    plugins: [{
-      name: 'electron-preload-watcher',
-      writeBundle() {
-        server.ws.send({ type: 'full-reload' })
+    plugins: [
+      {
+        name: 'electron-preload-watcher',
+        writeBundle() {
+          server.ws.send({ type: 'full-reload' })
+        },
       },
-    }],
+    ],
     build: {
       watch: true,
     },
@@ -52,7 +56,9 @@ function watchPreload(server) {
 }
 
 // bootstrap
-const server = await createServer({ configFile: 'packages/renderer/vite.config.ts' })
+const server = await createServer({
+  configFile: 'packages/renderer/vite.config.ts',
+})
 
 await server.listen()
 await watchPreload(server)

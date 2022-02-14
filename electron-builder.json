@@ -2,16 +2,15 @@
   "appId": "YouAppID@qq.com",
   "asar": true,
   "directories": {
-    "output": "release/${version}"
+    "output": "release",
+    "buildResources": "dist/renderer/images"
   },
   "files": ["dist"],
   "mac": {
-    "icon": "./dist/renderer/public/images/logo.png",
     "artifactName": "${productName}_${version}.${ext}",
     "target": ["dmg"]
   },
   "win": {
-    "icon": "./dist/renderer/public/images/logo.png",
     "target": [
       {
         "target": "nsis",
