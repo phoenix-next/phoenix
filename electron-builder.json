@@ -4,22 +4,18 @@
   "directories": {
     "output": "release/${version}"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "mac": {
+    "icon": "./dist/renderer/public/images/logo.png",
     "artifactName": "${productName}_${version}.${ext}",
-    "target": [
-      "dmg"
-    ]
+    "target": ["dmg"]
   },
   "win": {
+    "icon": "./dist/renderer/public/images/logo.png",
     "target": [
       {
         "target": "nsis",
-        "arch": [
-          "x64"
-        ]
+        "arch": ["x64"]
       }
     ],
     "artifactName": "${productName}_${version}.${ext}"

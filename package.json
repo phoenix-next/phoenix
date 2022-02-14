@@ -1,13 +1,14 @@
 {
   "name": "phoenix",
   "version": "1.0.0",
+  "description": "A learning and distributed judging system.",
   "main": "dist/main/index.cjs",
   "author": "Matrix53 <1079207272@qq.com>",
   "license": "MIT",
   "scripts": {
     "dev": "node scripts/watch.mjs",
     "prebuild": "vue-tsc --project packages/renderer/tsconfig.json --noEmit && node scripts/build.mjs",
-    "build": "npm run prebuild && electron-builder",
+    "build": "electron-builder",
     "debug": "npm run prebuild && vite ./packages/renderer"
   },
   "engines": {
