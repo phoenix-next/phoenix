@@ -17,7 +17,11 @@ npm install
 npm run dev
 ```
 
-另外，本项目在开发过程中可以热更新(HMR)，不需要重启应用来查看代码的更改效果，但是静态服务器需要在命令行中关闭(不能靠关闭 PhoeniX 来关闭)。
+另外，还有几点需要注意：
+
+1. 本项目在开发过程中可以热更新(HMR)，不需要重启应用来查看代码的更改效果
+2. Vite 静态服务器需要在命令行中关闭(不能靠关闭 PhoeniX 来关闭)
+3. 开发过程中建议使用 vscode，并启用 Volar 的 [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussion-3561961)
 
 ## Build
 
