@@ -1,11 +1,11 @@
-import { request } from '../utils/request'
+import { backend } from '../utils/request'
 
 export function login(data: { name: string; password: string }) {
-  return request.post('user/login', data)
+  return backend.post('user/login', data)
 }
 
 export function getCaptcha(data: { email: string }) {
-  return request.post('user/captcha', data)
+  return backend.post('user/captcha', data)
 }
 
 export function register(data: {
@@ -14,5 +14,5 @@ export function register(data: {
   name: string
   password: string
 }) {
-  return request.post('user/register', data)
+  return backend.post('user/register', data)
 }

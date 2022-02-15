@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, shell, Menu } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
 
@@ -16,6 +16,10 @@ if (!app.requestSingleInstanceLock()) {
 let win: BrowserWindow | null = null
 
 async function createWindow() {
+  // disable default menu
+  Menu.setApplicationMenu(null)
+
+  // config main window
   let winConfig = {
     title: 'PhoeniX',
     width: 1100,
@@ -31,7 +35,7 @@ async function createWindow() {
   }
   win = new BrowserWindow(winConfig)
 
-  // implement cross origin
+  // enable cross origin
   win.webContents.session.webRequest.onBeforeSendHeaders(
     (details, callback) => {
       callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } })
@@ -46,6 +50,7 @@ async function createWindow() {
     })
   })
 
+  // load app content
   if (app.isPackaged || process.env['DEBUG']) {
     win.loadFile(join(__dirname, '../renderer/index.html'))
   } else {

@@ -1,7 +1,9 @@
 import axios from 'axios'
 
-const request = axios.create({
+const backend = axios.create({
   baseURL: 'http://phoenix.matrix53.top/api/v1/',
 })
 
-export { request }
+const common = axios.create({})
+
+export { backend, common }

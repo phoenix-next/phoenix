@@ -2,7 +2,7 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
 import { useRoute, useRouter } from 'vue-router'
-import { request } from './utils/request'
+import { common } from './utils/request'
 import { ref } from 'vue'
 
 const router = useRouter()
@@ -16,7 +16,7 @@ const jump = () => {
 const data = ref('')
 
 const render = async () => {
-  let res = await request.get('swagger/index.html')
+  let res = await common.get('http://phoenix.matrix53.top/swagger/index.html')
   data.value = res.data.substring(1, 20)
 }
 </script>
