@@ -1,13 +1,13 @@
+<template>
+  <h1>这是HelloWorld1</h1>
+  <n-button type="info" @click="count++">count is: {{ count }}</n-button>
+</template>
+
 <script setup lang="ts">
 import { ref } from 'vue'
 
 const count = ref(0)
 </script>
-
-<template>
-  <h1>这是HelloWorld1</h1>
-  <n-button type="info" @click="count++">count is: {{ count }}</n-button>
-</template>
 
 <style scoped>
 a {
