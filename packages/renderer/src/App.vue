@@ -1,3 +1,10 @@
+<template>
+  <n-button type="info" @click="jump" style="margin-right: 5px">跳转</n-button>
+  <n-button type="info" @click="render">渲染</n-button>
+  <div>{{ data }}</div>
+  <router-view />
+</template>
+
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
@@ -20,13 +27,6 @@ const render = async () => {
   data.value = res.data.substring(1, 20)
 }
 </script>
-
-<template>
-  <n-button type="info" @click="jump" style="margin-right: 5px">跳转</n-button>
-  <n-button type="info" @click="render">渲染</n-button>
-  <div>{{ data }}</div>
-  <router-view />
-</template>
 
 <style>
 #app {
