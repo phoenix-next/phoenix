@@ -33,7 +33,7 @@ npm run build
 
 构建完成之后，构建产物将位于`release`文件夹下。
 
-# Mirror
+## Mirror
 
 若由于 GFW 等原因无法构建项目，以下是解决方案：
 
@@ -56,3 +56,4 @@ npm config set electron_mirror https://npmmirror.com/mirrors/electron/v # 构建
 ## Credits
 
 - 本项目使用的模板为[electron-vue-vite](https://github.com/caoxiemeihao/electron-vue-vite)
+- 没有 [eletron](https://github.com/electron/electron) 项目及其社区，就没有这个项目
