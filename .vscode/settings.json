@@ -17,5 +17,6 @@
     "prettier.semi": false,
     "prettier.jsxSingleQuote": true,
     "prettier.singleQuote": true,
-    "todo-tree.highlights.useColourScheme": true
+    "todo-tree.highlights.useColourScheme": true,
+    "volar.takeOverMode.enabled": true
 }
