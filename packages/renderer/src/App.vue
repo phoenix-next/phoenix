@@ -1,31 +1,31 @@
 <template>
-  <n-layout has-sider> </n-layout>
-  <n-button type="info" @click="jump" style="margin-right: 5px">跳转</n-button>
-  <n-button type="info" @click="render">渲染</n-button>
-  <div>{{ data }}</div>
+  <n-layout has-sider>
+    <n-layout-sider>
+      <n-menu :options="menuOptions" />
+    </n-layout-sider>
+    <n-layout-content>
+      <router-view />
+    </n-layout-content>
+  </n-layout>
 </template>
 
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
-import { useRoute, useRouter } from 'vue-router'
-import { common } from './utils/request'
-import { ref } from 'vue'
+import {
+  BookOutline,
+  DesktopOutline,
+  List,
+  LogoStackoverflow,
+  People,
+} from '@vicons/ionicons5'
+import { createMenuOptions } from './utils/naive'
 
-const router = useRouter()
-const route = useRoute()
-
-const jump = () => {
-  let to = route.path === '/' ? '/login' : '/'
-  router.push(to)
-}
-
-const data = ref('')
-
-const render = async () => {
-  let res = await common.get('http://phoenix.matrix53.top/swagger/index.html')
-  data.value = res.data.substring(1, 20)
-}
+const menuOptions = createMenuOptions([
+  { path: '/tutorial', name: '教程', icon: BookOutline },
+  { path: '/contest', name: '比赛', icon: DesktopOutline },
+  { path: '/problem', name: '题库', icon: List },
+  { path: '/forum', name: '论坛', icon: LogoStackoverflow },
+  { path: '/team', name: '组织', icon: People },
+])
 </script>
 
 <style>
