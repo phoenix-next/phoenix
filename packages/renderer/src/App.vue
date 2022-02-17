@@ -1,4 +1,5 @@
 <template>
+  <n-layout has-sider></n-layout>
   <n-button type="info" @click="jump" style="margin-right: 5px">跳转</n-button>
   <n-button type="info" @click="render">渲染</n-button>
   <div>{{ data }}</div>
