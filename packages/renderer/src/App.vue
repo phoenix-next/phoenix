@@ -36,7 +36,7 @@ const bottomMenuOptions = createMenuOptions([
 ])
 </script>
 
-<style>
+<style scoped>
 .top-menu {
   position: absolute;
   top: 1%;
