@@ -1,6 +1,6 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     redirect: { name: 'tutorial' },
@@ -29,6 +29,27 @@ const routes = [
     path: '/tutorial',
     name: 'tutorial',
     component: () => import('../views/Tutorial.vue'),
+  },
+  {
+    path: '/setting',
+    name: 'setting',
+    component: () => import('../views/Setting.vue'),
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('../views/Login.vue'),
+    beforeEnter: (to, from) => {
+      let userID = localStorage.getItem('userID')
+      if (userID !== null) {
+        return { path: '/profile/' + userID }
+      }
+    },
+  },
+  {
+    path: '/profile/:userID',
+    name: 'profile',
+    component: () => import('../views/Profile.vue'),
   },
 ]
 

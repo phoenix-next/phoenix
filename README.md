@@ -3,7 +3,7 @@
 ## Introduction
 
 - 基于 Electron 的综合性学习平台，集分布式评测、轻社交、资源发布等于一身
-- 使用 Vue3 + TS + NaiveUI 制作，技术栈较新
+- 拥抱 Typescript，使用 Vue3 作为前端框架，NaiveUI 作为组件库，xicons 作为图标库
 - 本项目为桌面客户端，Shell 客户端位于[这里](https://github.com/phoenix-next/phoenix-shell)，而服务端位于[这里](https://github.com/phoenix-next/phoenix-server)
 
 ## Development
@@ -56,4 +56,5 @@ npm config set electron_mirror https://npmmirror.com/mirrors/electron/v # 构建
 ## Credits
 
 - 本项目使用的模板为[electron-vue-vite](https://github.com/caoxiemeihao/electron-vue-vite)
-- 没有 [eletron](https://github.com/electron/electron) 项目及其社区，就没有这个项目
+- 没有 [Eletron](https://github.com/electron/electron) 框架和[Vue](https://github.com/vuejs/core)框架，就没有这个项目
+- 感谢 [07akioni](https://github.com/07akioni)维护的[NaiveUI](https://github.com/TuSimple/naive-ui)组件库和[xicons](https://github.com/07akioni/xicons)图标库
