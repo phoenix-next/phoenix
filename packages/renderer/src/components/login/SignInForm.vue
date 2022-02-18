@@ -7,14 +7,19 @@
       <n-input v-model:value="data.password" placeholder="输入密码" />
     </n-form-item-row>
   </n-form>
-  <n-button type="primary" block secondary strong @click="clickLogin"
-    >登录</n-button
-  >
+  <n-button type="primary" block secondary strong @click="clickLogin">
+    登录
+  </n-button>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { login } from '../../api/social'
+import { useMessage } from 'naive-ui'
+import { useRouter } from 'vue-router'
+
+const messager = useMessage()
+const router = useRouter()
 
 const data = ref({
   email: '',
@@ -35,9 +40,20 @@ const rules = {
 }
 
 function clickLogin() {
-  login(data.value).then((res) => {
-    console.log(res.data)
-  })
+  login(data.value)
+    .then((res) => {
+      if (res.data.success) {
+        localStorage.setItem('token', res.data.token)
+        localStorage.setItem('id', res.data.id)
+        messager.success(res.data.message)
+        router.push({ path: '/tutorial' })
+      } else {
+        messager.warning(res.data.message)
+      }
+    })
+    .catch((res) => {
+      messager.error('网络故障, 请检查网络连接')
+    })
 }
 </script>
 

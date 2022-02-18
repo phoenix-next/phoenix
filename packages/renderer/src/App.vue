@@ -1,13 +1,15 @@
 <template>
-  <n-layout has-sider position="absolute">
-    <n-layout-sider collapsed collapse-mode="width">
-      <n-menu :options="topMenuOptions" class="top-menu" />
-      <n-menu :options="bottomMenuOptions" class="bottom-menu" />
-    </n-layout-sider>
-    <n-layout-content>
-      <router-view />
-    </n-layout-content>
-  </n-layout>
+  <n-message-provider>
+    <n-layout has-sider position="absolute">
+      <n-layout-sider collapsed collapse-mode="width">
+        <n-menu :options="topMenuOptions" class="top-menu" />
+        <n-menu :options="bottomMenuOptions" class="bottom-menu" />
+      </n-layout-sider>
+      <n-layout-content>
+        <router-view />
+      </n-layout-content>
+    </n-layout>
+  </n-message-provider>
 </template>
 
 <script setup lang="ts">

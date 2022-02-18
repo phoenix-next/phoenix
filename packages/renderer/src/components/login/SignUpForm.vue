@@ -44,6 +44,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { getCaptcha, register } from '../../api/social'
+import { useMessage } from 'naive-ui'
+
+const messager = useMessage()
 
 const data = ref({
   email: '',
@@ -82,15 +85,32 @@ const rules = {
 }
 
 function clickRegister() {
-  register(data.value).then((res) => {
-    console.log(res.data)
-  })
+  // TODO: form validation
+  register(data.value)
+    .then((res) => {
+      if (res.data.success) {
+        messager.success(res.data.message)
+      } else {
+        messager.warning(res.data.message)
+      }
+    })
+    .catch((res) => {
+      messager.error('网络故障, 请检查网络连接')
+    })
 }
 
 function clickGetCaptcha() {
-  getCaptcha({ email: data.value.email }).then((res) => {
-    console.log(res.data)
-  })
+  getCaptcha({ email: data.value.email })
+    .then((res) => {
+      if (res.data.success) {
+        messager.success(res.data.message)
+      } else {
+        messager.warning(res.data.message)
+      }
+    })
+    .catch((res) => {
+      messager.error('网络故障, 请检查网络连接')
+    })
 }
 </script>
 
