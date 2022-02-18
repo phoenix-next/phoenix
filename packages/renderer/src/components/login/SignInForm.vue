@@ -44,7 +44,7 @@ function clickLogin() {
     .then((res) => {
       if (res.data.success) {
         localStorage.setItem('token', res.data.token)
-        localStorage.setItem('id', res.data.id)
+        localStorage.setItem('userID', res.data.id)
         messager.success(res.data.message)
         router.push({ path: '/tutorial' })
       } else {
