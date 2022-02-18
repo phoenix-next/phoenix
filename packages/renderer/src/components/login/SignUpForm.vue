@@ -15,18 +15,42 @@
         placeholder="重复输入密码"
       />
     </n-form-item-row>
+    <n-form-item-row label="验证码" path="captcha">
+      <n-input v-model:value="data.captcha" placeholder="输入验证码" />
+    </n-form-item-row>
   </n-form>
-  <n-button type="primary" block secondary strong>注册</n-button>
+  <n-button
+    type="primary"
+    block
+    secondary
+    strong
+    class="captcha-btn"
+    @click="clickGetCaptcha"
+  >
+    发送验证码
+  </n-button>
+  <n-button
+    type="primary"
+    block
+    secondary
+    strong
+    class="signup-btn"
+    @click="clickRegister"
+  >
+    注册
+  </n-button>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { getCaptcha, register } from '../../api/social'
 
 const data = ref({
   email: '',
   name: '',
   password: '',
   confirm_password: '',
+  captcha: '',
 })
 
 const rules = {
@@ -50,7 +74,28 @@ const rules = {
     message: '请重复输入密码',
     trigger: 'blur',
   },
+  captcha: {
+    required: true,
+    message: '请输入验证码',
+    trigger: 'blur',
+  },
+}
+
+function clickRegister() {
+  register(data.value).then((res) => {
+    console.log(res.data)
+  })
+}
+
+function clickGetCaptcha() {
+  getCaptcha({ email: data.value.email }).then((res) => {
+    console.log(res.data)
+  })
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.signup-btn {
+  margin-top: 1.5vh;
+}
+</style>

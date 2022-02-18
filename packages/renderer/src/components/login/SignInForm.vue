@@ -7,11 +7,14 @@
       <n-input v-model:value="data.password" placeholder="输入密码" />
     </n-form-item-row>
   </n-form>
-  <n-button type="primary" block secondary strong>登录</n-button>
+  <n-button type="primary" block secondary strong @click="clickLogin"
+    >登录</n-button
+  >
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { login } from '../../api/social'
 
 const data = ref({
   email: '',
@@ -29,6 +32,12 @@ const rules = {
     message: '请输入密码',
     trigger: 'blur',
   },
+}
+
+function clickLogin() {
+  login(data.value).then((res) => {
+    console.log(res.data)
+  })
 }
 </script>
 

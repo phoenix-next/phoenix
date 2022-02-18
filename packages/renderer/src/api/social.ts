@@ -1,6 +1,6 @@
 import { backend } from '../utils/request'
 
-export function login(data: { name: string; password: string }) {
+export function login(data: { email: string; password: string }) {
   return backend.post('user/login', data)
 }
 
@@ -9,7 +9,7 @@ export function getCaptcha(data: { email: string }) {
 }
 
 export function register(data: {
-  captcha: number
+  captcha: string
   email: string
   name: string
   password: string
