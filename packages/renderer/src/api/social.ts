@@ -16,3 +16,11 @@ export function register(data: {
 }) {
   return backend.post('user/register', data)
 }
+
+export function getProfile(data: { id: string }) {
+  return backend.get('user/profile', {
+    params: {
+      id: data.id,
+    },
+  })
+}
