@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const backend = axios.create({
-  baseURL: 'http://phoenix.matrix53.top/api/v1/',
+  baseURL: 'https://phoenix.matrix53.top/api/v1/',
   headers: {
     'x-token': localStorage.getItem('token') || '',
   },

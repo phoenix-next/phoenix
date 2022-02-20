@@ -38,20 +38,21 @@ async function createWindow() {
   // enable cross origin
   win.webContents.session.webRequest.onBeforeSendHeaders(
     (details, callback) => {
-      callback({ requestHeaders: { ...details.requestHeaders, Origin: '*' } })
+      delete details.requestHeaders['Origin']
+      callback({ requestHeaders: { ...details.requestHeaders, origin: '*' } })
     }
   )
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    if (details.responseHeaders) {
+      delete details.responseHeaders['Access-Control-Allow-Origin']
+      delete details.responseHeaders['Access-Control-Allow-Headers']
+    }
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Access-Control-Allow-Origin': ['*'],
-        'Access-Control-Allow-Headers': [
-          'Origin',
-          'Content-Length',
-          'Content-Type',
-          'x-token',
-        ],
+        'access-control-allow-origin': '*',
+        'access-control-allow-headers':
+          'Origin,Content-Length,Content-Type,x-token',
       },
     })
   })
