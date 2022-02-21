@@ -17,9 +17,11 @@ import { ref } from 'vue'
 import { login } from '../../api/social'
 import { useMessage } from 'naive-ui'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '../../stores/auth'
 
 const messager = useMessage()
 const router = useRouter()
+const { signIn } = useAuthStore()
 
 const data = ref({
   email: '',
@@ -45,6 +47,7 @@ function clickLogin() {
       if (res.data.success) {
         localStorage.setItem('token', res.data.token)
         localStorage.setItem('userID', res.data.id)
+        signIn()
         messager.success(res.data.message)
         router.push({ path: '/tutorial' })
       } else {
