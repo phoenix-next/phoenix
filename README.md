@@ -43,14 +43,14 @@ npm run build
 npm config set registry https://registry.npmmirror.com/
 ```
 
-其次，对于 Electron 镜像源，需要单独设置(使用华为或者阿里的 Electron 镜像均可，其优缺点也列在了下方)：
+其次，对于 Electron 镜像源，需要单独设置(使用华为或者阿里的 Electron 镜像均可)：
 
 ```sh
 # 华为Electron镜像的设置方法，缺点是华为镜像更新不够及时
-npm config set electron_mirror https://mirrors.huaweicloud.com/electron/
-# 阿里Electron镜像的设置方法，缺点是日常使用和构建时需要不同的配置
-npm config set electron_mirror https://npmmirror.com/mirrors/electron/ # 一般情况下的镜像配置
-npm config set electron_mirror https://npmmirror.com/mirrors/electron/v # 构建时需要的镜像配置
+npm config set ELECTRON_MIRROR="https://mirrors.huaweicloud.com/electron/"
+# 阿里Electron镜像的设置方法
+npm config set ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
+npm config set ELECTRON_CUSTOM_DIR="v{{ version }}"
 ```
 
 ## Credits
