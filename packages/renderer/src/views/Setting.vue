@@ -11,6 +11,7 @@
   >
     退出登录
   </n-button>
+  <n-button @click="test"> 测试 </n-button>
 </template>
 
 <script setup lang="ts">
@@ -28,6 +29,12 @@ function clickSignOut() {
   signOut()
   messager.success('退出账号成功')
   router.push({ name: 'login' })
+}
+
+function test() {
+  window.utilsBridge.judge().then((res) => {
+    console.log(res)
+  })
 }
 </script>
 
