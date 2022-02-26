@@ -1,6 +1,5 @@
 <template>
-  <!-- TODO: problem page -->
-  Problem
+  <router-view />
 </template>
 
 <script setup lang="ts"></script>
