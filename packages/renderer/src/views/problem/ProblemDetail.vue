@@ -1,8 +1,82 @@
 <template>
-  <!-- TODO: ProblemDetail page -->
-  ProblemDetail
+  <n-card>
+    <n-button text class="return" @click="clickReturn">
+      <n-icon>
+        <arrow-back-circle-outline />
+      </n-icon>
+    </n-button>
+    <n-space justify="center">
+      <n-h1 class="title">题目的名称</n-h1>
+    </n-space>
+    <n-space justify="end">
+      <n-select
+        v-model:value="language"
+        :options="options"
+        :consistent-menu-width="false"
+      />
+      <n-button @click="clickSubmit">提交</n-button>
+    </n-space>
+    <n-divider />
+    <!-- TODO: 渲染markdown -->
+  </n-card>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { ArrowBackCircleOutline } from '@vicons/ionicons5'
+import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
+import { useRouter } from 'vue-router'
 
-<style scoped></style>
+const router = useRouter()
+const problem = ref()
+const language = ref(0)
+
+function clickReturn() {
+  router.back()
+}
+function clickSubmit() {
+  // TODO: submit logic
+}
+
+onMounted(() => {
+  //TODO: get problem data
+})
+
+const options: SelectMixedOption[] = [
+  {
+    label: 'C',
+    value: 0,
+  },
+  {
+    label: 'C++',
+    value: 1,
+  },
+  {
+    label: 'Java',
+    value: 2,
+  },
+  {
+    label: 'Golang',
+    value: 3,
+  },
+  {
+    label: 'Javascript',
+    value: 4,
+  },
+  {
+    label: 'Python',
+    value: 5,
+  },
+]
+</script>
+
+<style scoped>
+.return {
+  position: absolute;
+  font-size: 30px;
+}
+
+.title {
+  margin-bottom: 0;
+}
+</style>
