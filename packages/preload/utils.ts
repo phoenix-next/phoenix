@@ -1,6 +1,9 @@
 import { ipcRenderer } from 'electron'
 
 export default {
+  markdownToHTML(markdown: string) {
+    return ipcRenderer.invoke('markdownToHTML', markdown)
+  },
   isProblemUpToDate(problemID: number) {
     return ipcRenderer.invoke('isProblemUpToDate', problemID)
   },

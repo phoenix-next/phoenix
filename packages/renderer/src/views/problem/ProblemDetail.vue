@@ -17,7 +17,7 @@
       <n-button @click="clickSubmit">提交</n-button>
     </n-space>
     <n-divider />
-    <!-- TODO: 渲染markdown -->
+    <div v-html="problem.description"></div>
   </n-card>
 </template>
 
@@ -28,7 +28,9 @@ import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const problem = ref()
+const problem = ref({
+  description: '',
+})
 const language = ref(0)
 
 function clickReturn() {
@@ -40,6 +42,11 @@ function clickSubmit() {
 
 onMounted(() => {
   //TODO: get problem data
+  window.utilsBridge
+    .markdownToHTML('## 题目描述 \n## 题目样例 \n## 数据范围')
+    .then((res) => {
+      problem.value.description = res
+    })
 })
 
 const options: SelectMixedOption[] = [
