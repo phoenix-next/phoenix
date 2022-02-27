@@ -40,11 +40,13 @@ function clickSubmit() {
   // TODO: submit logic
 }
 
+const text =
+  '## 题目描述 \n ## 题目样例 \n ```python \n print("Hello World") \n hello=1 if false else 2 \n ``` \n $\\sqrt{3x-1}+(1+x)^2$ \n ## 数据范围'
+
 onMounted(() => {
   //TODO: get problem data
-  window.utilsBridge.markdownToHTML('## 测试\n$\\alpha$').then((res) => {
+  window.utilsBridge.markdownToHTML(text).then((res) => {
     problem.value.description = res
-    console.log(res)
   })
 })
 

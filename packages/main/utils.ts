@@ -1,8 +1,9 @@
 import { ipcMain } from 'electron'
 import MarkdownIt from 'markdown-it'
 import latex from 'markdown-it-katex'
+import prism from 'markdown-it-prism'
 
-const markdown = new MarkdownIt().use(latex)
+const markdown = new MarkdownIt().use(latex).use(prism)
 
 export function handleUtils() {
   ipcMain.handle('markdownToHTML', (event, text) => {
