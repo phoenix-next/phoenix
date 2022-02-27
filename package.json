@@ -34,7 +34,7 @@
     "PORT": 3344
   },
   "dependencies": {
-    "@traptitech/markdown-it-katex": "^3.5.0",
-    "markdown-it": "^12.3.2"
+    "markdown-it": "^12.3.2",
+    "markdown-it-katex": "^2.0.3"
   }
 }

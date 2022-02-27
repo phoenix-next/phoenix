@@ -18,6 +18,6 @@ declare module '*.vue' {
 declare global {
   interface Window {
     // Expose some Api through preload script
-    utilsBridge: typeof import('../../preload/utils').default
+    utilsBridge: typeof import('../preload/utils').default
   }
 }

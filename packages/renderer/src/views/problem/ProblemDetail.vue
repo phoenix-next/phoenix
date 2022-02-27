@@ -42,11 +42,10 @@ function clickSubmit() {
 
 onMounted(() => {
   //TODO: get problem data
-  window.utilsBridge
-    .markdownToHTML('## 题目描述 \n## 题目样例 \n## 数据范围')
-    .then((res) => {
-      problem.value.description = res
-    })
+  window.utilsBridge.markdownToHTML('## 测试\n$\\alpha$').then((res) => {
+    problem.value.description = res
+    console.log(res)
+  })
 })
 
 const options: SelectMixedOption[] = [

@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import MarkdownIt from 'markdown-it'
-import latex from '@traptitech/markdown-it-katex'
+import latex from 'markdown-it-katex'
 
 const markdown = new MarkdownIt().use(latex)
 
