@@ -14,7 +14,16 @@
         :options="options"
         :consistent-menu-width="false"
       />
-      <n-button @click="clickSubmit">提交</n-button>
+      <n-upload
+        :default-upload="false"
+        :max="1"
+        :disabled="pending"
+        @change="handleProgramChange"
+        :file-list="program"
+        :show-file-list="false"
+      >
+        <n-button>提交</n-button>
+      </n-upload>
     </n-space>
     <n-divider />
     <div v-html="problem.description"></div>
@@ -25,19 +34,31 @@
 import { onMounted, ref } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
-import { useRouter } from 'vue-router'
+import { UploadFileInfo } from 'naive-ui'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 const problem = ref({
   description: '',
 })
-const language = ref(0)
+const language = ref('C')
+const program = ref<Array<UploadFileInfo>>([])
+const pending = ref(false)
 
 function clickReturn() {
   router.back()
 }
-function clickSubmit() {
-  // TODO: submit logic
+function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
+  program.value = data.fileList
+  const url = data.fileList[0].file?.path ?? ''
+  if (program.value.length > 0) {
+    window.utilsBridge
+      .judgeProblem(url, Number(route.params.id as string), language.value)
+      .then((res) => {
+        // TODO: accept and wrong answer
+      })
+  }
 }
 
 const text =
@@ -53,27 +74,27 @@ onMounted(() => {
 const options: SelectMixedOption[] = [
   {
     label: 'C',
-    value: 0,
+    value: 'C',
   },
   {
     label: 'C++',
-    value: 1,
+    value: 'C++',
   },
   {
     label: 'Java',
-    value: 2,
+    value: 'Java',
   },
   {
     label: 'Golang',
-    value: 3,
+    value: 'Golang',
   },
   {
-    label: 'Javascript',
-    value: 4,
+    label: 'JavaScript',
+    value: 'JavaScript',
   },
   {
     label: 'Python',
-    value: 5,
+    value: 'Python',
   },
 ]
 </script>

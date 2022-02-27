@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron'
+import { ipcMain, app } from 'electron'
 import MarkdownIt from 'markdown-it'
 import latex from 'markdown-it-texmath'
 import prism from 'markdown-it-prism'
@@ -18,7 +18,8 @@ export function handleUtils() {
     return 'success'
   })
 
-  ipcMain.handle('judgeProblem', (event, srcFilePath, problemID) => {
+  ipcMain.handle('judgeProblem', (event, srcFilePath, problemID, language) => {
+    console.log(srcFilePath, problemID, app.getPath('temp'))
     return 'pseudo judge result'
   })
 }

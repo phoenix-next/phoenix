@@ -10,7 +10,7 @@ export default {
   cacheProblem(problem: any) {
     return ipcRenderer.invoke('cacheProblem', problem)
   },
-  judgeProblem(srcFilePath: string, problemID: number) {
-    return ipcRenderer.invoke('judgeProblem', srcFilePath, problemID)
+  judgeProblem(srcFilePath: string, problemID: number, language: string) {
+    return ipcRenderer.invoke('judgeProblem', srcFilePath, problemID, language)
   },
 }
