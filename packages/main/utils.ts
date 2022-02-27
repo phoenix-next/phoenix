@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron'
 import MarkdownIt from 'markdown-it'
-import latex from 'markdown-it-katex'
+import latex from 'markdown-it-texmath'
 import prism from 'markdown-it-prism'
 
 const markdown = new MarkdownIt().use(latex).use(prism)
