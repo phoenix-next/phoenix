@@ -54,7 +54,7 @@ function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
   const url = data.fileList[0].file?.path ?? ''
   if (program.value.length > 0) {
     window.utilsBridge
-      .judgeProblem(url, Number(route.params.id as string), language.value)
+      .judgeProblem(url, route.params.id as string, language.value)
       .then((res) => {
         // TODO: accept and wrong answer
       })
