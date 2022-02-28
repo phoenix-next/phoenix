@@ -1,15 +1,16 @@
+import { ipcRenderer } from 'electron'
 
-/** docoment ready */
-export function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
-  return new Promise(resolve => {
-    if (condition.includes(document.readyState)) {
-      resolve(true)
-    } else {
-      document.addEventListener('readystatechange', () => {
-        if (condition.includes(document.readyState)) {
-          resolve(true)
-        }
-      })
-    }
-  })
+export default {
+  markdownToHTML(markdown: string) {
+    return ipcRenderer.invoke('markdownToHTML', markdown)
+  },
+  isProblemUpToDate(problemID: number) {
+    return ipcRenderer.invoke('isProblemUpToDate', problemID)
+  },
+  cacheProblem(problem: any) {
+    return ipcRenderer.invoke('cacheProblem', problem)
+  },
+  judgeProblem(srcFilePath: string, problemID: string, language: string) {
+    return ipcRenderer.invoke('judgeProblem', srcFilePath, problemID, language)
+  },
 }

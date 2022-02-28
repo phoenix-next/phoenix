@@ -43,18 +43,18 @@ npm run build
 npm config set registry https://registry.npmmirror.com/
 ```
 
-其次，对于 Electron 镜像源，需要单独设置(使用华为或者阿里的 Electron 镜像均可，其优缺点也列在了下方)：
+其次，对于 Electron 镜像源，需要单独设置(使用华为或者阿里的 Electron 镜像均可)：
 
 ```sh
 # 华为Electron镜像的设置方法，缺点是华为镜像更新不够及时
-npm config set electron_mirror https://mirrors.huaweicloud.com/electron/
-# 阿里Electron镜像的设置方法，缺点是日常使用和构建时需要不同的配置
-npm config set electron_mirror https://npmmirror.com/mirrors/electron/ # 一般情况下的镜像配置
-npm config set electron_mirror https://npmmirror.com/mirrors/electron/v # 构建时需要的镜像配置
+npm config set ELECTRON_MIRROR="https://mirrors.huaweicloud.com/electron/"
+# 阿里Electron镜像的设置方法
+npm config set ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
+npm config set ELECTRON_CUSTOM_DIR="v{{ version }}"
 ```
 
 ## Credits
 
-- 本项目使用的模板为[electron-vue-vite](https://github.com/caoxiemeihao/electron-vue-vite)
+- 本项目使用的模板为[electron-vue-vite](https://github.com/caoxiemeihao/electron-vue-vite)，借鉴了[fluent-reader](https://github.com/yang991178/fluent-reader)的架构
 - 没有 [Eletron](https://github.com/electron/electron) 框架和[Vue](https://github.com/vuejs/core)框架，就没有这个项目
 - 感谢 [07akioni](https://github.com/07akioni)维护的[NaiveUI](https://github.com/TuSimple/naive-ui)组件库和[xicons](https://github.com/07akioni/xicons)图标库

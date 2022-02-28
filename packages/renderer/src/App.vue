@@ -1,9 +1,13 @@
 <template>
   <n-message-provider>
     <n-layout has-sider position="absolute">
-      <n-layout-sider collapsed collapse-mode="width">
-        <n-menu :options="topMenuOptions" class="top-menu" />
-        <n-menu :options="bottomMenuOptions" class="bottom-menu" />
+      <n-layout-sider collapsed collapse-mode="width" bordered>
+        <n-layout-header position="absolute">
+          <n-menu collapsed :options="topMenuOptions" class="top-menu" />
+        </n-layout-header>
+        <n-layout-footer position="absolute">
+          <n-menu collapsed :options="bottomMenuOptions" class="bottom-menu" />
+        </n-layout-footer>
       </n-layout-sider>
       <n-layout-content>
         <router-view />
@@ -39,13 +43,7 @@ const bottomMenuOptions = createMenuOptions([
 </script>
 
 <style scoped>
-.top-menu {
-  position: absolute;
-  top: 1%;
-}
-
 .bottom-menu {
-  position: absolute;
-  bottom: 1%;
+  margin-bottom: 0.5vh;
 }
 </style>

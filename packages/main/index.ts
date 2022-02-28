@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell, Menu } from 'electron'
 import { release } from 'os'
 import { join } from 'path'
+import { handleUtils } from './utils'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -38,14 +39,21 @@ async function createWindow() {
   // enable cross origin
   win.webContents.session.webRequest.onBeforeSendHeaders(
     (details, callback) => {
-      callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } })
+      delete details.requestHeaders['Origin']
+      callback({ requestHeaders: { ...details.requestHeaders, origin: '*' } })
     }
   )
   win.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    if (details.responseHeaders) {
+      delete details.responseHeaders['Access-Control-Allow-Origin']
+      delete details.responseHeaders['Access-Control-Allow-Headers']
+    }
     callback({
       responseHeaders: {
-        'Access-Control-Allow-Origin': ['*'],
         ...details.responseHeaders,
+        'access-control-allow-origin': '*',
+        'access-control-allow-headers':
+          'Origin,Content-Length,Content-Type,x-token',
       },
     })
   })
@@ -96,3 +104,5 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+handleUtils()
