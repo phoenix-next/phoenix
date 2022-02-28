@@ -14,6 +14,7 @@
     "node": ">=14.17.0"
   },
   "devDependencies": {
+    "@types/diff": "^5.0.2",
     "@types/fs-extra": "^9.0.13",
     "@types/markdown-it": "^12.2.3",
     "@vicons/ionicons5": "^0.12.0",
@@ -35,6 +36,7 @@
     "PORT": 3344
   },
   "dependencies": {
+    "diff": "^5.0.0",
     "fs-extra": "^10.0.1",
     "katex": "^0.15.2",
     "markdown-it": "^12.3.2",
