@@ -2,20 +2,17 @@
   <n-card>
     <div class="table-toolbar">
       <div class="table-toolbar-left">
-        <template v-if="title">
-          <div class="table-toolbar-left-title">
-            {{ title }}
-            <n-tooltip trigger="hover" v-if="titleTooltip">
-              <template #trigger>
-                <n-icon size="18" class="cursor-pointer">
-                  <AlertCircle />
-                </n-icon>
-              </template>
-              {{ titleTooltip }}
-            </n-tooltip>
-          </div>
-          <slot name="tableTitle"></slot>
-        </template>
+        <div class="table-toolbar-left-title">
+          <slot name="teamDropdownList"></slot>
+          <n-tooltip trigger="hover" v-if="titleTooltip">
+            <template #trigger>
+              <n-icon size="18" class="cursor-pointer">
+                <alert-circle />
+              </n-icon>
+            </template>
+            {{ titleTooltip }}
+          </n-tooltip>
+        </div>
       </div>
       <div class="table-toolbar-right">
         <slot name="tableToolbar"></slot>
@@ -27,7 +24,7 @@
           <template #trigger>
             <div class="table-toolbar-right-icon" @click="reload">
               <n-icon size="18">
-                <ReloadOutline />
+                <reload-outline />
               </n-icon>
             </div>
           </template>
@@ -41,10 +38,24 @@
   </n-card>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { AlertCircle, ReloadOutline } from '@vicons/ionicons5'
-import { NDataTable, useMessage } from 'naive-ui'
-import { computed, defineComponent, reactive } from 'vue'
+import { NDataTable, useMessage, DataTableColumn } from 'naive-ui'
+
+defineProps({
+  teamName: {
+    type: String,
+    default: null,
+  },
+  titleTooltip: {
+    type: String,
+    default: null,
+  },
+})
+const emit = defineEmits(['update:checked-row-keys'])
+
+const message = useMessage()
+
 const tableData = [
   {
     key: 0,
@@ -75,7 +86,7 @@ const tableData = [
     identity: '组员',
   },
 ]
-const columns = [
+const columns: Array<DataTableColumn> = [
   {
     title: 'Name',
     key: 'name',
@@ -95,48 +106,21 @@ const columns = [
     key: 'loginTime',
     sorter: 'default',
   },
-  reactive({
+  {
     title: 'Identity',
     key: 'identity',
     sorter(rowA: any, rowB: any) {
-      if (rowA.identity == '管理员') return true
-      else return false
+      return rowA.class - rowA.class
     },
-  }),
+  },
 ]
-export default defineComponent({
-  components: {
-    AlertCircle,
-    ReloadOutline,
-  },
-  props: {
-    ...NDataTable.props,
-    title: {
-      type: String,
-      default: null,
-    },
-    titleTooltip: {
-      type: String,
-      default: null,
-    },
-  },
-  emits: ['update:checked-row-keys'],
-  setup(props, { emit }) {
-    const message = useMessage()
-    function reload() {
-      message.info('reload')
-    }
-    function updateCheckedRowKeys(rowKeys: any) {
-      emit('update:checked-row-keys', rowKeys)
-    }
-    return {
-      reload,
-      updateCheckedRowKeys,
-      columns,
-      tableData,
-    }
-  },
-})
+
+function reload() {
+  message.info('reload')
+}
+function updateCheckedRowKeys(rowKeys: any) {
+  emit('update:checked-row-keys', rowKeys)
+}
 </script>
 
 <style scoped>
