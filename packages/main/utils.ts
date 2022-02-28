@@ -27,27 +27,48 @@ export function handleUtils() {
 
   ipcMain.handle(
     'judgeProblem',
-    async (event, srcFilePath, problemID, language) => {
+    async (
+      event,
+      srcFilePath: string,
+      problemID: string,
+      language: string
+    ): Promise<'CE' | 'WA' | 'AC' | 'REG' | 'SystemError'> => {
       const execPath = join(tmpPath, 'exec_' + problemID)
       const outputPath = join(tmpPath, 'out_' + problemID)
       const inputPath = join(dataPath, 'in_' + problemID)
       const answerPath = join(dataPath, 'ans_' + problemID)
       // compile and run
       switch (language) {
-        case 'C':
+        case 'C': {
+          // compile
           const gcc = await spawn('gcc', [srcFilePath, '-o', execPath], {})
-          console.log(gcc.code)
+          if (gcc.code != 0) return 'CE'
+          // run
           const input = await open(inputPath, 'r')
           const output = await open(outputPath, 'w')
           const run = await spawn(execPath, [], {
             stdio: [input, output, 'pipe'],
           })
-          console.log(run.code)
+          if (run.code != 0) return 'REG'
           close(input)
           close(output)
           break
-        case 'C++':
+        }
+        case 'C++': {
+          // compile
+          const gcc = await spawn('g++', [srcFilePath, '-o', execPath], {})
+          if (gcc.code != 0) return 'CE'
+          // run
+          const input = await open(inputPath, 'r')
+          const output = await open(outputPath, 'w')
+          const run = await spawn(execPath, [], {
+            stdio: [input, output, 'pipe'],
+          })
+          if (run.code != 0) return 'REG'
+          close(input)
+          close(output)
           break
+        }
         case 'Golang':
           break
         case 'JavaScript':
@@ -57,24 +78,26 @@ export function handleUtils() {
         case 'Java':
           break
       }
-      // compare output and ans
+      // compare output and answer
       const ansStr = await readFile(answerPath, 'utf8')
       const outStr = await readFile(outputPath, 'utf8')
-      console.log(ansStr, outStr)
-      diffWords(ansStr, outStr, (error, change) => {
-        if (
-          !change ||
-          change.length !== 1 ||
-          change[0].added ||
-          change[0].removed
-        ) {
-          console.log('diff\n')
-        } else {
-          console.log('same\n')
-        }
-      })
-      // return result
-      return 'pseudo judge result'
+      const change = diffWords(ansStr, outStr)
+      // if (
+      //   !change ||
+      //   change.length !== 1 ||
+      //   change[0].added ||
+      //   change[0].removed
+      // ) {
+      //   console.log('diff\n')
+      // } else {
+      //   console.log('same\n')
+      // }
+      return !change ||
+        change.length !== 1 ||
+        change[0].added ||
+        change[0].removed
+        ? 'WA'
+        : 'AC'
     }
   )
 }
