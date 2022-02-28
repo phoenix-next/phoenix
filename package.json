@@ -36,6 +36,7 @@
     "PORT": 3344
   },
   "dependencies": {
+    "@npmcli/promise-spawn": "^2.0.0",
     "diff": "^5.0.0",
     "fs-extra": "^10.0.1",
     "katex": "^0.15.2",

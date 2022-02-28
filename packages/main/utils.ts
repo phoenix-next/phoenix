@@ -1,11 +1,11 @@
 import { join } from 'path'
 import { open, close, readFile } from 'fs-extra'
-import { spawn } from 'child_process'
 import { ipcMain, app } from 'electron'
 import MarkdownIt from 'markdown-it'
 import latex from 'markdown-it-texmath'
 import prism from 'markdown-it-prism'
 import { diffWords } from 'diff'
+import spawn from '@npmcli/promise-spawn'
 
 const markdown = new MarkdownIt().use(latex).use(prism)
 const configPath = app.getPath('userData')
@@ -35,18 +35,16 @@ export function handleUtils() {
       // compile and run
       switch (language) {
         case 'C':
-          const gcc = spawn('gcc', [srcFilePath, '-o', execPath])
-          gcc.on('close', (code) => {
-            console.log(code)
-          })
+          const gcc = await spawn('gcc', [srcFilePath, '-o', execPath], {})
+          console.log(gcc.code)
           const input = await open(inputPath, 'r')
           const output = await open(outputPath, 'w')
-          const run = spawn(execPath, [], { stdio: [input, output, 'pipe'] })
-          run.on('close', (code) => {
-            close(input)
-            close(output)
-            console.log(code)
+          const run = await spawn(execPath, [], {
+            stdio: [input, output, 'pipe'],
           })
+          console.log(run.code)
+          close(input)
+          close(output)
           break
         case 'C++':
           break
