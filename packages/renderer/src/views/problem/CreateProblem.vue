@@ -25,27 +25,14 @@
       </n-form-item-row>
     </n-form>
     <n-grid :x-gap="12">
-      <n-gi :span="12">
-        <n-upload
-          :file-list="uploadDescription"
-          :default-upload="false"
-          class="upload-container"
-          @change="handleDescriptionChange"
-          :max="1"
-        >
-          <n-button type="primary" block secondary strong>上传题面</n-button>
-        </n-upload>
+      <n-gi :span="8">
+        <upload-button ref="descriptionRef">上传题面</upload-button>
       </n-gi>
-      <n-gi :span="12">
-        <n-upload
-          :file-list="uploadAnswer"
-          :default-upload="false"
-          class="upload-container"
-          @change="handleAnswerChange"
-          :max="1"
-        >
-          <n-button type="primary" block secondary strong>上传答案</n-button>
-        </n-upload>
+      <n-gi :span="8">
+        <upload-button ref="inputRef">上传输入</upload-button>
+      </n-gi>
+      <n-gi :span="8">
+        <upload-button ref="outputRef">上传输出</upload-button>
       </n-gi>
     </n-grid>
     <n-button
@@ -66,10 +53,13 @@ import { ref, computed, onMounted } from 'vue'
 import { FormRules, UploadFileInfo, useMessage } from 'naive-ui'
 import { createProblem } from '../../api/judge'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
+import UploadButton from '../../components/problem/UploadButton.vue'
 
 const messager = useMessage()
-const uploadDescription = ref<Array<UploadFileInfo>>([])
-const uploadAnswer = ref<Array<UploadFileInfo>>([])
+
+const descriptionRef = ref<InstanceType<typeof UploadButton> | null>(null)
+const inputRef = ref<InstanceType<typeof UploadButton> | null>(null)
+const outputRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const organizationOptions = ref<SelectMixedOption[]>([])
 const data = ref({
   name: '',
@@ -78,25 +68,22 @@ const data = ref({
   writable: 0,
   organization: 0,
 })
+
 const organizationVisiable = computed(() => {
   return data.value.readable > 0 || data.value.writable > 0
 })
 const uploadEnable = computed(() => {
   return (
-    uploadDescription.value.length > 0 &&
-    uploadAnswer.value.length > 0 &&
+    descriptionRef.value?.file &&
+    inputRef.value?.file &&
+    outputRef.value?.file &&
     data.value.name !== ''
   )
 })
 
 function clickCreate() {
   // TODO: send request
-}
-function handleAnswerChange(data: { fileList: UploadFileInfo[] }) {
-  uploadAnswer.value = data.fileList
-}
-function handleDescriptionChange(data: { fileList: UploadFileInfo[] }) {
-  uploadDescription.value = data.fileList
+  createProblem()
 }
 
 onMounted(() => {
@@ -140,9 +127,4 @@ const rules: FormRules = {
 }
 </script>
 
-<style scoped>
-.upload-container:deep(.n-upload-trigger) {
-  width: 100%;
-  height: 100%;
-}
-</style>
+<style scoped></style>

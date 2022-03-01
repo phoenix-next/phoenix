@@ -33,64 +33,47 @@ export function handleUtils() {
       problemID: string,
       language: string
     ): Promise<'CE' | 'WA' | 'AC' | 'REG' | 'SystemError'> => {
+      // set some paths
       const execPath = join(tmpPath, 'exec_' + problemID)
       const outputPath = join(tmpPath, 'out_' + problemID)
       const answerPath = join(dataPath, 'ans_' + problemID)
       const output = await open(outputPath, 'w')
       const input = await open(join(dataPath, 'in_' + problemID), 'r')
       // compile and run
+      let compiler,
+        runner,
+        stdio = [input, output, 'pipe']
       switch (language) {
-        case 'C': {
-          const gcc = await spawn('gcc', [srcFilePath, '-o', execPath], {})
-          if (gcc.code != 0) return 'CE'
-          const run = await spawn(execPath, [], {
-            stdio: [input, output, 'pipe'],
-          })
-          if (run.code != 0) return 'REG'
+        case 'C':
+          compiler = await spawn('gcc', [srcFilePath, '-o', execPath], {})
+          if (compiler.code != 0) return 'CE'
+          runner = await spawn(execPath, [], { stdio })
           break
-        }
-        case 'C++': {
-          const gcc = await spawn('g++', [srcFilePath, '-o', execPath], {})
-          if (gcc.code != 0) return 'CE'
-          const run = await spawn(execPath, [], {
-            stdio: [input, output, 'pipe'],
-          })
-          if (run.code != 0) return 'REG'
+        case 'C++':
+          compiler = await spawn('g++', [srcFilePath, '-o', execPath], {})
+          if (compiler.code != 0) return 'CE'
+          runner = await spawn(execPath, [], { stdio })
           break
-        }
-        case 'Golang': {
-          const go = await spawn('go', ['run', srcFilePath], {
-            stdio: [input, output, 'pipe'],
-          })
-          if (go.code != 0) return 'REG'
-          break
-        }
-        case 'JavaScript': {
-          const node = await spawn('node', [srcFilePath], {
-            stdio: [input, output, 'pipe'],
-          })
-          if (node.code != 0) return 'REG'
-          break
-        }
-        case 'Python': {
-          const python = await spawn('python', [srcFilePath], {
-            stdio: [input, output, 'pipe'],
-          })
-          if (python.code != 0) return 'REG'
-          break
-        }
-        case 'Java': {
-          const javac = await spawn('javac', [srcFilePath, '-d', tmpPath], {})
-          if (javac.code != 0) return 'CE'
-          const run = await spawn(
+        case 'Java':
+          compiler = await spawn('javac', [srcFilePath, '-d', tmpPath], {})
+          if (compiler.code != 0) return 'CE'
+          runner = await spawn(
             'java',
             ['-classpath', tmpPath, basename(srcFilePath, '.java')],
-            { stdio: [input, output, 'pipe'] }
+            { stdio }
           )
-          if (run.code != 0) return 'REG'
           break
-        }
+        case 'Golang':
+          runner = await spawn('go', ['run', srcFilePath], { stdio })
+          break
+        case 'JavaScript':
+          runner = await spawn('node', [srcFilePath], { stdio })
+          break
+        case 'Python':
+          runner = await spawn('python', [srcFilePath], { stdio })
+          break
       }
+      if (runner.code != 0) return 'REG'
       // compare output and answer
       close(input)
       close(output)
