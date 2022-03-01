@@ -1,5 +1,17 @@
 <template>
-  <!-- TODO: problem page -->
+  <n-card></n-card>
+  <n-card>
+    <n-data-table
+      remote
+      :columns="columns"
+      :data="data"
+      :loading="loading"
+      :pagination="pagination"
+      :row-key="rowKey"
+      @update:sorter="handleSorterChange"
+      @update:page="handlePageChange"
+    />
+  </n-card>
   <n-button
     type="primary"
     block
@@ -25,17 +37,88 @@
 <script setup lang="ts">
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
+import { DataTableColumn, PaginationProps } from 'naive-ui'
+import { ref, reactive, onMounted } from 'vue'
 
 const { isLogin } = useAuthStore()
 const router = useRouter()
 
+const data = ref([])
+const loading = ref(false)
+const pagination = reactive<PaginationProps>({
+  page: 1,
+  pageCount: 1,
+  pageSize: 10,
+})
+
 function clickCreate() {
   router.push({ path: '/problem/create' })
 }
-
 function test() {
   router.push({ path: '/problem/1' })
 }
+function rowKey(rowData: any) {
+  return rowData.id
+}
+function handleSorterChange(sorter: any) {
+  if (!sorter) {
+    if (!loading.value) {
+      loading.value = true
+      // query(
+      //   paginationReactive.page,
+      //   paginationReactive.pageSize,
+      //   !sorter ? false : sorter.order,
+      //   column2Reactive.filterOptionValues
+      // ).then((data) => {
+      //   column1Reactive.sortOrder = !sorter ? false : sorter.order
+      //   dataRef.value = data.data
+      //   paginationReactive.pageCount = data.pageCount
+      //   paginationReactive.itemCount = data.total
+      //   loadingRef.value = false
+      // })
+    }
+  }
+}
+function handlePageChange(currentPage: number) {
+  if (!loading.value) {
+    loading.value = true
+    // query(
+    //   currentPage,
+    //   paginationReactive.pageSize,
+    //   column1Reactive.sortOrder,
+    //   column2Reactive.filterOptionValues
+    // ).then((data) => {
+    //   dataRef.value = data.data
+    //   paginationReactive.page = currentPage
+    //   paginationReactive.pageCount = data.pageCount
+    //   paginationReactive.itemCount = data.total
+    //   loadingRef.value = false
+    // })
+  }
+}
+
+onMounted(() => {})
+
+const columns: Array<DataTableColumn> = [
+  {
+    title: '题号',
+    key: 'id',
+    sorter: true,
+    sortOrder: false,
+  },
+  {
+    title: '题目名称',
+    key: 'name',
+    sorter: true,
+    sortOrder: false,
+  },
+  {
+    title: '难度',
+    key: 'difficulty',
+    sorter: true,
+    sortOrder: false,
+  },
+]
 </script>
 
 <style scoped></style>
