@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import { UploadFileInfo } from 'naive-ui'
@@ -39,12 +39,16 @@ import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
+
 const problem = ref({
   description: '',
 })
 const language = ref('C')
 const program = ref<Array<UploadFileInfo>>([])
-const pending = ref(false)
+
+const pending = computed(() => {
+  return program.value.length > 0
+})
 
 function clickReturn() {
   router.back()
@@ -56,7 +60,8 @@ function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
     window.utilsBridge
       .judgeProblem(url, route.params.id as string, language.value)
       .then((res) => {
-        // TODO: accept and wrong answer
+        console.log(res)
+        program.value = []
       })
   }
 }

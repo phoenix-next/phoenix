@@ -1,4 +1,4 @@
-import { join } from 'path'
+import { join, basename } from 'path'
 import { open, close, readFile } from 'fs-extra'
 import { ipcMain, app } from 'electron'
 import MarkdownIt from 'markdown-it'
@@ -35,63 +35,68 @@ export function handleUtils() {
     ): Promise<'CE' | 'WA' | 'AC' | 'REG' | 'SystemError'> => {
       const execPath = join(tmpPath, 'exec_' + problemID)
       const outputPath = join(tmpPath, 'out_' + problemID)
-      const inputPath = join(dataPath, 'in_' + problemID)
       const answerPath = join(dataPath, 'ans_' + problemID)
+      const output = await open(outputPath, 'w')
+      const input = await open(join(dataPath, 'in_' + problemID), 'r')
       // compile and run
       switch (language) {
         case 'C': {
-          // compile
           const gcc = await spawn('gcc', [srcFilePath, '-o', execPath], {})
           if (gcc.code != 0) return 'CE'
-          // run
-          const input = await open(inputPath, 'r')
-          const output = await open(outputPath, 'w')
           const run = await spawn(execPath, [], {
             stdio: [input, output, 'pipe'],
           })
           if (run.code != 0) return 'REG'
-          close(input)
-          close(output)
           break
         }
         case 'C++': {
-          // compile
           const gcc = await spawn('g++', [srcFilePath, '-o', execPath], {})
           if (gcc.code != 0) return 'CE'
-          // run
-          const input = await open(inputPath, 'r')
-          const output = await open(outputPath, 'w')
           const run = await spawn(execPath, [], {
             stdio: [input, output, 'pipe'],
           })
           if (run.code != 0) return 'REG'
-          close(input)
-          close(output)
           break
         }
-        case 'Golang':
+        case 'Golang': {
+          const go = await spawn('go', ['run', srcFilePath], {
+            stdio: [input, output, 'pipe'],
+          })
+          if (go.code != 0) return 'REG'
           break
-        case 'JavaScript':
+        }
+        case 'JavaScript': {
+          const node = await spawn('node', [srcFilePath], {
+            stdio: [input, output, 'pipe'],
+          })
+          if (node.code != 0) return 'REG'
           break
-        case 'Python':
+        }
+        case 'Python': {
+          const python = await spawn('python', [srcFilePath], {
+            stdio: [input, output, 'pipe'],
+          })
+          if (python.code != 0) return 'REG'
           break
-        case 'Java':
+        }
+        case 'Java': {
+          const javac = await spawn('javac', [srcFilePath, '-d', tmpPath], {})
+          if (javac.code != 0) return 'CE'
+          const run = await spawn(
+            'java',
+            ['-classpath', tmpPath, basename(srcFilePath, '.java')],
+            { stdio: [input, output, 'pipe'] }
+          )
+          if (run.code != 0) return 'REG'
           break
+        }
       }
       // compare output and answer
+      close(input)
+      close(output)
       const ansStr = await readFile(answerPath, 'utf8')
       const outStr = await readFile(outputPath, 'utf8')
       const change = diffWords(ansStr, outStr)
-      // if (
-      //   !change ||
-      //   change.length !== 1 ||
-      //   change[0].added ||
-      //   change[0].removed
-      // ) {
-      //   console.log('diff\n')
-      // } else {
-      //   console.log('same\n')
-      // }
       return !change ||
         change.length !== 1 ||
         change[0].added ||
