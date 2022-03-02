@@ -2,141 +2,176 @@
   <n-card>
     <div class="table-toolbar">
       <div class="table-toolbar-left">
-        <template v-if="title">
-          <div class="table-toolbar-left-title">
-            {{ title }}
-            <n-tooltip trigger="hover" v-if="titleTooltip">
-              <template #trigger>
-                <n-icon size="18" class="cursor-pointer">
-                  <AlertCircle />
-                </n-icon>
-              </template>
-              {{ titleTooltip }}
-            </n-tooltip>
-          </div>
-          <slot name="tableTitle"></slot>
-        </template>
+        <slot name="teamSelectList"></slot>
+        <n-tooltip trigger="hover" v-if="titleTooltip">
+          <template #trigger>
+            <n-icon size="18" class="cursor-pointer">
+              <alert-circle />
+            </n-icon>
+          </template>
+          {{ titleTooltip }}
+        </n-tooltip>
       </div>
       <div class="table-toolbar-right">
-        <slot name="tableToolbar"></slot>
         <n-input-group>
           <n-input :style="{ width: '50%' }" />
           <n-button type="primary" ghost> 搜索 </n-button>
         </n-input-group>
-        <n-tooltip trigger="hover">
-          <template #trigger>
-            <div class="table-toolbar-right-icon" @click="reload">
-              <n-icon size="18">
-                <ReloadOutline />
-              </n-icon>
-            </div>
-          </template>
-        </n-tooltip>
+        <div class="table-toolbar-right-icon">
+          <n-button text @click="showAddPanel = true">
+            <template #icon>
+              <n-icon size="20"> <add-circle-outline /> </n-icon>
+            </template>
+          </n-button>
+          <n-button text @click="reload">
+            <template #icon>
+              <n-icon size="20"><reload-outline /> </n-icon>
+            </template>
+          </n-button>
+        </div>
       </div>
+      <n-modal v-model:show="showAddPanel" preset="card">
+        <template #header>
+          <n-h3>添加队员</n-h3>
+          <n-divider />
+          <n-tabs default-value="add-one" size="medium">
+            <n-tab-pane name="add-one" tab="单个添加">
+              <n-input></n-input>
+            </n-tab-pane>
+            <n-tab-pane name="add-batch" tab="批量添加"> </n-tab-pane>
+          </n-tabs>
+        </template>
+      </n-modal>
     </div>
     <div class="table-context">
-      <n-data-table ref="table" :columns="columns" :data="tableData">
+      <n-data-table
+        ref="table"
+        :columns="columns"
+        :data="tableDataRef"
+        :pagination="paginationReactive"
+        :style="{ height: '600px' }"
+      >
       </n-data-table>
     </div>
   </n-card>
 </template>
 
-<script lang="ts">
-import { AlertCircle, ReloadOutline } from '@vicons/ionicons5'
-import { NDataTable, useMessage } from 'naive-ui'
-import { computed, defineComponent, reactive } from 'vue'
-const tableData = [
-  {
-    key: 0,
-    name: 'John Brown',
-    class: 32,
-    loginTime: '2019-1-31',
-    identity: '管理员',
+<script setup lang="ts">
+import {
+  AlertCircle,
+  ReloadOutline,
+  SearchOutline,
+  AddCircleOutline,
+} from '@vicons/ionicons5'
+import {
+  NDataTable,
+  NIcon,
+  NSpace,
+  NButton,
+  useMessage,
+  DataTableColumn,
+  DataTableBaseColumn,
+  DataTableColumns,
+} from 'naive-ui'
+import { onMounted, ref, reactive, h } from 'vue'
+
+defineProps({
+  teamName: {
+    type: String,
+    default: null,
   },
-  {
-    key: 1,
-    name: 'Jim Green',
-    class: 42,
-    loginTime: '2022-12-19',
-    identity: '组员',
+  titleTooltip: {
+    type: String,
+    default: null,
   },
-  {
-    key: 2,
-    name: 'Joe Black',
-    class: 32,
-    loginTime: '2021-3-4',
-    identity: '组员',
+})
+const message = useMessage()
+const tableDataRef = ref([])
+const showAddPanel = ref(false)
+
+const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
+  title: '身份',
+  key: 'identity',
+  filter: 'default',
+  filterOptionValue: null,
+  renderFilterIcon: () => {
+    return h(NIcon, null, { default: () => h(SearchOutline) })
   },
-  {
-    key: 3,
-    name: 'Jim Red',
-    class: 32,
-    loginTime: '2022-1-28',
-    identity: '组员',
+  renderFilterMenu: ({ hide }) => {
+    return h(
+      NSpace,
+      { style: { padding: '12px' }, vertical: true },
+      {
+        default: () => [
+          h(
+            NButton,
+            {
+              onClick: () => {
+                identityColumn.filterOptionValue = '管理员'
+              },
+            },
+            { default: () => '管理员' }
+          ),
+          h(
+            NButton,
+            {
+              onClick: () => {
+                identityColumn.filterOptionValue = '组员'
+              },
+            },
+            { default: () => '组员' }
+          ),
+          h(
+            NButton,
+            {
+              onClick: () => {
+                identityColumn.filterOptionValue = null
+                hide()
+              },
+            },
+            { default: () => '所有人' }
+          ),
+        ],
+      }
+    )
   },
-]
-const columns = [
+})
+
+const columns: DataTableColumns = reactive<DataTableColumns>([
   {
-    title: 'Name',
+    title: '姓名',
     key: 'name',
     sorter(rowA: any, rowB: any) {
       return rowA.name.length - rowB.name.length
     },
   },
   {
-    title: 'Class',
-    key: 'class',
+    title: '学号',
+    key: 'number',
     sorter(rowA: any, rowB: any) {
-      return rowA.class - rowB.class
+      return rowA.number - rowB.numb
     },
   },
-  {
-    title: 'LastLogin',
-    key: 'loginTime',
-    sorter: 'default',
+  identityColumn,
+])
+
+const paginationReactive = reactive({
+  page: 2,
+  pageSize: 5,
+  showSizePicker: true,
+  pageSizes: [5, 10, 20],
+  onChange: (page: number) => {
+    paginationReactive.page = page
   },
-  reactive({
-    title: 'Identity',
-    key: 'identity',
-    sorter(rowA: any, rowB: any) {
-      if (rowA.identity == '管理员') return true
-      else return false
-    },
-  }),
-]
-export default defineComponent({
-  components: {
-    AlertCircle,
-    ReloadOutline,
-  },
-  props: {
-    ...NDataTable.props,
-    title: {
-      type: String,
-      default: null,
-    },
-    titleTooltip: {
-      type: String,
-      default: null,
-    },
-  },
-  emits: ['update:checked-row-keys'],
-  setup(props, { emit }) {
-    const message = useMessage()
-    function reload() {
-      message.info('reload')
-    }
-    function updateCheckedRowKeys(rowKeys: any) {
-      emit('update:checked-row-keys', rowKeys)
-    }
-    return {
-      reload,
-      updateCheckedRowKeys,
-      columns,
-      tableData,
-    }
+  onUpdatePageSize: (pageSize: number) => {
+    paginationReactive.pageSize = pageSize
+    paginationReactive.page = 1
   },
 })
+
+function reload() {
+  message.info('reload')
+}
 </script>
 
 <style scoped>
@@ -166,5 +201,10 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+.table-toolbar-right-icon {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 </style>
