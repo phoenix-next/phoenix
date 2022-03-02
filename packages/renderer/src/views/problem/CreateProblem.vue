@@ -49,12 +49,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive } from 'vue'
 import { FormRules, useMessage } from 'naive-ui'
 import { createProblem } from '../../api/judge'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
 import { useRouter } from 'vue-router'
+import { getOrganization } from '../../api/social'
 
 const router = useRouter()
 const messager = useMessage()
@@ -63,7 +64,7 @@ const descriptionRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const inputRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const outputRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const organizationOptions = ref<SelectMixedOption[]>([])
-const data = ref({
+const data = reactive({
   name: '',
   difficulty: 5,
   readable: 0,
@@ -72,21 +73,21 @@ const data = ref({
 })
 
 const organizationVisiable = computed(() => {
-  return data.value.readable > 0 || data.value.writable > 0
+  return data.readable > 0 || data.writable > 0
 })
 const uploadEnable = computed(() => {
   return (
     descriptionRef.value?.file &&
     inputRef.value?.file &&
     outputRef.value?.file &&
-    data.value.name !== ''
+    data.name !== ''
   )
 })
 
 function clickCreate() {
   const formData = new FormData()
-  Object.keys(data.value).forEach((key) => {
-    formData.append(key, String(data.value[key as keyof typeof data.value]))
+  Object.keys(data).forEach((key) => {
+    formData.append(key, String(data[key as keyof typeof data]))
   })
   formData.append('input', inputRef.value?.file as File, 'input')
   formData.append('output', outputRef.value?.file as File, 'output')
@@ -110,7 +111,17 @@ function clickCreate() {
 }
 
 onMounted(() => {
-  // TODO: fetch organizations
+  getOrganization()
+    .then((res) => {
+      organizationOptions.value = (res.data.organizations as Array<any>).map(
+        (item) => {
+          return { label: item.name, value: item.id }
+        }
+      )
+    })
+    .catch((res) => {
+      messager.error('网络故障, 请检查网络连接')
+    })
 })
 
 const readOptions: SelectMixedOption[] = [
