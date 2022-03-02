@@ -50,14 +50,15 @@
 <script setup lang="ts">
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
-import { DataTableColumn, PaginationProps } from 'naive-ui'
+import { DataTableColumn, PaginationProps, useMessage } from 'naive-ui'
 import { ref, reactive, onMounted } from 'vue'
 import { getProblemList } from '../../api/judge'
 
 const { isLogin } = useAuthStore()
 const router = useRouter()
+const messager = useMessage()
 
-const data = ref([])
+const data = ref<Array<{ id: string; difficulty: number; name: string }>>([])
 const loading = ref(false)
 const pagination = reactive<PaginationProps>({
   page: 1,
@@ -112,7 +113,15 @@ function handlePageChange(currentPage: number) {
 }
 
 onMounted(() => {
-  // TODO: get problem list
+  getProblemList({ page: 1, sorter: 1 })
+    .then((res) => {
+      data.value = (res.data.problemList as Array<any>).map((item) => {
+        return { ...item, id: 'P' + item.id }
+      })
+    })
+    .catch((res) => {
+      messager.error('网络故障, 请检查网络连接')
+    })
 })
 
 const columns: Array<DataTableColumn> = [
