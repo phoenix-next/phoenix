@@ -1,5 +1,27 @@
 <template>
-  <n-card></n-card>
+  <n-card>
+    <n-grid>
+      <n-gi :span="14" :offset="7">
+        <n-input-group>
+          <n-button type="primary" class="label">查找题目</n-button>
+          <n-input :style="{ width: '50%' }" />
+          <n-button type="primary" ghost>搜索</n-button>
+        </n-input-group>
+      </n-gi>
+      <n-gi :span="2" :offset="1">
+        <n-button
+          type="primary"
+          block
+          secondary
+          strong
+          :disabled="!isLogin"
+          @click="clickCreate"
+        >
+          创建题目
+        </n-button>
+      </n-gi>
+    </n-grid>
+  </n-card>
   <n-card>
     <n-data-table
       remote
@@ -12,16 +34,7 @@
       @update:page="handlePageChange"
     />
   </n-card>
-  <n-button
-    type="primary"
-    block
-    secondary
-    strong
-    :disabled="!isLogin"
-    @click="clickCreate"
-  >
-    创建题目
-  </n-button>
+
   <n-button
     type="primary"
     block
@@ -39,6 +52,7 @@ import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
 import { DataTableColumn, PaginationProps } from 'naive-ui'
 import { ref, reactive, onMounted } from 'vue'
+import { getProblemList } from '../../api/judge'
 
 const { isLogin } = useAuthStore()
 const router = useRouter()
@@ -48,7 +62,7 @@ const loading = ref(false)
 const pagination = reactive<PaginationProps>({
   page: 1,
   pageCount: 1,
-  pageSize: 10,
+  pageSize: 10
 })
 
 function clickCreate() {
@@ -61,22 +75,21 @@ function rowKey(rowData: any) {
   return rowData.id
 }
 function handleSorterChange(sorter: any) {
-  if (!sorter) {
-    if (!loading.value) {
-      loading.value = true
-      // query(
-      //   paginationReactive.page,
-      //   paginationReactive.pageSize,
-      //   !sorter ? false : sorter.order,
-      //   column2Reactive.filterOptionValues
-      // ).then((data) => {
-      //   column1Reactive.sortOrder = !sorter ? false : sorter.order
-      //   dataRef.value = data.data
-      //   paginationReactive.pageCount = data.pageCount
-      //   paginationReactive.itemCount = data.total
-      //   loadingRef.value = false
-      // })
-    }
+  if (!sorter && !loading.value) {
+    loading.value = true
+    // query(
+    //   paginationReactive.page,
+    //   paginationReactive.pageSize,
+    //   !sorter ? false : sorter.order,
+    //   column2Reactive.filterOptionValues
+    // ).then((data) => {
+    //   column1Reactive.sortOrder = !sorter ? false : sorter.order
+    //   dataRef.value = data.data
+    //   paginationReactive.pageCount = data.pageCount
+    //   paginationReactive.itemCount = data.total
+    //   loadingRef.value = false
+    // })
+    // TODO: get problem list
   }
 }
 function handlePageChange(currentPage: number) {
@@ -94,31 +107,38 @@ function handlePageChange(currentPage: number) {
     //   paginationReactive.itemCount = data.total
     //   loadingRef.value = false
     // })
+    // TODO: get problem list
   }
 }
 
-onMounted(() => {})
+onMounted(() => {
+  // TODO: get problem list
+})
 
 const columns: Array<DataTableColumn> = [
   {
     title: '题号',
     key: 'id',
     sorter: true,
-    sortOrder: false,
+    sortOrder: false
   },
   {
     title: '题目名称',
     key: 'name',
     sorter: true,
-    sortOrder: false,
+    sortOrder: false
   },
   {
     title: '难度',
     key: 'difficulty',
     sorter: true,
-    sortOrder: false,
-  },
+    sortOrder: false
+  }
 ]
 </script>
 
-<style scoped></style>
+<style scoped>
+.label {
+  cursor: default;
+}
+</style>
