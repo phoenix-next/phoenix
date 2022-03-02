@@ -1,6 +1,6 @@
 <template>
   <n-card>
-    <div class="setting">setting</div>
+    <n-h1>队伍设定</n-h1>
   </n-card>
 </template>
 

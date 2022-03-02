@@ -3,16 +3,17 @@
   <n-card>
     <n-tabs default-value="team-list" size="large">
       <n-tab-pane name="team-list" tab="成员列表">
-        <team-list :teamName="teamName">
-          <template #teamDropdownList>
-            <n-dropdown
-              trigger="click"
-              placement="bottom-start"
+        <team-list
+          :teamName="teamName"
+          :title-tooltip="isTeamManager ? '您当前是管理员' : ''"
+        >
+          <template #teamSelectList>
+            <n-select
+              v-model:value="teamName"
               :options="teamsName"
-              @select="handleSelectTeam"
+              @update-value="handleSelectTeam"
             >
-              <n-button text>{{ teamName }}</n-button>
-            </n-dropdown>
+            </n-select>
           </template>
         </team-list>
       </n-tab-pane>
@@ -32,15 +33,18 @@ import TeamSetting from '../components/team/TeamSetting.vue'
 const message = useMessage()
 
 const teamsName = [
-  { label: 'kurino', key: 'kurino' },
-  { label: 'phoenix-next', key: 'phoneix' },
-  { label: 'Castagna', key: 'castagna' },
+  { label: 'kurino', value: 'kurino' },
+  { label: 'phoenix-next', value: 'phoneix-next' },
+  { label: 'castagna', value: 'castagna' },
 ]
-const teamName = ref(teamsName[0].key)
-const handleSelectTeam = (key: string) => {
-  teamName.value = key
-  message.info('change to ' + key)
+const teamName = ref('')
+
+const isTeamManager = ref(false)
+const handleSelectTeam = (value: string) => {
+  teamName.value = value
+  message.info('change to ' + value)
 }
+// 需要当前登录人员信息
 </script>
 
 <style scoped></style>
