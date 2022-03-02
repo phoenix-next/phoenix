@@ -50,11 +50,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { FormRules, UploadFileInfo, useMessage } from 'naive-ui'
+import { FormRules, useMessage } from 'naive-ui'
 import { createProblem } from '../../api/judge'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const messager = useMessage()
 
 const descriptionRef = ref<InstanceType<typeof UploadButton> | null>(null)
@@ -66,7 +68,7 @@ const data = ref({
   difficulty: 5,
   readable: 0,
   writable: 0,
-  organization: 0,
+  organization: 0
 })
 
 const organizationVisiable = computed(() => {
@@ -82,8 +84,29 @@ const uploadEnable = computed(() => {
 })
 
 function clickCreate() {
-  // TODO: send request
-  createProblem()
+  const formData = new FormData()
+  Object.keys(data.value).forEach((key) => {
+    formData.append(key, String(data.value[key as keyof typeof data.value]))
+  })
+  formData.append('input', inputRef.value?.file as File, 'input')
+  formData.append('output', outputRef.value?.file as File, 'output')
+  formData.append(
+    'description',
+    descriptionRef.value?.file as File,
+    'description'
+  )
+  createProblem(formData)
+    .then((res) => {
+      if (res.data.success) {
+        messager.success(res.data.message)
+        router.back()
+      } else {
+        messager.warning(res.data.message)
+      }
+    })
+    .catch((res) => {
+      messager.error('网络故障, 请检查网络连接')
+    })
 }
 
 onMounted(() => {
@@ -93,37 +116,37 @@ onMounted(() => {
 const readOptions: SelectMixedOption[] = [
   {
     label: '仅题目创建者可见',
-    value: 0,
+    value: 0
   },
   {
     label: '仅创建者和组织管理员可见',
-    value: 1,
+    value: 1
   },
   {
     label: '仅创建者和组织成员可见',
-    value: 2,
+    value: 2
   },
   {
     label: '所有人可见',
-    value: 3,
-  },
+    value: 3
+  }
 ]
 const writeOptions: SelectMixedOption[] = [
   {
     label: '仅题目创建者可编辑',
-    value: 0,
+    value: 0
   },
   {
     label: '仅创建者和组织管理员可编辑',
-    value: 1,
-  },
+    value: 1
+  }
 ]
 const rules: FormRules = {
   name: {
     required: true,
     message: '请输入题目名称',
-    trigger: 'blur',
-  },
+    trigger: 'blur'
+  }
 }
 </script>
 

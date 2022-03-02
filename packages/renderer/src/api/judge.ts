@@ -4,8 +4,8 @@ export function getProblemList() {
   return backend.get('problems')
 }
 
-export function createProblem() {
-  return backend.post('problems')
+export function createProblem(data: FormData) {
+  return backend.post('problems', data)
 }
 
 export function getProblem(data: { problemID: number }) {
