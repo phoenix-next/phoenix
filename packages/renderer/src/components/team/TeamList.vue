@@ -30,16 +30,23 @@
           </n-button>
         </div>
       </div>
+
       <n-modal v-model:show="showAddPanel" preset="card">
         <template #header>
-          <n-h3>添加队员</n-h3>
+          <n-h3>添加成员</n-h3>
           <n-divider />
           <n-tabs default-value="add-one" size="medium">
             <n-tab-pane name="add-one" tab="单个添加">
-              <n-input></n-input>
+              <n-input type="text" placeholder="请输入添加的成员邮箱"></n-input>
             </n-tab-pane>
-            <n-tab-pane name="add-batch" tab="批量添加"> </n-tab-pane>
+            <n-tab-pane name="add-batch" tab="批量添加">
+              <n-input
+                type="textarea"
+                placeholder="请每行输入一个添加的成员邮箱"
+              ></n-input>
+            </n-tab-pane>
           </n-tabs>
+          <n-button type="primary" @click="">确认</n-button>
         </template>
       </n-modal>
     </div>
@@ -61,7 +68,7 @@ import {
   AlertCircle,
   ReloadOutline,
   SearchOutline,
-  AddCircleOutline,
+  AddCircleOutline
 } from '@vicons/ionicons5'
 import {
   NDataTable,
@@ -71,22 +78,26 @@ import {
   useMessage,
   DataTableColumn,
   DataTableBaseColumn,
-  DataTableColumns,
+  DataTableColumns
 } from 'naive-ui'
 import { onMounted, ref, reactive, h } from 'vue'
 
-defineProps({
+const props = defineProps({
   teamName: {
     type: String,
-    default: null,
+    default: null
+  },
+  teamID: {
+    type: Number,
+    default: null
   },
   titleTooltip: {
     type: String,
-    default: null,
-  },
+    default: null
+  }
 })
 const message = useMessage()
-const tableDataRef = ref([])
+const tableDataRef = ref<Array<Object>>([])
 const showAddPanel = ref(false)
 
 const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
@@ -108,7 +119,7 @@ const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
             {
               onClick: () => {
                 identityColumn.filterOptionValue = '管理员'
-              },
+              }
             },
             { default: () => '管理员' }
           ),
@@ -117,7 +128,7 @@ const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
             {
               onClick: () => {
                 identityColumn.filterOptionValue = '组员'
-              },
+              }
             },
             { default: () => '组员' }
           ),
@@ -127,14 +138,14 @@ const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
               onClick: () => {
                 identityColumn.filterOptionValue = null
                 hide()
-              },
+              }
             },
             { default: () => '所有人' }
-          ),
-        ],
+          )
+        ]
       }
     )
-  },
+  }
 })
 
 const columns: DataTableColumns = reactive<DataTableColumns>([
@@ -143,16 +154,16 @@ const columns: DataTableColumns = reactive<DataTableColumns>([
     key: 'name',
     sorter(rowA: any, rowB: any) {
       return rowA.name.length - rowB.name.length
-    },
+    }
   },
   {
     title: '学号',
     key: 'number',
     sorter(rowA: any, rowB: any) {
       return rowA.number - rowB.numb
-    },
+    }
   },
-  identityColumn,
+  identityColumn
 ])
 
 const paginationReactive = reactive({
@@ -166,7 +177,7 @@ const paginationReactive = reactive({
   onUpdatePageSize: (pageSize: number) => {
     paginationReactive.pageSize = pageSize
     paginationReactive.page = 1
-  },
+  }
 })
 
 function reload() {
