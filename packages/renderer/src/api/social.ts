@@ -25,6 +25,6 @@ export function getProfile(data: { id: string }) {
   })
 }
 
-export function getOrganizationProfile() {
+export function getOrganization() {
   return backend.get('user/organizations')
 }
