@@ -87,6 +87,10 @@ const props = defineProps({
     type: String,
     default: null
   },
+  teamID: {
+    type: Number,
+    default: null
+  },
   titleTooltip: {
     type: String,
     default: null

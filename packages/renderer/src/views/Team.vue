@@ -10,7 +10,7 @@
           <template #teamSelectList>
             <n-select
               v-model:value="teamName"
-              :options="teamsName"
+              :options="teamsNameRef"
               @update-value="handleSelectTeam"
             >
             </n-select>
@@ -32,11 +32,8 @@ import TeamSetting from '../components/team/TeamSetting.vue'
 
 const message = useMessage()
 
-const teamsName = [
-  { label: 'kurino', value: 'kurino' },
-  { label: 'phoenix-next', value: 'phoneix-next' },
-  { label: 'castagna', value: 'castagna' },
-]
+// const organization
+const teamsNameRef = ref([{ label: '', value: '' }])
 const teamName = ref('')
 
 const isTeamManager = ref(false)
@@ -44,7 +41,6 @@ const handleSelectTeam = (value: string) => {
   teamName.value = value
   message.info('change to ' + value)
 }
-// 需要当前登录人员信息
 </script>
 
 <style scoped></style>

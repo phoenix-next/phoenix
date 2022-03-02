@@ -20,7 +20,11 @@ export function register(data: {
 export function getProfile(data: { id: string }) {
   return backend.get('user/profile', {
     params: {
-      id: data.id,
-    },
+      id: data.id
+    }
   })
+}
+
+export function getOrganizationProfile() {
+  return backend.get('user/organizations')
 }
