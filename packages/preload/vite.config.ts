@@ -9,17 +9,16 @@ export default defineConfig({
     lib: {
       entry: 'index.ts',
       formats: ['cjs'],
-      fileName: () => '[name].cjs',
+      fileName: () => '[name].cjs'
     },
     minify: process.env./* from mode option */ NODE_ENV === 'production',
-    sourcemap: true,
     emptyOutDir: true,
     rollupOptions: {
       external: [
         'electron',
         ...builtinModules,
-        ...Object.keys(pkg.dependencies || {}),
-      ],
-    },
-  },
+        ...Object.keys(pkg.dependencies || {})
+      ]
+    }
+  }
 })

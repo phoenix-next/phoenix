@@ -51,7 +51,7 @@
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
 import { DataTableColumn, PaginationProps, useMessage } from 'naive-ui'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { getProblemList } from '../../api/judge'
 
 const { isLogin } = useAuthStore()
@@ -60,10 +60,40 @@ const messager = useMessage()
 
 const data = ref<Array<{ id: string; difficulty: number; name: string }>>([])
 const loading = ref(false)
-const pagination = reactive<PaginationProps>({
+const columns = ref<Array<DataTableColumn>>([
+  {
+    title: '题号',
+    key: 'id',
+    sorter: true,
+    sortOrder: 'ascend'
+  },
+  {
+    title: '题目名称',
+    key: 'name',
+    sorter: true,
+    sortOrder: false
+  },
+  {
+    title: '难度',
+    key: 'difficulty',
+    sorter: true,
+    sortOrder: false
+  }
+])
+
+const pagination = reactive({
   page: 1,
   pageCount: 1,
   pageSize: 10
+})
+const sortMethod = computed(() => {
+  let index = columns.value.findIndex((item: any) => {
+    return item.sortOrder !== false
+  })
+  // 该数字为后端API的要求
+  return (columns.value[index] as any).sortOrder === 'ascend'
+    ? index + 1
+    : -index - 1
 })
 
 function clickCreate() {
@@ -76,39 +106,63 @@ function rowKey(rowData: any) {
   return rowData.id
 }
 function handleSorterChange(sorter: any) {
-  if (!sorter && !loading.value) {
+  // 建立从列名到索引的映射
+  const sorterMap: Record<string, number> = {
+    id: 0,
+    name: 1,
+    difficulty: 2
+  }
+  // sorter不为空且不在加载中
+  if (sorter && !loading.value) {
+    // 设置为在加载中
     loading.value = true
-    // query(
-    //   paginationReactive.page,
-    //   paginationReactive.pageSize,
-    //   !sorter ? false : sorter.order,
-    //   column2Reactive.filterOptionValues
-    // ).then((data) => {
-    //   column1Reactive.sortOrder = !sorter ? false : sorter.order
-    //   dataRef.value = data.data
-    //   paginationReactive.pageCount = data.pageCount
-    //   paginationReactive.itemCount = data.total
-    //   loadingRef.value = false
-    // })
-    // TODO: get problem list
+    // 设置columns的排序规则
+    columns.value.forEach((item: any) => {
+      item.sortOrder = false
+    })
+    ;(columns.value[sorterMap[sorter.columnKey]] as any).sortOrder =
+      sorter.order ? sorter.order : 'descend'
+    // 发起请求
+    getProblemList({
+      page: pagination.page as number,
+      sorter: sortMethod.value
+    })
+      .then((res) => {
+        data.value = (res.data.problemList as Array<any>).map((item) => {
+          return { ...item, id: 'P' + item.id }
+        })
+        // TODO: pagination.pageCount = res.data.total
+        // 设置为不在加载中
+        loading.value = false
+      })
+      .catch((res) => {
+        messager.error('网络故障, 请检查网络连接')
+        // 设置为不在加载中
+        loading.value = false
+      })
   }
 }
 function handlePageChange(currentPage: number) {
   if (!loading.value) {
     loading.value = true
-    // query(
-    //   currentPage,
-    //   paginationReactive.pageSize,
-    //   column1Reactive.sortOrder,
-    //   column2Reactive.filterOptionValues
-    // ).then((data) => {
-    //   dataRef.value = data.data
-    //   paginationReactive.page = currentPage
-    //   paginationReactive.pageCount = data.pageCount
-    //   paginationReactive.itemCount = data.total
-    //   loadingRef.value = false
-    // })
-    // TODO: get problem list
+    pagination.page = currentPage
+    getProblemList({
+      page: currentPage,
+      sorter: sortMethod.value
+    })
+      .then((res) => {
+        data.value = (res.data.problemList as Array<any>).map((item) => {
+          return { ...item, id: 'P' + item.id }
+        })
+        // TODO: pagination.pageCount = res.data.total
+        // 设置为不在加载中
+        loading.value = false
+      })
+      .catch((res) => {
+        messager.error('网络故障, 请检查网络连接')
+        // 设置为不在加载中
+        loading.value = false
+      })
   }
 }
 
@@ -123,27 +177,6 @@ onMounted(() => {
       messager.error('网络故障, 请检查网络连接')
     })
 })
-
-const columns: Array<DataTableColumn> = [
-  {
-    title: '题号',
-    key: 'id',
-    sorter: true,
-    sortOrder: false
-  },
-  {
-    title: '题目名称',
-    key: 'name',
-    sorter: true,
-    sortOrder: false
-  },
-  {
-    title: '难度',
-    key: 'difficulty',
-    sorter: true,
-    sortOrder: false
-  }
-]
 </script>
 
 <style scoped>
