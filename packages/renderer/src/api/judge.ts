@@ -1,7 +1,9 @@
 import { backend } from '../utils/request'
 
-export function getProblemList() {
-  return backend.get('problems')
+export function getProblemList(data: { page: number; sorter: number }) {
+  return backend.get('problems', {
+    params: data
+  })
 }
 
 export function createProblem(data: FormData) {
