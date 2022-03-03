@@ -5,6 +5,7 @@
       <n-tab-pane name="team-list" tab="成员列表">
         <team-list
           :teamName="teamName"
+          :teamId="teamId"
           :title-tooltip="isTeamAdmin ? '您当前是管理员' : ''"
         >
           <template #teamSelectList>
@@ -30,10 +31,17 @@ import { useMessage } from 'naive-ui'
 import TeamList from '../components/team/TeamList.vue'
 import TeamSetting from '../components/team/TeamSetting.vue'
 import { getOrganization } from '../api/social'
-import { stringifyStyle } from '@vue/shared'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 
 const message = useMessage()
+
+const teamsIdDic = new Map<string, number>()
+const teamsNameRef = ref<SelectMixedOption[]>([])
+const isTeamsAdminDic = new Map<string, boolean>()
+
+const teamId = ref()
+const teamName = ref()
+const isTeamAdmin = ref<boolean | undefined>(false)
 
 onMounted(
   () => {
@@ -67,12 +75,13 @@ onMounted(
   //   testTeamsData.data.organization.forEach((element) => {
   //     teamsNameRef.value.push({ label: element.name, value: element.name })
   //     isTeamsAdminDic.set(element.name, element.isAdmin)
+  //     teamsIdDic.set(element.name, element.id)
   //   })
   //   teamName.value = teamsNameRef.value[0].label
   //   isTeamAdmin.value = testTeamsData.data.organization[0].isAdmin
+  //   teamId.value = testTeamsData.data.organization[0].id
   // }
 )
-
 // const testTeamsData = {
 //   data: {
 //     success: true,
@@ -91,17 +100,14 @@ onMounted(
 //   }
 // }
 
-const isTeamsAdminDic = new Map<string, boolean>()
-const teamsIdDic = new Map<string, number>()
-const teamsNameRef = ref<SelectMixedOption[]>([])
-const teamName = ref()
-const isTeamAdmin = ref<boolean | undefined>(false)
 const handleSelectTeam = (value: string) => {
-  teamName.value = value
-  isTeamAdmin.value = isTeamsAdminDic.get(value)
-  message.info('Team change to ' + value)
+  if (teamName.value != value) {
+    teamName.value = value
+    isTeamAdmin.value = isTeamsAdminDic.get(value)
+    teamId.value = teamsIdDic.get(value)
+    message.info('Team change to ' + value)
+  }
 }
 </script>
 
 <style scoped></style>
--

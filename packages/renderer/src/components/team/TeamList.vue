@@ -31,9 +31,9 @@
         </div>
       </div>
 
-      <n-modal v-model:show="showAddPanel" preset="card">
+      <n-modal v-model:show="showAddPanel" preset="card" size="medium">
         <template #header>
-          <n-h3>添加成员</n-h3>
+          <n-h4>添加成员</n-h4>
           <n-divider />
           <n-tabs default-value="add-one" size="medium">
             <n-tab-pane name="add-one" tab="单个添加">
@@ -57,6 +57,7 @@
         :data="tableDataRef"
         :pagination="paginationReactive"
         :style="{ height: '600px' }"
+        :remote="true"
       >
       </n-data-table>
     </div>
@@ -80,14 +81,15 @@ import {
   DataTableBaseColumn,
   DataTableColumns
 } from 'naive-ui'
-import { onMounted, ref, reactive, h } from 'vue'
+import { onMounted, ref, reactive, h, watch } from 'vue'
+import { getOrganizationTeamsById } from '../../api/social'
 
 const props = defineProps({
   teamName: {
     type: String,
     default: null
   },
-  teamID: {
+  teamId: {
     type: Number,
     default: null
   },
@@ -96,9 +98,53 @@ const props = defineProps({
     default: null
   }
 })
+
+watch(
+  () => props.teamId,
+  (newTeamId: number, oldTeamId: number) => {
+    requestData.value.teamId = newTeamId.toString()
+    reload()
+  }
+)
+onMounted(() => reload())
+
+function reload() {
+  isReloading.value = true
+  getOrganizationTeamsById(requestData.value).then(
+    (res: {
+      data: {
+        success: boolean
+        teamList: {
+          name: string
+          isAdmin: boolean
+          email: string
+        }[]
+      }
+    }) => {
+      if (res.data.success) {
+        var counter = 0
+        res.data.teamList.forEach((element) => {
+          counter++
+          tableDataRef.value.push({
+            key: counter,
+            name: element.name,
+            email: element.email,
+            identity: element.isAdmin ? '管理员' : '组员'
+          })
+        })
+        message.info('已重新加载列表')
+      } else {
+        message.error('列表加载失败')
+      }
+      isReloading.value = false
+    }
+  )
+}
 const message = useMessage()
-const tableDataRef = ref<Array<Object>>([])
+const tableDataRef = ref<Array<object>>([])
 const showAddPanel = ref(false)
+const requestData = ref({ teamId: '' })
+const isReloading = ref(false)
 
 const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
   title: '身份',
@@ -157,11 +203,8 @@ const columns: DataTableColumns = reactive<DataTableColumns>([
     }
   },
   {
-    title: '学号',
-    key: 'number',
-    sorter(rowA: any, rowB: any) {
-      return rowA.number - rowB.numb
-    }
+    title: '邮箱',
+    key: 'email'
   },
   identityColumn
 ])
@@ -179,10 +222,6 @@ const paginationReactive = reactive({
     paginationReactive.page = 1
   }
 })
-
-function reload() {
-  message.info('reload')
-}
 </script>
 
 <style scoped>
