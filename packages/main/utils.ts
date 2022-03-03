@@ -6,6 +6,7 @@ import latex from 'markdown-it-texmath'
 import prism from 'markdown-it-prism'
 import { diffWords } from 'diff'
 import spawn from '@npmcli/promise-spawn'
+import { DownloaderHelper } from 'node-downloader-helper'
 
 const markdown = new MarkdownIt().use(latex).use(prism)
 const configPath = app.getPath('userData')
@@ -21,7 +22,7 @@ export function handleUtils() {
     return true
   })
 
-  ipcMain.handle('cacheProblem', (event, problem) => {
+  ipcMain.handle('downloadProblem', (event, problem) => {
     return 'success'
   })
 
@@ -86,6 +87,23 @@ export function handleUtils() {
         change[0].removed
         ? 'WA'
         : 'AC'
+    }
+  )
+
+  ipcMain.handle(
+    'download',
+    (event, url: string, savePath: string, isBackend: boolean) => {
+      if (isBackend) url = 'https://phoenix.matrix53.top/api/v1/' + url
+      const download = new DownloaderHelper(url, savePath)
+      return new Promise((resolve, reject) => {
+        download.on('end', () => {
+          resolve('Download Completed')
+        })
+        download.on('error', () => {
+          reject('Download Error')
+        })
+        download.start()
+      })
     }
   )
 }
