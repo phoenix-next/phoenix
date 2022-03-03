@@ -41,7 +41,7 @@ const router = useRouter()
 const route = useRoute()
 
 const problem = ref({
-  description: '',
+  description: ''
 })
 const language = ref('C')
 const program = ref<Array<UploadFileInfo>>([])
@@ -71,6 +71,7 @@ const text =
 
 onMounted(() => {
   //TODO: get problem data
+  console.log(route.params.id)
   window.utilsBridge.markdownToHTML(text).then((res) => {
     problem.value.description = res
   })
@@ -79,28 +80,28 @@ onMounted(() => {
 const options: SelectMixedOption[] = [
   {
     label: 'C',
-    value: 'C',
+    value: 'C'
   },
   {
     label: 'C++',
-    value: 'C++',
+    value: 'C++'
   },
   {
     label: 'Java',
-    value: 'Java',
+    value: 'Java'
   },
   {
     label: 'Golang',
-    value: 'Golang',
+    value: 'Golang'
   },
   {
     label: 'JavaScript',
-    value: 'JavaScript',
+    value: 'JavaScript'
   },
   {
     label: 'Python',
-    value: 'Python',
-  },
+    value: 'Python'
+  }
 ]
 </script>
 

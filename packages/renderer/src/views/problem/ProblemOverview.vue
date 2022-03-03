@@ -34,50 +34,62 @@
       @update:page="handlePageChange"
     />
   </n-card>
-
-  <n-button
-    type="primary"
-    block
-    secondary
-    strong
-    @click="test"
-    style="margin-top: 10px"
-  >
-    评测题目的测试
-  </n-button>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
-import { DataTableColumn, PaginationProps, useMessage } from 'naive-ui'
-import { ref, reactive, onMounted, computed } from 'vue'
+import { DataTableColumn, useMessage } from 'naive-ui'
+import { ref, reactive, onMounted, computed, h } from 'vue'
 import { getProblemList } from '../../api/judge'
 
 const { isLogin } = useAuthStore()
 const router = useRouter()
 const messager = useMessage()
 
-const data = ref<Array<{ id: string; difficulty: number; name: string }>>([])
+const data = ref<Array<{ id: string; difficulty: number; name: string }>>([
+  { id: 'Loading...', difficulty: 1, name: 'Loading...' }
+])
 const loading = ref(false)
 const columns = ref<Array<DataTableColumn>>([
   {
     title: '题号',
     key: 'id',
     sorter: true,
-    sortOrder: 'ascend'
+    sortOrder: 'ascend',
+    render: (rowData, rowIndex) => {
+      return h(
+        'div',
+        { onClick: handleClick(rowData.id as string) },
+        rowData.id as string
+      )
+    }
   },
   {
     title: '题目名称',
     key: 'name',
     sorter: true,
-    sortOrder: false
+    sortOrder: false,
+    render: (rowData, rowIndex) => {
+      return h(
+        'div',
+        { onClick: handleClick(rowData.id as string) },
+        rowData.name as string
+      )
+    }
   },
   {
     title: '难度',
     key: 'difficulty',
     sorter: true,
-    sortOrder: false
+    sortOrder: false,
+    render: (rowData, rowIndex) => {
+      return h(
+        'div',
+        { onClick: handleClick(rowData.id as string) },
+        rowData.difficulty as string
+      )
+    }
   }
 ])
 
@@ -99,11 +111,13 @@ const sortMethod = computed(() => {
 function clickCreate() {
   router.push({ path: '/problem/create' })
 }
-function test() {
-  router.push({ path: '/problem/1' })
-}
 function rowKey(rowData: any) {
   return rowData.id
+}
+function handleClick(id: string) {
+  return () => {
+    router.push({ path: '/problem/' + id.substring(1) })
+  }
 }
 function handleSorterChange(sorter: any) {
   // 建立从列名到索引的映射
@@ -174,6 +188,7 @@ onMounted(() => {
       })
     })
     .catch((res) => {
+      console.log(res)
       messager.error('网络故障, 请检查网络连接')
     })
 })
