@@ -6,6 +6,7 @@ import latex from 'markdown-it-texmath'
 import prism from 'markdown-it-prism'
 import { diffWords } from 'diff'
 import spawn from '@npmcli/promise-spawn'
+import { DownloaderHelper } from 'node-downloader-helper'
 
 const markdown = new MarkdownIt().use(latex).use(prism)
 const configPath = app.getPath('userData')
@@ -88,4 +89,6 @@ export function handleUtils() {
         : 'AC'
     }
   )
+
+  ipcMain.handle('download', (event, url, savePath) => {})
 }
