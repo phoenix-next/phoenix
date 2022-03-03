@@ -22,7 +22,7 @@ export function handleUtils() {
     return true
   })
 
-  ipcMain.handle('cacheProblem', (event, problem) => {
+  ipcMain.handle('downloadProblem', (event, problem) => {
     return 'success'
   })
 
@@ -90,5 +90,20 @@ export function handleUtils() {
     }
   )
 
-  ipcMain.handle('download', (event, url, savePath) => {})
+  ipcMain.handle(
+    'download',
+    (event, url: string, savePath: string, isBackend: boolean) => {
+      if (isBackend) url = 'https://phoenix.matrix53.top/api/v1/' + url
+      const download = new DownloaderHelper(url, savePath)
+      return new Promise((resolve, reject) => {
+        download.on('end', () => {
+          resolve('Download Completed')
+        })
+        download.on('error', () => {
+          reject('Download Error')
+        })
+        download.start()
+      })
+    }
+  )
 }
