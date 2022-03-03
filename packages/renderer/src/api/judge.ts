@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios'
 import { backend } from '../utils/request'
 
 export function getProblemList(data: { page: number; sorter: number }) {
@@ -10,7 +11,14 @@ export function createProblem(data: FormData) {
   return backend.post('problems', data)
 }
 
-export function getProblem(data: { problemID: number }) {
+export function getProblem(data: { problemID: number }): Promise<
+  AxiosResponse<{
+    name: string
+    input: string
+    output: string
+    description: string
+  }>
+> {
   return backend.get(`problems/${data.problemID}`)
 }
 

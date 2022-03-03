@@ -6,7 +6,7 @@
       </n-icon>
     </n-button>
     <n-space justify="center">
-      <n-h1 class="title">题目的名称</n-h1>
+      <n-h1 class="title">{{ problem.name }}</n-h1>
     </n-space>
     <n-space justify="end">
       <n-select
@@ -31,21 +31,25 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, reactive, watch } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
-import { UploadFileInfo } from 'naive-ui'
+import { UploadFileInfo, useMessage } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
+import { getProblem } from '../../api/judge'
 
 const router = useRouter()
 const route = useRoute()
+const messager = useMessage()
 
-const problem = ref({
-  description: ''
+const problem = reactive({
+  description: '## 题目描述 \n ## 题目样例 \n ## 数据范围',
+  input: '',
+  output: '',
+  name: '题目名称'
 })
 const language = ref('C')
 const program = ref<Array<UploadFileInfo>>([])
-
 const pending = computed(() => {
   return program.value.length > 0
 })
@@ -66,15 +70,24 @@ function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
   }
 }
 
-const text =
-  '## 题目描述 \n ## 题目样例 \n ```python \n print("Hello World") \n hello=1 if false else 2 \n ``` \n $\\sqrt{3x-1}+(1+x)^2$ \n ## 数据范围'
+watch(
+  () => problem.description,
+  (data, prevData) => {}
+)
 
 onMounted(() => {
-  //TODO: get problem data
-  console.log(route.params.id)
-  window.utilsBridge.markdownToHTML(text).then((res) => {
-    problem.value.description = res
-  })
+  getProblem({ problemID: Number(route.params.id) })
+    .then(async (res) => {
+      problem.name = res.data.name
+      problem.description = await window.utilsBridge.markdownToHTML(
+        res.data.description
+      )
+      problem.input = res.data.input
+      problem.output = res.data.output
+    })
+    .catch((res) => {
+      messager.error('网络故障, 请检查网络连接')
+    })
 })
 
 const options: SelectMixedOption[] = [

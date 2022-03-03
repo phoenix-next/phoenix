@@ -110,35 +110,24 @@ onMounted(() => reload())
 
 function reload() {
   isReloading.value = true
-  getOrganizationTeamsById(requestData.value).then(
-    (res: {
-      data: {
-        success: boolean
-        teamList: {
-          name: string
-          isAdmin: boolean
-          email: string
-        }[]
-      }
-    }) => {
-      if (res.data.success) {
-        var counter = 0
-        res.data.teamList.forEach((element) => {
-          counter++
-          tableDataRef.value.push({
-            key: counter,
-            name: element.name,
-            email: element.email,
-            identity: element.isAdmin ? '管理员' : '组员'
-          })
+  getOrganizationTeamsById(requestData.value).then((res) => {
+    if (res.data.success) {
+      var counter = 0
+      res.data.teamList.forEach((element) => {
+        counter++
+        tableDataRef.value.push({
+          key: counter,
+          name: element.name,
+          email: element.email,
+          identity: element.isAdmin ? '管理员' : '组员'
         })
-        message.info('已重新加载列表')
-      } else {
-        message.error('列表加载失败')
-      }
-      isReloading.value = false
+      })
+      message.info('已重新加载列表')
+    } else {
+      message.error('列表加载失败')
     }
-  )
+    isReloading.value = false
+  })
 }
 const message = useMessage()
 const tableDataRef = ref<Array<object>>([])

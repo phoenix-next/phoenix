@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios'
 import { backend } from '../utils/request'
 
 export function login(data: { email: string; password: string }) {
@@ -27,8 +28,17 @@ export function getOrganization() {
   return backend.get('user/organizations')
 }
 
-export function getOrganizationTeamsById(data: { teamId: string }) {
-  return backend.get('user/organizations/teamList', {
+export function getOrganizationById(data: { teamId: string }): Promise<
+  AxiosResponse<{
+    success: boolean
+    teamList: {
+      name: string
+      isAdmin: boolean
+      email: string
+    }[]
+  }>
+> {
+  return backend.get('organizations/people', {
     params: data
   })
 }
