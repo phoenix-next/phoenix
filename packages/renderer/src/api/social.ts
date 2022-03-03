@@ -26,3 +26,9 @@ export function getProfile(data: { id: string }) {
 export function getOrganization() {
   return backend.get('user/organizations')
 }
+
+export function getOrganizationTeamsById(data: { teamId: string }) {
+  return backend.get('user/organizations/teamList', {
+    params: data
+  })
+}
