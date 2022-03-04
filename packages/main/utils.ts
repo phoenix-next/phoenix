@@ -1,5 +1,5 @@
 import { join, basename } from 'path'
-import { open, close, readFile } from 'fs-extra'
+import { open, close, readFile, mkdir } from 'fs-extra'
 import { ipcMain, app } from 'electron'
 import MarkdownIt from 'markdown-it'
 import latex from 'markdown-it-texmath'
@@ -15,7 +15,10 @@ const dataPath = join(configPath, 'data')
 const remote = 'https://phoenix.matrix53.top/api/v1/'
 
 function download(url: string, savePath: string, saveName: string) {
-  const download = new DownloaderHelper(url, savePath, { fileName: saveName })
+  const download = new DownloaderHelper(url, savePath, {
+    fileName: saveName,
+    override: true
+  })
   return new Promise((resolve, reject) => {
     download.on('end', () => {
       resolve('Download Completed')
@@ -28,6 +31,11 @@ function download(url: string, savePath: string, saveName: string) {
 }
 
 export function handleUtils() {
+  // initialization
+  mkdir(dataPath).catch((res) => {
+    console.log('创建文件夹失败')
+  })
+  // handler
   ipcMain.handle('markdownToHTML', (event, text) => {
     return markdown.render(text)
   })
