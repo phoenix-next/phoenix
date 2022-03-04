@@ -7,12 +7,19 @@
       <n-input v-model:value="data.name" placeholder="输入用户名" />
     </n-form-item-row>
     <n-form-item-row label="密码" path="password">
-      <n-input v-model:value="data.password" placeholder="输入密码" />
+      <n-input
+        v-model:value="data.password"
+        placeholder="输入密码"
+        type="password"
+        show-password-on="mousedown"
+      />
     </n-form-item-row>
     <n-form-item-row label="重复密码" path="confirm_password">
       <n-input
         v-model:value="data.confirm_password"
         placeholder="重复输入密码"
+        type="password"
+        show-password-on="mousedown"
       />
     </n-form-item-row>
     <n-form-item-row label="验证码" path="captcha">
@@ -42,74 +49,88 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive } from 'vue'
 import { getCaptcha, register } from '../../api/social'
-import { useMessage } from 'naive-ui'
 
-const messager = useMessage()
-
-const data = ref({
+const data = reactive({
   email: '',
   name: '',
   password: '',
   confirm_password: '',
-  captcha: '',
+  captcha: ''
 })
 
 const rules = {
   email: {
     required: true,
     message: '请输入邮箱',
-    trigger: 'blur',
+    trigger: 'blur'
   },
   name: {
     required: true,
     message: '请输入用户名',
-    trigger: 'blur',
+    trigger: 'blur'
   },
   password: {
     required: true,
     message: '请输入密码',
-    trigger: 'blur',
+    trigger: 'blur'
   },
   confirm_password: {
     required: true,
     message: '请重复输入密码',
-    trigger: 'blur',
+    trigger: 'blur'
   },
   captcha: {
     required: true,
     message: '请输入验证码',
-    trigger: 'blur',
-  },
+    trigger: 'blur'
+  }
 }
 
 function clickRegister() {
-  // TODO: form validation
-  register(data.value)
+  if (
+    !data.captcha ||
+    !data.confirm_password ||
+    !data.name ||
+    !data.email ||
+    !data.password
+  ) {
+    window.$message.warning('请输入完整的注册信息')
+    return
+  }
+  if (data.confirm_password !== data.password) {
+    window.$message.warning('两次输入的密码不同')
+    return
+  }
+  register(data)
     .then((res) => {
       if (res.data.success) {
-        messager.success(res.data.message)
+        window.$message.success(res.data.message)
       } else {
-        messager.warning(res.data.message)
+        window.$message.warning(res.data.message)
       }
     })
     .catch((res) => {
-      messager.error('网络故障, 请检查网络连接')
+      window.$message.error('网络故障, 请检查网络连接')
     })
 }
 
 function clickGetCaptcha() {
-  getCaptcha({ email: data.value.email })
+  if (data.email === '') {
+    window.$message.warning('请先输入您的邮箱')
+    return
+  }
+  getCaptcha({ email: data.email })
     .then((res) => {
       if (res.data.success) {
-        messager.success(res.data.message)
+        window.$message.success(res.data.message)
       } else {
-        messager.warning(res.data.message)
+        window.$message.warning(res.data.message)
       }
     })
     .catch((res) => {
-      messager.error('网络故障, 请检查网络连接')
+      window.$message.error('网络故障, 请检查网络连接')
     })
 }
 </script>
