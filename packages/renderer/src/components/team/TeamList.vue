@@ -82,7 +82,7 @@ import {
   DataTableColumns
 } from 'naive-ui'
 import { onMounted, ref, reactive, h, watch } from 'vue'
-import { getOrganizationTeamsById } from '../../api/social'
+import { getOrganizationById } from '../../api/social'
 
 const props = defineProps({
   teamName: {
@@ -110,7 +110,7 @@ onMounted(() => reload())
 
 function reload() {
   isReloading.value = true
-  getOrganizationTeamsById(requestData.value).then((res) => {
+  getOrganizationById(requestData.value).then((res) => {
     if (res.data.success) {
       var counter = 0
       res.data.teamList.forEach((element) => {
