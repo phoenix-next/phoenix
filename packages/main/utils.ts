@@ -12,20 +12,44 @@ const markdown = new MarkdownIt().use(latex).use(prism)
 const configPath = app.getPath('userData')
 const tmpPath = app.getPath('temp')
 const dataPath = join(configPath, 'data')
+const remote = 'https://phoenix.matrix53.top/api/v1/'
+
+function download(url: string, savePath: string) {
+  const download = new DownloaderHelper(url, savePath)
+  return new Promise((resolve, reject) => {
+    download.on('end', () => {
+      resolve('Download Completed')
+    })
+    download.on('error', () => {
+      reject('Download Error')
+    })
+    download.start()
+  })
+}
 
 export function handleUtils() {
   ipcMain.handle('markdownToHTML', (event, text) => {
     return markdown.render(text)
   })
-
+  ipcMain.handle('download', (event, url, savePath) => {
+    return download(url, savePath)
+  })
   ipcMain.handle('isProblemUpToDate', (event, problemID) => {
     return true
   })
-
-  ipcMain.handle('downloadProblem', (event, problem) => {
-    return 'success'
-  })
-
+  ipcMain.handle(
+    'downloadProblem',
+    (event, problemID, input, output, description) => {
+      return Promise.all([
+        download(remote + input, dataPath),
+        download(remote + output, dataPath),
+        download(remote + description, dataPath),
+        readFile(join(dataPath, description), 'utf-8')
+      ]).then((arr) => {
+        return markdown.render(arr[3])
+      })
+    }
+  )
   ipcMain.handle(
     'judgeProblem',
     async (
@@ -87,23 +111,6 @@ export function handleUtils() {
         change[0].removed
         ? 'WA'
         : 'AC'
-    }
-  )
-
-  ipcMain.handle(
-    'download',
-    (event, url: string, savePath: string, isBackend: boolean) => {
-      if (isBackend) url = 'https://phoenix.matrix53.top/api/v1/' + url
-      const download = new DownloaderHelper(url, savePath)
-      return new Promise((resolve, reject) => {
-        download.on('end', () => {
-          resolve('Download Completed')
-        })
-        download.on('error', () => {
-          reject('Download Error')
-        })
-        download.start()
-      })
     }
   )
 }
