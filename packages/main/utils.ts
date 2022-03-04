@@ -1,5 +1,5 @@
 import { join, basename } from 'path'
-import { open, close, readFile, mkdir } from 'fs-extra'
+import { open, close, readFile, ensureDir } from 'fs-extra'
 import { ipcMain, app } from 'electron'
 import MarkdownIt from 'markdown-it'
 import latex from 'markdown-it-texmath'
@@ -32,8 +32,8 @@ function download(url: string, savePath: string, saveName: string) {
 
 export function handleUtils() {
   // initialization
-  mkdir(dataPath).catch((res) => {
-    console.log('创建文件夹失败')
+  ensureDir(dataPath).catch((res) => {
+    console.log('未知错误')
   })
   // handler
   ipcMain.handle('markdownToHTML', (event, text) => {

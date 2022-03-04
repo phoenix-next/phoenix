@@ -9,6 +9,7 @@
         placeholder="输入密码"
         type="password"
         show-password-on="mousedown"
+        @keypress.enter="clickLogin"
       />
     </n-form-item-row>
   </n-form>
