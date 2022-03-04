@@ -30,25 +30,11 @@
           </n-button>
         </div>
       </div>
-
-      <n-modal v-model:show="showAddPanel" preset="card" size="medium">
-        <template #header>
-          <n-h4>添加成员</n-h4>
-          <n-divider />
-          <n-tabs default-value="add-one" size="medium">
-            <n-tab-pane name="add-one" tab="单个添加">
-              <n-input type="text" placeholder="请输入添加的成员邮箱"></n-input>
-            </n-tab-pane>
-            <n-tab-pane name="add-batch" tab="批量添加">
-              <n-input
-                type="textarea"
-                placeholder="请每行输入一个添加的成员邮箱"
-              ></n-input>
-            </n-tab-pane>
-          </n-tabs>
-          <n-button type="primary" @click="">确认</n-button>
-        </template>
-      </n-modal>
+      <team-search
+        v-model:show="showAddPanel"
+        @update:show="showAddPanel = false"
+        @update:user-info="addUserInfoTable"
+      />
     </div>
     <div class="table-context">
       <n-data-table
@@ -82,7 +68,8 @@ import {
   DataTableColumns
 } from 'naive-ui'
 import { onMounted, ref, reactive, h, watch } from 'vue'
-import { getOrganizationTeamsById } from '../../api/social'
+import { getOrganizationById } from '../../api/social'
+import TeamSearch from './TeamSearch.vue'
 
 const props = defineProps({
   teamName: {
@@ -110,7 +97,7 @@ onMounted(() => reload())
 
 function reload() {
   isReloading.value = true
-  getOrganizationTeamsById(requestData.value).then((res) => {
+  getOrganizationById(requestData.value).then((res) => {
     if (res.data.success) {
       var counter = 0
       res.data.teamList.forEach((element) => {
@@ -134,6 +121,15 @@ const tableDataRef = ref<Array<object>>([])
 const showAddPanel = ref(false)
 const requestData = ref({ teamId: '' })
 const isReloading = ref(false)
+const addUserInfoTable = (userInfo: { name: string; email: string }) => {
+  var currentCounter = tableDataRef.value.length
+  tableDataRef.value.push({
+    key: currentCounter + 1,
+    name: userInfo.name,
+    email: userInfo.email,
+    identity: '组员'
+  })
+}
 
 const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
   title: '身份',
