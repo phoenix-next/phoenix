@@ -110,7 +110,7 @@ const keyWord = ref('')
 
 const pagination = reactive({
   page: 1,
-  pageCount: 1,
+  itemCount: 1,
   pageSize: 10
 })
 const sortMethod = computed(() => {
@@ -137,7 +137,7 @@ function updateData() {
       data.value = (res.data.problemList as Array<any>).map((item) => {
         return { ...item, id: 'P' + item.id }
       })
-      pagination.pageCount = res.data.total
+      pagination.itemCount = res.data.total
     })
     .catch((res) => {
       messager.error('网络故障, 请检查网络连接')
