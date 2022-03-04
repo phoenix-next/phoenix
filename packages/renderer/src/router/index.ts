@@ -3,54 +3,58 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: { name: 'tutorial' },
+    redirect: { name: 'tutorial' }
   },
   {
     path: '/contest',
     name: 'contest',
-    component: () => import('../views/Contest.vue'),
+    meta: { requiresAuth: true },
+    component: () => import('../views/Contest.vue')
   },
   {
     path: '/forum',
     name: 'forum',
-    component: () => import('../views/Forum.vue'),
+    meta: { requiresAuth: true },
+    component: () => import('../views/Forum.vue')
   },
   {
     path: '/problem',
     name: 'problemIndex',
+    meta: { requiresAuth: true },
     component: () => import('../views/problem/Index.vue'),
     children: [
       {
         path: '',
         name: 'problemOverview',
-        component: () => import('../views/problem/ProblemOverview.vue'),
+        component: () => import('../views/problem/ProblemOverview.vue')
       },
       {
         path: 'create',
         name: 'createProblem',
-        component: () => import('../views/problem/CreateProblem.vue'),
+        component: () => import('../views/problem/CreateProblem.vue')
       },
       {
         path: ':id',
         name: 'problemDetail',
-        component: () => import('../views/problem/ProblemDetail.vue'),
-      },
-    ],
+        component: () => import('../views/problem/ProblemDetail.vue')
+      }
+    ]
   },
   {
     path: '/team',
     name: 'team',
-    component: () => import('../views/Team.vue'),
+    meta: { requiresAuth: true },
+    component: () => import('../views/Team.vue')
   },
   {
     path: '/tutorial',
     name: 'tutorial',
-    component: () => import('../views/Tutorial.vue'),
+    component: () => import('../views/Tutorial.vue')
   },
   {
     path: '/setting',
     name: 'setting',
-    component: () => import('../views/Setting.vue'),
+    component: () => import('../views/Setting.vue')
   },
   {
     path: '/login',
@@ -61,18 +65,29 @@ const routes: RouteRecordRaw[] = [
       if (userID !== null) {
         return { path: '/profile/' + userID }
       }
-    },
+    }
   },
   {
     path: '/profile/:userID',
     name: 'profile',
-    component: () => import('../views/Profile.vue'),
-  },
+    meta: { requiresAuth: true },
+    component: () => import('../views/Profile.vue')
+  }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes,
+  routes
+})
+
+router.beforeEach((to, from) => {
+  if (to.meta.requiresAuth && !localStorage.getItem('token')) {
+    window.$message.warning('您还没有登录，请先登录')
+    return {
+      path: '/login',
+      query: { redirect: to.fullPath }
+    }
+  }
 })
 
 export default router

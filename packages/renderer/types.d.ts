@@ -15,9 +15,11 @@ declare module '*.vue' {
   export default component
 }
 
+import { MessageApi } from 'naive-ui'
 declare global {
   interface Window {
     // Expose some Api through preload script
     utilsBridge: typeof import('../preload/utils').default
+    $message: MessageApi
   }
 }

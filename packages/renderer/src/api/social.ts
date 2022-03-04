@@ -28,7 +28,7 @@ export function getOrganization() {
   return backend.get('user/organizations')
 }
 
-export function getOrganizationById(data: { teamId: string }): Promise<
+export function getOrganizationTeamsById(data: { teamId: string }): Promise<
   AxiosResponse<{
     success: boolean
     teamList: {

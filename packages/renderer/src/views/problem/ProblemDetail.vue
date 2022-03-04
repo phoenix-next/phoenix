@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, reactive, watch } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import { UploadFileInfo, useMessage } from 'naive-ui'
@@ -43,47 +43,51 @@ const route = useRoute()
 const messager = useMessage()
 
 const problem = reactive({
-  description: '## 题目描述 \n ## 题目样例 \n ## 数据范围',
-  input: '',
-  output: '',
+  description: '<h2>题目描述</h2><h2>题目样例</h2><h2>数据范围</h2>',
   name: '题目名称'
 })
 const language = ref('C')
 const program = ref<Array<UploadFileInfo>>([])
-const pending = computed(() => {
-  return program.value.length > 0
-})
+const pending = ref(true)
 
 function clickReturn() {
   router.back()
 }
 function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
-  program.value = data.fileList
-  const url = data.fileList[0].file?.path ?? ''
-  if (program.value.length > 0) {
-    window.utilsBridge
-      .judgeProblem(url, route.params.id as string, language.value)
-      .then((res) => {
-        console.log(res)
-        program.value = []
-      })
+  if (!pending.value) {
+    program.value = data.fileList
+    pending.value = true
+    const url = data.fileList[0].file?.path ?? ''
+    if (program.value.length > 0) {
+      window.utilsBridge
+        .judgeProblem(url, route.params.id as string, language.value)
+        .then((res) => {
+          if (res === 'AC') {
+            messager.success('AC')
+          } else {
+            messager.warning(res)
+          }
+          program.value = []
+          pending.value = false
+        })
+    }
   }
 }
 
-watch(
-  () => problem.description,
-  (data, prevData) => {}
-)
-
 onMounted(() => {
   getProblem({ problemID: Number(route.params.id) })
-    .then(async (res) => {
+    .then((res) => {
       problem.name = res.data.name
-      problem.description = await window.utilsBridge.markdownToHTML(
+      return window.utilsBridge.downloadProblem(
+        route.params.id as string,
+        res.data.input,
+        res.data.output,
         res.data.description
       )
-      problem.input = res.data.input
-      problem.output = res.data.output
+    })
+    .then((des) => {
+      problem.description = des
+      pending.value = false
     })
     .catch((res) => {
       messager.error('网络故障, 请检查网络连接')
