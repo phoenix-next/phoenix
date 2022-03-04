@@ -1,16 +1,18 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
-// 是否登录也可用localStorage直接判断
 export const useAuthStore = defineStore('auth', () => {
-  const isLogin = ref(localStorage.getItem('token') !== null)
+  const token = ref(localStorage.getItem('token') || '')
+  const isLogin = computed(() => {
+    return token.value !== ''
+  })
 
-  function signIn() {
-    isLogin.value = true
+  function signIn(userToken: string) {
+    token.value = userToken
   }
   function signOut() {
-    isLogin.value = false
+    token.value = ''
   }
 
-  return { isLogin, signIn, signOut }
+  return { token, isLogin, signIn, signOut }
 })

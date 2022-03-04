@@ -25,20 +25,20 @@ const { signIn } = useAuthStore()
 
 const data = ref({
   email: '',
-  password: '',
+  password: ''
 })
 
 const rules = {
   email: {
     required: true,
     message: '请输入邮箱',
-    trigger: 'blur',
+    trigger: 'blur'
   },
   password: {
     required: true,
     message: '请输入密码',
-    trigger: 'blur',
-  },
+    trigger: 'blur'
+  }
 }
 
 function clickLogin() {
@@ -47,7 +47,7 @@ function clickLogin() {
       if (res.data.success) {
         localStorage.setItem('token', res.data.token)
         localStorage.setItem('userID', res.data.id)
-        signIn()
+        signIn(res.data.token)
         messager.success(res.data.message)
         router.push({ path: '/tutorial' })
       } else {

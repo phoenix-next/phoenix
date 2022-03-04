@@ -65,7 +65,7 @@ const columns = ref<Array<DataTableColumn>>([
     render: (rowData, rowIndex) => {
       return h(
         'div',
-        { onClick: handleClick(rowData.id as string) },
+        { onClick: handleClick(rowData.id as string), class: 'test' },
         rowData.id as string
       )
     }
