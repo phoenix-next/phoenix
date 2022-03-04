@@ -17,13 +17,6 @@ npm install
 npm run dev
 ```
 
-另外，还有几点需要注意：
-
-1. 本项目在开发过程中可以热更新(HMR)，不需要重启应用来查看代码的更改效果
-2. Vite 静态服务器需要在命令行中关闭(不能靠关闭 PhoeniX 来关闭)
-3. 开发过程中建议使用 vscode，并启用 Volar 的 [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussion-3561961)
-4. 项目的路径**不能包含中文**，否则项目可能会无法正常运行
-
 ## Build
 
 构建环境和开发环境的需求一致，在项目目录下执行以下命令即可构建本项目：
@@ -56,6 +49,14 @@ npm config set ELECTRON_CUSTOM_DIR="v{{ version }}"
 ```bash
 npm config set ELECTRON_BUILDER_BINARIES_MIRROR="https://npmmirror.com/mirrors/electron-builder-binaries/"
 ```
+
+## Tips
+
+- 本项目在开发过程中可以热更新(HMR)，不需要重启应用来查看代码的更改效果
+- Vite 静态服务器需要在命令行中关闭(不能靠关闭 PhoeniX 来关闭)
+- 开发过程中建议使用 vscode，并启用 Volar 的 [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussion-3561961)
+- 项目的路径**不能包含中文**，否则项目可能会无法正常运行
+- 打开火绒时，不能下载 Electron-Builder 的依赖，建议开发时关闭火绒。详情见[这里](https://blog.csdn.net/qiuqiang748/article/details/106902082)
 
 ## Credits
 
