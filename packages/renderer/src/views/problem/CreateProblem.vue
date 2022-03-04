@@ -26,13 +26,13 @@
     </n-form>
     <n-grid :x-gap="12">
       <n-gi :span="8">
-        <upload-button ref="descriptionRef">上传题面</upload-button>
+        <upload-button ref="descriptionRef">选择题面</upload-button>
       </n-gi>
       <n-gi :span="8">
-        <upload-button ref="inputRef">上传输入</upload-button>
+        <upload-button ref="inputRef">选择输入</upload-button>
       </n-gi>
       <n-gi :span="8">
-        <upload-button ref="outputRef">上传输出</upload-button>
+        <upload-button ref="outputRef">选择输出</upload-button>
       </n-gi>
     </n-grid>
     <n-button

@@ -62,7 +62,11 @@ function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
       window.utilsBridge
         .judgeProblem(url, route.params.id as string, language.value)
         .then((res) => {
-          console.log(res)
+          if (res === 'AC') {
+            messager.success('AC')
+          } else {
+            messager.warning(res)
+          }
           program.value = []
           pending.value = false
         })

@@ -42,7 +42,7 @@ export function handleUtils() {
     (event, problemID, input, output, description) => {
       return Promise.all([
         download(remote + input, dataPath, 'in_' + problemID),
-        download(remote + output, dataPath, 'out_' + problemID),
+        download(remote + output, dataPath, 'ans_' + problemID),
         download(remote + description, dataPath, 'des_' + problemID)
       ])
         .then((res) => {
