@@ -1,7 +1,11 @@
 import { AxiosResponse } from 'axios'
 import { backend } from '../utils/request'
 
-export function getProblemList(data: { page: number; sorter: number }) {
+export function getProblemList(data: {
+  page: number
+  sorter: number
+  keyWord: string
+}) {
   return backend.get('problems', {
     params: data
   })

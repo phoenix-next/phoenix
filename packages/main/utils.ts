@@ -6,25 +6,53 @@ import latex from 'markdown-it-texmath'
 import prism from 'markdown-it-prism'
 import { diffWords } from 'diff'
 import spawn from '@npmcli/promise-spawn'
+import { DownloaderHelper } from 'node-downloader-helper'
 
 const markdown = new MarkdownIt().use(latex).use(prism)
 const configPath = app.getPath('userData')
 const tmpPath = app.getPath('temp')
 const dataPath = join(configPath, 'data')
+const remote = 'https://phoenix.matrix53.top/api/v1/'
+
+function download(url: string, savePath: string, saveName: string) {
+  const download = new DownloaderHelper(url, savePath, { fileName: saveName })
+  return new Promise((resolve, reject) => {
+    download.on('end', () => {
+      resolve('Download Completed')
+    })
+    download.on('error', () => {
+      reject('Download Error')
+    })
+    download.start()
+  })
+}
 
 export function handleUtils() {
   ipcMain.handle('markdownToHTML', (event, text) => {
     return markdown.render(text)
   })
-
+  ipcMain.handle('download', (event, url, savePath, saveName) => {
+    return download(url, savePath, saveName)
+  })
   ipcMain.handle('isProblemUpToDate', (event, problemID) => {
     return true
   })
-
-  ipcMain.handle('cacheProblem', (event, problem) => {
-    return 'success'
-  })
-
+  ipcMain.handle(
+    'downloadProblem',
+    (event, problemID, input, output, description) => {
+      return Promise.all([
+        download(remote + input, dataPath, 'in_' + problemID),
+        download(remote + output, dataPath, 'ans_' + problemID),
+        download(remote + description, dataPath, 'des_' + problemID)
+      ])
+        .then((res) => {
+          return readFile(join(dataPath, 'des_' + problemID), 'utf-8')
+        })
+        .then((res) => {
+          return markdown.render(res)
+        })
+    }
+  )
   ipcMain.handle(
     'judgeProblem',
     async (
