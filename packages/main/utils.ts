@@ -14,8 +14,8 @@ const tmpPath = app.getPath('temp')
 const dataPath = join(configPath, 'data')
 const remote = 'https://phoenix.matrix53.top/api/v1/'
 
-function download(url: string, savePath: string) {
-  const download = new DownloaderHelper(url, savePath)
+function download(url: string, savePath: string, saveName: string) {
+  const download = new DownloaderHelper(url, savePath, { fileName: saveName })
   return new Promise((resolve, reject) => {
     download.on('end', () => {
       resolve('Download Completed')
@@ -31,8 +31,8 @@ export function handleUtils() {
   ipcMain.handle('markdownToHTML', (event, text) => {
     return markdown.render(text)
   })
-  ipcMain.handle('download', (event, url, savePath) => {
-    return download(url, savePath)
+  ipcMain.handle('download', (event, url, savePath, saveName) => {
+    return download(url, savePath, saveName)
   })
   ipcMain.handle('isProblemUpToDate', (event, problemID) => {
     return true
@@ -41,13 +41,16 @@ export function handleUtils() {
     'downloadProblem',
     (event, problemID, input, output, description) => {
       return Promise.all([
-        download(remote + input, dataPath),
-        download(remote + output, dataPath),
-        download(remote + description, dataPath),
-        readFile(join(dataPath, description), 'utf-8')
-      ]).then((arr) => {
-        return markdown.render(arr[3])
-      })
+        download(remote + input, dataPath, 'in_' + problemID),
+        download(remote + output, dataPath, 'out_' + problemID),
+        download(remote + description, dataPath, 'des_' + problemID)
+      ])
+        .then((res) => {
+          return readFile(join(dataPath, 'des_' + problemID), 'utf-8')
+        })
+        .then((res) => {
+          return markdown.render(res)
+        })
     }
   )
   ipcMain.handle(

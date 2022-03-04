@@ -4,8 +4,8 @@ export default {
   markdownToHTML(markdown: string) {
     return ipcRenderer.invoke('markdownToHTML', markdown)
   },
-  download(url: string, savePath: string) {
-    return ipcRenderer.invoke('download', url, savePath)
+  download(url: string, savePath: string, saveName: string) {
+    return ipcRenderer.invoke('download', url, savePath, saveName)
   },
   isProblemUpToDate(problemID: number) {
     return ipcRenderer.invoke('isProblemUpToDate', problemID)
