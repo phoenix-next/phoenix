@@ -128,7 +128,7 @@ function updateData() {
       data.value = (res.data.problemList as Array<any>).map((item) => {
         return { ...item, id: 'P' + item.id }
       })
-      // TODO: pagination.pageCount = res.data.total
+      pagination.pageCount = res.data.total
     })
     .catch((res) => {
       messager.error('网络故障, 请检查网络连接')
