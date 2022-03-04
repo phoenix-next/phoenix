@@ -4,8 +4,13 @@
       <n-gi :span="14" :offset="7">
         <n-input-group>
           <n-button type="primary" class="label">查找题目</n-button>
-          <n-input :style="{ width: '50%' }" />
-          <n-button type="primary" ghost>搜索</n-button>
+          <n-input
+            :style="{ width: '50%' }"
+            v-model:value="keyWord"
+            placeholder="请输入关键字"
+            @keypress.enter="handleSearch"
+          />
+          <n-button type="primary" ghost @click="handleSearch">搜索</n-button>
         </n-input-group>
       </n-gi>
       <n-gi :span="2" :offset="1">
@@ -15,7 +20,7 @@
           secondary
           strong
           :disabled="!isLogin"
-          @click="clickCreate"
+          @click="handleCreate"
         >
           创建题目
         </n-button>
@@ -50,7 +55,7 @@ const messager = useMessage()
 const data = ref<Array<{ id: string; difficulty: number; name: string }>>([
   { id: 'Loading...', difficulty: 1, name: 'Loading...' }
 ])
-const loading = ref(false)
+const loading = ref(true)
 const columns = ref<Array<DataTableColumn>>([
   {
     title: '题号',
@@ -92,6 +97,7 @@ const columns = ref<Array<DataTableColumn>>([
     }
   }
 ])
+const keyWord = ref('')
 
 const pagination = reactive({
   page: 1,
@@ -108,11 +114,36 @@ const sortMethod = computed(() => {
     : -index - 1
 })
 
-function clickCreate() {
-  router.push({ path: '/problem/create' })
-}
 function rowKey(rowData: any) {
   return rowData.id
+}
+function updateData() {
+  loading.value = true
+  getProblemList({
+    page: pagination.page as number,
+    sorter: sortMethod.value,
+    keyWord: keyWord.value
+  })
+    .then((res) => {
+      data.value = (res.data.problemList as Array<any>).map((item) => {
+        return { ...item, id: 'P' + item.id }
+      })
+      // TODO: pagination.pageCount = res.data.total
+    })
+    .catch((res) => {
+      messager.error('网络故障, 请检查网络连接')
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+function handleCreate() {
+  router.push({ path: '/problem/create' })
+}
+function handleSearch() {
+  if (!loading.value) {
+    updateData()
+  }
 }
 function handleClick(id: string) {
   return () => {
@@ -128,8 +159,6 @@ function handleSorterChange(sorter: any) {
   }
   // sorter不为空且不在加载中
   if (sorter && !loading.value) {
-    // 设置为在加载中
-    loading.value = true
     // 设置columns的排序规则
     columns.value.forEach((item: any) => {
       item.sortOrder = false
@@ -137,61 +166,17 @@ function handleSorterChange(sorter: any) {
     ;(columns.value[sorterMap[sorter.columnKey]] as any).sortOrder =
       sorter.order ? sorter.order : 'descend'
     // 发起请求
-    getProblemList({
-      page: pagination.page as number,
-      sorter: sortMethod.value
-    })
-      .then((res) => {
-        data.value = (res.data.problemList as Array<any>).map((item) => {
-          return { ...item, id: 'P' + item.id }
-        })
-        // TODO: pagination.pageCount = res.data.total
-        // 设置为不在加载中
-        loading.value = false
-      })
-      .catch((res) => {
-        messager.error('网络故障, 请检查网络连接')
-        // 设置为不在加载中
-        loading.value = false
-      })
+    updateData()
   }
 }
 function handlePageChange(currentPage: number) {
   if (!loading.value) {
-    loading.value = true
     pagination.page = currentPage
-    getProblemList({
-      page: currentPage,
-      sorter: sortMethod.value
-    })
-      .then((res) => {
-        data.value = (res.data.problemList as Array<any>).map((item) => {
-          return { ...item, id: 'P' + item.id }
-        })
-        // TODO: pagination.pageCount = res.data.total
-        // 设置为不在加载中
-        loading.value = false
-      })
-      .catch((res) => {
-        messager.error('网络故障, 请检查网络连接')
-        // 设置为不在加载中
-        loading.value = false
-      })
+    updateData()
   }
 }
 
-onMounted(() => {
-  getProblemList({ page: 1, sorter: 1 })
-    .then((res) => {
-      data.value = (res.data.problemList as Array<any>).map((item) => {
-        return { ...item, id: 'P' + item.id }
-      })
-    })
-    .catch((res) => {
-      console.log(res)
-      messager.error('网络故障, 请检查网络连接')
-    })
-})
+onMounted(updateData)
 </script>
 
 <style scoped>
