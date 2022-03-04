@@ -4,7 +4,12 @@
       <n-input v-model:value="data.email" placeholder="输入邮箱" />
     </n-form-item-row>
     <n-form-item-row label="密码" path="password">
-      <n-input v-model:value="data.password" placeholder="输入密码" />
+      <n-input
+        v-model:value="data.password"
+        placeholder="输入密码"
+        type="password"
+        show-password-on="mousedown"
+      />
     </n-form-item-row>
   </n-form>
   <n-button type="primary" block secondary strong @click="clickLogin">
@@ -16,11 +21,12 @@
 import { ref } from 'vue'
 import { login } from '../../api/social'
 import { useMessage } from 'naive-ui'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 
 const messager = useMessage()
 const router = useRouter()
+const route = useRoute()
 const { signIn } = useAuthStore()
 
 const data = ref({
@@ -49,7 +55,11 @@ function clickLogin() {
         localStorage.setItem('userID', res.data.id)
         signIn(res.data.token)
         messager.success(res.data.message)
-        router.push({ path: '/tutorial' })
+        if (route.query['redirect']) {
+          router.push({ path: route.query['redirect'] as string })
+        } else {
+          router.push({ path: '/tutorial' })
+        }
       } else {
         messager.warning(res.data.message)
       }
