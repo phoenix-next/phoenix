@@ -65,7 +65,10 @@ const columns = ref<Array<DataTableColumn>>([
     render: (rowData, rowIndex) => {
       return h(
         'div',
-        { onClick: handleClick(rowData.id as string), class: 'test' },
+        {
+          onClick: handleClick(rowData.id as string),
+          style: { cursor: 'pointer' }
+        },
         rowData.id as string
       )
     }
@@ -78,7 +81,10 @@ const columns = ref<Array<DataTableColumn>>([
     render: (rowData, rowIndex) => {
       return h(
         'div',
-        { onClick: handleClick(rowData.id as string) },
+        {
+          onClick: handleClick(rowData.id as string),
+          style: { cursor: 'pointer' }
+        },
         rowData.name as string
       )
     }
@@ -91,7 +97,10 @@ const columns = ref<Array<DataTableColumn>>([
     render: (rowData, rowIndex) => {
       return h(
         'div',
-        { onClick: handleClick(rowData.id as string) },
+        {
+          onClick: handleClick(rowData.id as string),
+          style: { cursor: 'pointer' }
+        },
         rowData.difficulty as string
       )
     }
