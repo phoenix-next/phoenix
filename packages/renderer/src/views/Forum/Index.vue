@@ -1,6 +1,5 @@
 <template>
-  <!-- TODO: forum page -->
-  Forum
+  <router-view />
 </template>
 
 <script setup lang="ts"></script>
