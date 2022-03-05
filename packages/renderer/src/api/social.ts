@@ -3,11 +3,11 @@ import { idID } from 'naive-ui'
 import { backend } from '../utils/request'
 
 export function login(data: { email: string; password: string }) {
-  return backend.post('user/login', data)
+  return backend.post('tokens', data)
 }
 
 export function getCaptcha(data: { email: string }) {
-  return backend.post('user/captcha', data)
+  return backend.post('captcha', data)
 }
 
 export function register(data: {
@@ -16,17 +16,15 @@ export function register(data: {
   name: string
   password: string
 }) {
-  return backend.post('user/register', data)
+  return backend.post('users', data)
 }
 
 export function getProfile(data: { id: string }) {
-  return backend.get('user/profile', {
-    params: data
-  })
+  return backend.get(`users/${data.id}/profile`)
 }
 
-export function getOrganization() {
-  return backend.get('user/organizations')
+export function getOrganization(data: { id: string }) {
+  return backend.get(`users/${data.id}/organizations`)
 }
 
 export function createOrganization(data: { name: string; profile: string }) {
