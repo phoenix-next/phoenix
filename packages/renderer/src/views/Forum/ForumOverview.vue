@@ -28,7 +28,9 @@
             </n-layout-sider>
             <n-layout>
               <n-layout-content>
-                <n-text> 第 {{ i }} 个人的帖子标题 </n-text>
+                <n-text @click="handleClick">
+                  第 {{ i }} 个人的帖子标题
+                </n-text>
                 <br />
                 <n-text> 第 {{ i }} 个人的名字 </n-text>
                 <br />
@@ -44,6 +46,14 @@
   </n-card>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+function handleClick() {
+  router.push('/forum/1')
+}
+</script>
 
 <style scoped></style>

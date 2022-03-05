@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import ForumOverviewVue from '../views/Forum/ForumOverview.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -13,9 +14,21 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/forum',
-    name: 'forum',
+    name: 'forumIndex',
     meta: { requiresAuth: true },
-    component: () => import('../views/Forum.vue')
+    component: () => import('../views/Forum/Index.vue'),
+    children: [
+      {
+        path: '',
+        name: 'forumOverview',
+        component: () => import('../views/Forum/ForumOverview.vue')
+      },
+      {
+        path: ':id',
+        name: 'forumDetail',
+        component: () => import('../views/Forum/ForumDetail.vue')
+      }
+    ]
   },
   {
     path: '/problem',
