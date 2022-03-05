@@ -31,33 +31,26 @@
             {{ userInfo.email }}
           </n-descriptions-item>
         </n-descriptions>
-        <n-h4 v-else>heelo</n-h4>
       </template>
     </n-card>
-
-    <user-info-card :name="userInfo.name" :email="userInfo.email" />
   </n-modal>
 </template>
 
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { useMessage } from 'naive-ui'
 
-const props = defineProps({
+defineProps({
   show: {
     type: Boolean,
     default: null
   }
 })
 
-const emit = defineEmits(['update:show', 'update:user-info'])
-const message = useMessage()
-const userInfo = reactive({ name: 'kurino', email: 'gejingze@163.com' })
+const emit = defineEmits(['update:show'])
+const userInfo = reactive({ name: '', email: '' })
 const showUserInfo = ref(false)
 const isLoading = ref(true)
 
-function handlePositiveClick() {
-  emit('update:user-info', userInfo)
-}
+function handlePositiveClick() {}
 function handleNegativeClick() {}
 </script>

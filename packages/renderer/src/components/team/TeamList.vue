@@ -1,53 +1,57 @@
 <template>
-  <n-card>
-    <div class="table-toolbar">
-      <div class="table-toolbar-left">
-        <slot name="teamSelectList"></slot>
-        <n-tooltip trigger="hover" v-if="titleTooltip">
-          <template #trigger>
-            <n-icon size="18" class="cursor-pointer">
-              <alert-circle />
-            </n-icon>
+  <div class="table-toolbar">
+    <div class="table-toolbar-left">
+      <div>
+        共有
+        <span class="table-tool-bar-number">{{ teamUserNumber }}</span
+        >个成员，
+        <span class="table-tool-bar-number">{{ teamAdminNumber }}</span
+        >个管理员
+      </div>
+      <n-tooltip trigger="hover" v-if="titleTooltip">
+        <template #trigger>
+          <n-icon size="18" class="cursor-pointer">
+            <alert-circle />
+          </n-icon>
+        </template>
+        {{ titleTooltip }}
+      </n-tooltip>
+    </div>
+    <div class="table-toolbar-right">
+      <n-input-group>
+        <n-input :style="{ width: '50%' }" />
+        <n-button type="primary" ghost> 搜索 </n-button>
+      </n-input-group>
+      <div class="table-toolbar-right-icon">
+        <n-button text @click="showAddModal = true">
+          <template #icon>
+            <n-icon size="20"> <add-circle-outline /> </n-icon>
           </template>
-          {{ titleTooltip }}
-        </n-tooltip>
+        </n-button>
+        <n-button text @click="reload">
+          <template #icon>
+            <n-icon size="20"><reload-outline /> </n-icon>
+          </template>
+        </n-button>
       </div>
-      <div class="table-toolbar-right">
-        <n-input-group>
-          <n-input :style="{ width: '50%' }" />
-          <n-button type="primary" ghost> 搜索 </n-button>
-        </n-input-group>
-        <div class="table-toolbar-right-icon">
-          <n-button text @click="showAddPanel = true">
-            <template #icon>
-              <n-icon size="20"> <add-circle-outline /> </n-icon>
-            </template>
-          </n-button>
-          <n-button text @click="reload">
-            <template #icon>
-              <n-icon size="20"><reload-outline /> </n-icon>
-            </template>
-          </n-button>
-        </div>
-      </div>
-      <team-search
-        v-model:show="showAddPanel"
-        @update:show="showAddPanel = false"
-        @update:user-info="addUserInfoTable"
-      />
     </div>
-    <div class="table-context">
-      <n-data-table
-        ref="table"
-        :columns="columns"
-        :data="tableDataRef"
-        :pagination="paginationReactive"
-        :style="{ height: '600px' }"
-        :remote="true"
-      >
-      </n-data-table>
-    </div>
-  </n-card>
+    <team-search
+      v-model:show="showAddModal"
+      @update:show="showAddModal = false"
+      @update:user-info="addUserInfoTable"
+    />
+  </div>
+  <div class="table-context">
+    <n-data-table
+      ref="table"
+      :columns="columns"
+      :data="tableDataRef"
+      :pagination="paginationReactive"
+      :style="{ height: '600px' }"
+      :remote="true"
+    >
+    </n-data-table>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -63,11 +67,10 @@ import {
   NSpace,
   NButton,
   useMessage,
-  DataTableColumn,
   DataTableBaseColumn,
   DataTableColumns
 } from 'naive-ui'
-import { onMounted, ref, reactive, h, watch } from 'vue'
+import { onMounted, ref, reactive, h, watch, computed } from 'vue'
 import { getOrganizationById } from '../../api/social'
 import TeamSearch from './TeamSearch.vue'
 
@@ -95,6 +98,15 @@ watch(
 )
 onMounted(() => reload())
 
+const teamUserNumber = computed(() => tableDataRef.value.length)
+const teamAdminNumber = computed(() => {
+  var count = 0
+  tableDataRef.value.forEach((element: any) => {
+    if (element.identity == '管理员') count++
+  })
+  return count
+})
+
 function reload() {
   isReloading.value = true
   getOrganizationById(requestData.value).then((res) => {
@@ -118,7 +130,7 @@ function reload() {
 }
 const message = useMessage()
 const tableDataRef = ref<Array<object>>([])
-const showAddPanel = ref(false)
+const showAddModal = ref(false)
 const requestData = ref({ teamId: '' })
 const isReloading = ref(false)
 const addUserInfoTable = (userInfo: { name: string; email: string }) => {
@@ -221,6 +233,9 @@ const paginationReactive = reactive({
   align-items: center;
   justify-content: flex-start;
   flex: 1;
+}
+.table-tool-bar-number {
+  color: #18a058;
 }
 
 .table-toolbar-left-title {

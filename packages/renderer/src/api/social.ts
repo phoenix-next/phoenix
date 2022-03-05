@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios'
+import { idID } from 'naive-ui'
 import { backend } from '../utils/request'
 
 export function login(data: { email: string; password: string }) {
@@ -28,7 +29,30 @@ export function getOrganization() {
   return backend.get('user/organizations')
 }
 
-export function getOrganizationTeamsById(data: { teamId: string }): Promise<
+export function createOrganization(data: { name: string; profile: string }) {
+  return backend.post('organizations/', data)
+}
+
+export function updateOrganization(
+  data: { name: string; profile: string },
+  teamId: number
+) {
+  return backend.put('organizations/' + teamId.toString, data)
+}
+
+export function deleteOrganization(teamId: number) {
+  return backend.delete('organizations/' + teamId.toString)
+}
+
+export function createInvitation(data: { email: string }, teamId: number) {
+  return backend.post('organizations/' + teamId.toString + '/invitations', data)
+}
+
+export function updateOrganizationMember(teamId: number) {
+  return backend.post('organizations/' + teamId.toString + '/users')
+}
+
+export function getOrganizationMember(teamId: number): Promise<
   AxiosResponse<{
     success: boolean
     teamList: {
@@ -38,7 +62,15 @@ export function getOrganizationTeamsById(data: { teamId: string }): Promise<
     }[]
   }>
 > {
-  return backend.get('organizations/people', {
-    params: data
-  })
+  return backend.get('organizations/' + teamId.toString + '/users')
+}
+
+export function updateOrganizationAdmin(data: { id: string }, teamId: number) {
+  return backend.post('organizations/' + teamId.toString + '/admins', data)
+}
+
+export function deleteOrganizationAdmin(adminId: number, teamId: number) {
+  return backend.delete(
+    'organizations/' + teamId.toString + '/admins/' + adminId.toString
+  )
 }
