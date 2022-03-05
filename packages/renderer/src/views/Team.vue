@@ -56,22 +56,22 @@ const teamName = ref()
 const isTeamAdmin = ref<boolean | undefined>(false)
 
 const showAddTeamModal = ref(false)
-const requestData = ref()
 
-onMounted(() => {
-  getOrganization({ id: localStorage.getItem('userID') || '' }).then(
-    (res: {
-      data: {
-        success: boolean
-        organization: {
-          id: number
-          isAdmin: boolean
-          name: string
-        }[]
-      }
-    }) => {
+onMounted(() => reload)
+
+const handleSelectTeam = (value: string) => {
+  if (teamName.value != value) {
+    teamName.value = value
+    isTeamAdmin.value = isTeamsAdminDic.get(value)
+    teamId.value = teamsIdDic.get(value)
+  }
+}
+
+function reload() {
+  getOrganization({ id: localStorage.getItem('userID') || '' })
+    .then((res) => {
       if (res.data.success) {
-        res.data.organization.forEach((element) => {
+        res.data.organizations.forEach((element) => {
           teamsNameRef.value.push({
             label: element.name,
             value: element.name
@@ -80,18 +80,14 @@ onMounted(() => {
           teamsIdDic.set(element.name, element.id)
         })
         teamName.value = teamsNameRef.value[0].label
-        isTeamAdmin.value = res.data.organization[0].isAdmin
+        isTeamAdmin.value = res.data.organizations[0].isAdmin
+      } else {
+        message.error('加载组织失败')
       }
-    }
-  )
-})
-
-const handleSelectTeam = (value: string) => {
-  if (teamName.value != value) {
-    teamName.value = value
-    isTeamAdmin.value = isTeamsAdminDic.get(value)
-    teamId.value = teamsIdDic.get(value)
-  }
+    })
+    .catch((res) => {
+      message.error('网络故障, 请检查网络连接')
+    })
 }
 </script>
 

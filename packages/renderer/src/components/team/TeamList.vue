@@ -46,6 +46,7 @@
       ref="table"
       :columns="columns"
       :data="tableDataRef"
+      :loading="isReloading"
       :pagination="paginationReactive"
       :style="{ height: '600px' }"
       :remote="true"
@@ -72,7 +73,7 @@ import {
 } from 'naive-ui'
 import { onMounted, ref, reactive, h, watch, computed } from 'vue'
 import { getOrganizationMember } from '../../api/social'
-import TeamSearch from './TeamSearch.vue'
+import TeamSearch from './TeamInvite.vue'
 
 const props = defineProps({
   teamName: {
@@ -121,7 +122,6 @@ function reload() {
           identity: element.isAdmin ? '管理员' : '组员'
         })
       })
-      message.info('已重新加载列表')
     } else {
       message.error('列表加载失败')
     }

@@ -23,11 +23,23 @@ export function getProfile(data: { id: string }) {
   return backend.get(`users/${data.id}/profile`)
 }
 
-export function getOrganization(data: { id: string }) {
+export function getOrganization(data: { id: string }): Promise<
+  AxiosResponse<{
+    success: boolean
+    organizations: {
+      id: number
+      isAdmin: boolean
+      name: string
+    }[]
+  }>
+> {
   return backend.get(`users/${data.id}/organizations`)
 }
 
-export function createOrganization(data: { name: string; profile: string }) {
+export function createOrganization(data: {
+  name: string
+  profile: string
+}): Promise<AxiosResponse<{ success: boolean }>> {
   return backend.post('organizations/', data)
 }
 
@@ -42,7 +54,10 @@ export function deleteOrganization(teamId: number) {
   return backend.delete(`organizations/${teamId}`)
 }
 
-export function createInvitation(data: { email: string }, teamId: number) {
+export function createInvitation(
+  data: { email: string; isAdmin: Boolean },
+  teamId: number
+) {
   return backend.post(`organizations/${teamId}/invitations`, data)
 }
 
