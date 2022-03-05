@@ -71,7 +71,7 @@ import {
   DataTableColumns
 } from 'naive-ui'
 import { onMounted, ref, reactive, h, watch, computed } from 'vue'
-import { getOrganizationById } from '../../api/social'
+import { getOrganizationMember } from '../../api/social'
 import TeamSearch from './TeamSearch.vue'
 
 const props = defineProps({
@@ -92,7 +92,7 @@ const props = defineProps({
 watch(
   () => props.teamId,
   (newTeamId: number, oldTeamId: number) => {
-    requestData.value.teamId = newTeamId.toString()
+    requestData.value = newTeamId
     reload()
   }
 )
@@ -109,7 +109,7 @@ const teamAdminNumber = computed(() => {
 
 function reload() {
   isReloading.value = true
-  getOrganizationById(requestData.value).then((res) => {
+  getOrganizationMember(requestData.value).then((res) => {
     if (res.data.success) {
       var counter = 0
       res.data.teamList.forEach((element) => {
@@ -131,7 +131,7 @@ function reload() {
 const message = useMessage()
 const tableDataRef = ref<Array<object>>([])
 const showAddModal = ref(false)
-const requestData = ref({ teamId: '' })
+const requestData = ref()
 const isReloading = ref(false)
 const addUserInfoTable = (userInfo: { name: string; email: string }) => {
   var currentCounter = tableDataRef.value.length

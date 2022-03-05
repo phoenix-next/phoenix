@@ -35,19 +35,19 @@ export function updateOrganization(
   data: { name: string; profile: string },
   teamId: number
 ) {
-  return backend.put('organizations/' + teamId.toString, data)
+  return backend.put(`organizations/${teamId}`, data)
 }
 
 export function deleteOrganization(teamId: number) {
-  return backend.delete('organizations/' + teamId.toString)
+  return backend.delete(`organizations/${teamId}`)
 }
 
 export function createInvitation(data: { email: string }, teamId: number) {
-  return backend.post('organizations/' + teamId.toString + '/invitations', data)
+  return backend.post(`organizations/${teamId}/invitations`, data)
 }
 
 export function updateOrganizationMember(teamId: number) {
-  return backend.post('organizations/' + teamId.toString + '/users')
+  return backend.post(`organizations/${teamId}/users`)
 }
 
 export function getOrganizationMember(teamId: number): Promise<
@@ -60,15 +60,13 @@ export function getOrganizationMember(teamId: number): Promise<
     }[]
   }>
 > {
-  return backend.get('organizations/' + teamId.toString + '/users')
+  return backend.get(`organizations/${teamId}/users`)
 }
 
 export function updateOrganizationAdmin(data: { id: string }, teamId: number) {
-  return backend.post('organizations/' + teamId.toString + '/admins', data)
+  return backend.post(`organizations/${teamId}/admins`, data)
 }
 
 export function deleteOrganizationAdmin(adminId: number, teamId: number) {
-  return backend.delete(
-    'organizations/' + teamId.toString + '/admins/' + adminId.toString
-  )
+  return backend.delete(`organizations/${teamId}/admins/${adminId}`)
 }

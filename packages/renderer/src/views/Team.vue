@@ -56,9 +56,10 @@ const teamName = ref()
 const isTeamAdmin = ref<boolean | undefined>(false)
 
 const showAddTeamModal = ref(false)
+const requestData = ref()
 
 onMounted(() => {
-  getOrganization().then(
+  getOrganization({ id: localStorage.getItem('userID') || '' }).then(
     (res: {
       data: {
         success: boolean
