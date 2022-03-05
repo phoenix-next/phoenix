@@ -10,24 +10,18 @@
 
 为了开发本项目，需要 Node 14 及以上(推荐使用最新 LTS 版本的 Node)，执行以下命令即可运行客户端：
 
-```sh
+```bash
 git clone https://github.com/phoenix-next/phoenix
 cd phoenix
 npm install
 npm run dev
 ```
 
-另外，还有几点需要注意：
-
-1. 本项目在开发过程中可以热更新(HMR)，不需要重启应用来查看代码的更改效果
-2. Vite 静态服务器需要在命令行中关闭(不能靠关闭 PhoeniX 来关闭)
-3. 开发过程中建议使用 vscode，并启用 Volar 的 [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussion-3561961)
-
 ## Build
 
 构建环境和开发环境的需求一致，在项目目录下执行以下命令即可构建本项目：
 
-```sh
+```bash
 npm run build
 ```
 
@@ -39,19 +33,30 @@ npm run build
 
 首先，使用如下命令更换 npm 源：
 
-```sh
+```bash
 npm config set registry https://registry.npmmirror.com/
 ```
 
-其次，对于 Electron 镜像源，需要单独设置(使用华为或者阿里的 Electron 镜像均可)：
+其次，对于 Electron 镜像源，需要单独设置：
 
-```sh
-# 华为Electron镜像的设置方法，缺点是华为镜像更新不够及时
-npm config set ELECTRON_MIRROR="https://mirrors.huaweicloud.com/electron/"
-# 阿里Electron镜像的设置方法
+```bash
 npm config set ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
 npm config set ELECTRON_CUSTOM_DIR="v{{ version }}"
 ```
+
+最后，若 Electron-Builder 的依赖下载失败，则需配置 Electron-Builder 源：
+
+```bash
+npm config set ELECTRON_BUILDER_BINARIES_MIRROR="https://npmmirror.com/mirrors/electron-builder-binaries/"
+```
+
+## Tips
+
+- 本项目在开发过程中可以热更新(HMR)，不需要重启应用来查看代码的更改效果
+- Vite 静态服务器需要在命令行中关闭(不能靠关闭 PhoeniX 来关闭)
+- 开发过程中建议使用 vscode，并启用 Volar 的 [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussion-3561961)
+- 项目的路径**不能包含中文**，否则项目可能会无法正常运行
+- 打开火绒时，不能下载 Electron-Builder 的依赖，建议开发时关闭火绒。详情见[这里](https://blog.csdn.net/qiuqiang748/article/details/106902082)
 
 ## Credits
 
