@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider :locale="zhCN">
+  <n-config-provider :locale="zhCN" :date-locale="dateZhCN">
     <n-message-provider>
       <app />
     </n-message-provider>
@@ -8,5 +8,5 @@
 
 <script setup lang="ts">
 import App from './App.vue'
-import { zhCN, NMessageProvider, NConfigProvider } from 'naive-ui'
+import { zhCN, dateZhCN, NMessageProvider, NConfigProvider } from 'naive-ui'
 </script>
