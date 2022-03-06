@@ -59,7 +59,7 @@ async function createWindow() {
   })
 
   // load app content
-  if (app.isPackaged || process.env['DEBUG']) {
+  if (app.isPackaged) {
     win.loadFile(join(__dirname, '../renderer/index.html'))
   } else {
     // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
