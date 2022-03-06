@@ -25,9 +25,10 @@
   </n-modal>
 </template>
 <script setup lang="ts">
-import { useMessage } from 'naive-ui'
+import { useMessage, NModal, NDivider, NInput } from 'naive-ui'
 import { ref } from 'vue'
 import { createOrganization } from '../../api/social'
+
 defineProps({
   show: {
     type: Boolean,

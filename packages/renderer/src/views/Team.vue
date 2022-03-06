@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: team page -->
   <n-card>
     <n-select
       placeholder="请选择当前组织"
@@ -38,7 +37,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useMessage } from 'naive-ui'
+import { useMessage, NCard, NSelect, NButton, NTabs, NTabPane } from 'naive-ui'
 import TeamList from '../components/team/TeamList.vue'
 import TeamSetting from '../components/team/TeamSetting.vue'
 import { getOrganization } from '../api/social'

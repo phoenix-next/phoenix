@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { useMessage } from 'naive-ui'
+import { useMessage, NModal, NDivider, NSelect, NInput, NSpace } from 'naive-ui'
 import { ref } from 'vue'
 import { createInvitation } from '../../api/social'
 

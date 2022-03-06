@@ -12,6 +12,7 @@
 </template>
 
 <script setup lang="ts">
+import { NCard, NTabs, NTabPane } from 'naive-ui'
 import SignInForm from '../components/login/SignInForm.vue'
 import SignUpForm from '../components/login/SignUpForm.vue'
 </script>

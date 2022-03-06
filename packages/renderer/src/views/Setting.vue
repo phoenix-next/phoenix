@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useMessage } from 'naive-ui'
+import { useMessage, NButton } from 'naive-ui'
 import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()

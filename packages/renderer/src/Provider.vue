@@ -8,5 +8,5 @@
 
 <script setup lang="ts">
 import App from './App.vue'
-import { zhCN } from 'naive-ui'
+import { zhCN, NMessageProvider, NConfigProvider } from 'naive-ui'
 </script>
