@@ -18,27 +18,37 @@
       </n-tooltip>
     </div>
     <div class="table-toolbar-right">
-      <n-input-group>
-        <n-input :style="{ width: '50%' }" />
-        <n-button type="primary" ghost> 搜索 </n-button>
-      </n-input-group>
-      <div class="table-toolbar-right-icon">
+      <n-space justify="space-between">
+        <n-input-group>
+          <n-input
+            :style="{ width: '100%' }"
+            placeholder="请输入搜索的用户名"
+            v-model:value="searchUserInfo"
+          />
+          <n-button
+            type="primary"
+            ghost
+            @click="nameColum.filterOptionValue = searchUserInfo.value"
+          >
+            搜索
+          </n-button>
+        </n-input-group>
+
         <n-button text @click="showAddModal = true">
           <template #icon>
-            <n-icon size="20"> <add-circle-outline /> </n-icon>
+            <n-icon size="25"> <add-circle-outline /> </n-icon>
           </template>
         </n-button>
         <n-button text @click="reload">
           <template #icon>
-            <n-icon size="20"><reload-outline /> </n-icon>
+            <n-icon size="25"><reload-outline /> </n-icon>
           </template>
         </n-button>
-      </div>
+      </n-space>
     </div>
-    <team-search
+    <team-invite
       v-model:show="showAddModal"
       @update:show="showAddModal = false"
-      @update:user-info="addUserInfoTable"
     />
   </div>
   <div class="table-context">
@@ -49,9 +59,24 @@
       :loading="isReloading"
       :pagination="paginationReactive"
       :style="{ height: '600px' }"
-      :remote="true"
+      :row-props="rowProps"
+      remote
     >
     </n-data-table>
+    <n-dropdown
+      placement="bottom-start"
+      trigger="manual"
+      :x="mouseX"
+      :y="mouseY"
+      :options="dropDownOptions"
+      :show="showDropdownRef"
+      :on-clickoutside="onClickoutside"
+      @select="handleSelectDropDown"
+    />
+
+    <n-button @click="addUserInfoTable('kurino', 'kurino@163.com')">
+      测试添加
+    </n-button>
   </div>
 </template>
 
@@ -69,11 +94,12 @@ import {
   NButton,
   useMessage,
   DataTableBaseColumn,
-  DataTableColumns
+  DataTableColumns,
+  DropdownOption
 } from 'naive-ui'
-import { onMounted, ref, reactive, h, watch, computed } from 'vue'
+import { onMounted, ref, reactive, h, watch, computed, nextTick } from 'vue'
 import { getOrganizationMember } from '../../api/social'
-import TeamSearch from './TeamInvite.vue'
+import TeamInvite from './TeamInvite.vue'
 
 const props = defineProps({
   teamName: {
@@ -97,8 +123,10 @@ watch(
     reload()
   }
 )
+
 onMounted(() => reload())
 
+const searchUserInfo = ref()
 const teamUserNumber = computed(() => tableDataRef.value.length)
 const teamAdminNumber = computed(() => {
   var count = 0
@@ -128,19 +156,64 @@ function reload() {
     isReloading.value = false
   })
 }
+
 const message = useMessage()
-const tableDataRef = ref<Array<object>>([])
+
+type RowData = {
+  key: number
+  name: string
+  email: string
+  identity: string
+}
+const tableDataRef = ref<Array<RowData>>([])
 const showAddModal = ref(false)
 const requestData = ref()
 const isReloading = ref(false)
-const addUserInfoTable = (userInfo: { name: string; email: string }) => {
+const mouseX = ref(0)
+const mouseY = ref(0)
+const dropDownOptions: DropdownOption[] = [
+  {
+    label: '管理身份',
+    key: 'edit'
+  },
+  {
+    label: '删除成员',
+    key: 'delete'
+  }
+]
+const showDropdownRef = ref(false)
+function onClickoutside() {
+  showDropdownRef.value = false
+}
+function handleSelectDropDown() {
+  showDropdownRef.value = false
+}
+
+const rowProps = (row: RowData) => {
+  return {
+    onContextmenu: (e: MouseEvent) => {
+      message.info(JSON.stringify(row, null, 2))
+      e.preventDefault()
+      showDropdownRef.value = false
+      nextTick().then(() => {
+        showDropdownRef.value = true
+        mouseX.value = e.clientX
+        mouseY.value = e.clientY
+      })
+    }
+  }
+}
+function addUserInfoTable(name: string, email: string) {
   var currentCounter = tableDataRef.value.length
   tableDataRef.value.push({
     key: currentCounter + 1,
-    name: userInfo.name,
-    email: userInfo.email,
+    name: name,
+    email: email,
     identity: '组员'
   })
+  paginationReactive.page =
+    tableDataRef.value.length / paginationReactive.pageSize
+  console.log(paginationReactive.page)
 }
 
 const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
@@ -191,14 +264,18 @@ const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
   }
 })
 
-const columns: DataTableColumns = reactive<DataTableColumns>([
-  {
-    title: '姓名',
-    key: 'name',
-    sorter(rowA: any, rowB: any) {
-      return rowA.name.length - rowB.name.length
-    }
+const nameColum: DataTableBaseColumn = reactive<DataTableBaseColumn>({
+  title: '姓名',
+  key: 'name',
+  sorter(rowA: any, rowB: any) {
+    return rowA.name.length - rowB.name.length
   },
+  filter: 'default',
+  filterOptionValue: null
+})
+
+const columns: DataTableColumns = reactive<DataTableColumns>([
+  nameColum,
   {
     title: '邮箱',
     key: 'email'
@@ -209,14 +286,8 @@ const columns: DataTableColumns = reactive<DataTableColumns>([
 const paginationReactive = reactive({
   page: 2,
   pageSize: 5,
-  showSizePicker: true,
-  pageSizes: [5, 10, 20],
   onChange: (page: number) => {
     paginationReactive.page = page
-  },
-  onUpdatePageSize: (pageSize: number) => {
-    paginationReactive.pageSize = pageSize
-    paginationReactive.page = 1
   }
 })
 </script>
@@ -251,10 +322,5 @@ const paginationReactive = reactive({
   display: flex;
   align-items: center;
   justify-content: flex-end;
-}
-.table-toolbar-right-icon {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
 }
 </style>
