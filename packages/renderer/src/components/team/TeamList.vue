@@ -92,39 +92,17 @@ import {
   NIcon,
   NSpace,
   NButton,
-  useMessage,
   DataTableBaseColumn,
   DataTableColumns,
   DropdownOption
 } from 'naive-ui'
-import { onMounted, ref, reactive, h, watch, computed, nextTick } from 'vue'
+import { onMounted, ref, reactive, h, computed, nextTick } from 'vue'
 import { getOrganizationMember } from '../../api/social'
 import TeamInvite from './TeamInvite.vue'
 
-const props = defineProps({
-  teamName: {
-    type: String,
-    default: null
-  },
-  teamId: {
-    type: Number,
-    default: null
-  },
-  titleTooltip: {
-    type: String,
-    default: null
-  }
-})
+defineProps<{ teamId: number; titleTooltip: string }>()
 
-watch(
-  () => props.teamId,
-  (newTeamId: number, oldTeamId: number) => {
-    requestData.value = newTeamId
-    reload()
-  }
-)
-
-onMounted(() => reload())
+onMounted(reload)
 
 const searchUserInfo = ref()
 const teamUserNumber = computed(() => tableDataRef.value.length)
@@ -151,13 +129,11 @@ function reload() {
         })
       })
     } else {
-      message.error('列表加载失败')
+      window.$message.error('列表加载失败')
     }
     isReloading.value = false
   })
 }
-
-const message = useMessage()
 
 type RowData = {
   key: number
@@ -192,7 +168,7 @@ function handleSelectDropDown() {
 const rowProps = (row: RowData) => {
   return {
     onContextmenu: (e: MouseEvent) => {
-      message.info(JSON.stringify(row, null, 2))
+      window.$message.info(JSON.stringify(row, null, 2))
       e.preventDefault()
       showDropdownRef.value = false
       nextTick().then(() => {
@@ -285,6 +261,7 @@ const columns: DataTableColumns = reactive<DataTableColumns>([
 
 const paginationReactive = reactive({
   page: 2,
+  itemCount: 100,
   pageSize: 5,
   onChange: (page: number) => {
     paginationReactive.page = page
