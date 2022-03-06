@@ -44,7 +44,17 @@
 <script setup lang="ts">
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
-import { DataTableColumn, useMessage } from 'naive-ui'
+import {
+  DataTableColumn,
+  useMessage,
+  NCard,
+  NGrid,
+  NGi,
+  NInputGroup,
+  NDataTable,
+  NButton,
+  NInput
+} from 'naive-ui'
 import { ref, reactive, onMounted, computed, h } from 'vue'
 import { getProblemList } from '../../api/judge'
 

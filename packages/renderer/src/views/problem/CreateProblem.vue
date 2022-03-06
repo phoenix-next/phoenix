@@ -50,7 +50,19 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
-import { FormRules, useMessage } from 'naive-ui'
+import {
+  FormRules,
+  useMessage,
+  NForm,
+  NInput,
+  NGi,
+  NGrid,
+  NButton,
+  NSelect,
+  NFormItemRow,
+  NCard,
+  NSlider
+} from 'naive-ui'
 import { createProblem } from '../../api/judge'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'

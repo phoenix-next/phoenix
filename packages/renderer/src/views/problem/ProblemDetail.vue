@@ -34,7 +34,18 @@
 import { onMounted, ref, reactive } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
-import { UploadFileInfo, useMessage } from 'naive-ui'
+import {
+  UploadFileInfo,
+  useMessage,
+  NCard,
+  NButton,
+  NIcon,
+  NSpace,
+  NH1,
+  NSelect,
+  NUpload,
+  NDivider
+} from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
 import { getProblem } from '../../api/judge'
 
