@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [vue()],
   base: './',
   build: {
-    sourcemap: process.env.NODE_ENV !== 'production',
+    sourcemap: true,
     emptyOutDir: true,
     outDir: '../../dist/renderer'
   },

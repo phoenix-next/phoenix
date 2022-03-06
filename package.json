@@ -6,9 +6,9 @@
   "author": "Matrix53 <1079207272@qq.com>",
   "scripts": {
     "dev": "node scripts/watch.mjs",
-    "prebuild": "vue-tsc --project packages/renderer/tsconfig.json --noEmit && node scripts/build.mjs",
-    "build": "electron-builder",
-    "debug": "npm run prebuild && vite ./packages/renderer"
+    "debug": "vite ./packages/renderer",
+    "build": "node scripts/build.mjs && electron-builder",
+    "check": "vue-tsc --project packages/renderer/tsconfig.json --noEmit"
   },
   "engines": {
     "node": ">=14.17.0"
