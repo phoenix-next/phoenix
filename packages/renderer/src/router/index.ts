@@ -62,7 +62,25 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/tutorial',
     name: 'tutorial',
-    component: () => import('../views/Tutorial.vue')
+    component: () => import('../views/tutorial/Index.vue'),
+    children: [
+      {
+        path: '',
+        name: 'tutorialOverview',
+        component: () => import('../views/tutorial/TutorialOverview.vue')
+      },
+      {
+        path: 'create',
+        name: 'createTutorial',
+        meta: { requiresAuth: true },
+        component: () => import('../views/tutorial/CreateTutorial.vue')
+      },
+      {
+        path: ':id',
+        name: 'tutorialDetail',
+        component: () => import('../views/tutorial/TutorialDetail.vue')
+      }
+    ]
   },
   {
     path: '/setting',

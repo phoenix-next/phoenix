@@ -14,10 +14,22 @@ const tmpPath = app.getPath('temp')
 const dataPath = join(configPath, 'data')
 const remote = 'https://phoenix.matrix53.top/api/v1/'
 
-function download(url: string, savePath: string, saveName: string) {
+// 获取题面、输入、输出的本地存储位置，以及临时程序、临时输出文件的本地存储位置
+function getProblemPath(problemID: string) {
+  return {
+    input: join(dataPath, 'in_' + problemID),
+    answer: join(dataPath, 'ans_' + problemID),
+    description: join(dataPath, 'des_' + problemID),
+    exec: join(tmpPath, 'exec_' + problemID),
+    output: join(tmpPath, 'out_' + problemID)
+  }
+}
+
+// 下载一个文件，参数见https://www.npmjs.com/package/node-downloader-helper
+function download(url: string, savePath: string, option: any) {
   const download = new DownloaderHelper(url, savePath, {
-    fileName: saveName,
-    override: true
+    override: true,
+    ...option
   })
   return new Promise((resolve, reject) => {
     download.on('end', () => {
@@ -31,36 +43,51 @@ function download(url: string, savePath: string, saveName: string) {
 }
 
 export function handleUtils() {
-  // initialization
+  // 初始化保存数据的文件夹
   ensureDir(dataPath).catch((res) => {
     console.log('未知错误')
   })
+
   // handler
   ipcMain.handle('markdownToHTML', (event, text) => {
     return markdown.render(text)
   })
-  ipcMain.handle('download', (event, url, savePath, saveName) => {
-    return download(url, savePath, saveName)
+
+  ipcMain.handle('download', (event, url, savePath, option) => {
+    return download(url, savePath, option)
   })
+
   ipcMain.handle('isProblemUpToDate', (event, problemID) => {
     return true
   })
+
   ipcMain.handle(
     'downloadProblem',
-    (event, problemID, input, output, description) => {
+    (event, problemID, input, output, description, token) => {
+      const problem = getProblemPath(problemID)
       return Promise.all([
-        download(remote + input, dataPath, 'in_' + problemID),
-        download(remote + output, dataPath, 'ans_' + problemID),
-        download(remote + description, dataPath, 'des_' + problemID)
+        download(remote + input, dataPath, {
+          fileName: basename(problem.input),
+          headers: { 'x-token': token }
+        }),
+        download(remote + output, dataPath, {
+          fileName: basename(problem.answer),
+          headers: { 'x-token': token }
+        }),
+        download(remote + description, dataPath, {
+          fileName: basename(problem.description),
+          headers: { 'x-token': token }
+        })
       ])
         .then((res) => {
-          return readFile(join(dataPath, 'des_' + problemID), 'utf-8')
+          return readFile(problem.description, 'utf-8')
         })
         .then((res) => {
           return markdown.render(res)
         })
     }
   )
+
   ipcMain.handle(
     'judgeProblem',
     async (
@@ -70,25 +97,23 @@ export function handleUtils() {
       language: string
     ): Promise<'CE' | 'WA' | 'AC' | 'REG' | 'SystemError'> => {
       // set some paths
-      const execPath = join(tmpPath, 'exec_' + problemID)
-      const outputPath = join(tmpPath, 'out_' + problemID)
-      const answerPath = join(dataPath, 'ans_' + problemID)
-      const output = await open(outputPath, 'w')
-      const input = await open(join(dataPath, 'in_' + problemID), 'r')
+      const problem = getProblemPath(problemID)
+      const output = await open(problem.output, 'w')
+      const input = await open(problem.input, 'r')
       // compile and run
       let compiler,
         runner,
         stdio = [input, output, 'pipe']
       switch (language) {
         case 'C':
-          compiler = await spawn('gcc', [srcFilePath, '-o', execPath], {})
+          compiler = await spawn('gcc', [srcFilePath, '-o', problem.exec], {})
           if (compiler.code != 0) return 'CE'
-          runner = await spawn(execPath, [], { stdio })
+          runner = await spawn(problem.exec, [], { stdio })
           break
         case 'C++':
-          compiler = await spawn('g++', [srcFilePath, '-o', execPath], {})
+          compiler = await spawn('g++', [srcFilePath, '-o', problem.exec], {})
           if (compiler.code != 0) return 'CE'
-          runner = await spawn(execPath, [], { stdio })
+          runner = await spawn(problem.exec, [], { stdio })
           break
         case 'Java':
           compiler = await spawn('javac', [srcFilePath, '-d', tmpPath], {})
@@ -113,8 +138,8 @@ export function handleUtils() {
       // compare output and answer
       close(input)
       close(output)
-      const ansStr = await readFile(answerPath, 'utf8')
-      const outStr = await readFile(outputPath, 'utf8')
+      const ansStr = await readFile(problem.answer, 'utf8')
+      const outStr = await readFile(problem.output, 'utf8')
       const change = diffWords(ansStr, outStr)
       return !change ||
         change.length !== 1 ||
