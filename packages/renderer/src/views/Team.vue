@@ -40,7 +40,7 @@ import { onMounted, ref } from 'vue'
 import { useMessage, NCard, NSelect, NButton, NTabs, NTabPane } from 'naive-ui'
 import TeamList from '../components/team/TeamList.vue'
 import TeamSetting from '../components/team/TeamSetting.vue'
-import { getOrganization } from '../api/social'
+import { getOrganization } from '../api/user'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import TeamAdd from '../components/team/TeamAdd.vue'
 

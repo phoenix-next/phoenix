@@ -93,7 +93,8 @@ onMounted(() => {
         route.params.id as string,
         res.data.input,
         res.data.output,
-        res.data.description
+        res.data.description,
+        localStorage.getItem('token') || ''
       )
     })
     .then((des) => {

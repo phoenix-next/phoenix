@@ -3,7 +3,7 @@
     <n-grid>
       <n-gi :span="14" :offset="7">
         <n-input-group>
-          <n-button type="primary" class="label">查找题目</n-button>
+          <n-button type="primary" class="label">查找教程</n-button>
           <n-input
             :style="{ width: '50%' }"
             v-model:value="keyWord"
@@ -60,14 +60,14 @@ import { getProblemList } from '../../api/judge'
 const { isLogin } = useAuthStore()
 const router = useRouter()
 
-const data = ref<Array<{ id: string; difficulty: number; name: string }>>([
-  { id: 'Loading...', difficulty: 1, name: 'Loading...' }
+const data = ref<Array<{ name: string; profile: string; creator: string }>>([
+  { name: 'Loading...', profile: 'Loading...', creator: 'Loading...' }
 ])
 const loading = ref(true)
 const columns = ref<Array<DataTableColumn>>([
   {
-    title: '题号',
-    key: 'id',
+    title: '教程名称',
+    key: 'name',
     sorter: true,
     sortOrder: 'ascend',
     render: (rowData, rowIndex) => {
@@ -82,10 +82,8 @@ const columns = ref<Array<DataTableColumn>>([
     }
   },
   {
-    title: '题目名称',
-    key: 'name',
-    sorter: true,
-    sortOrder: false,
+    title: '教程简介',
+    key: 'profile',
     render: (rowData, rowIndex) => {
       return h(
         'div',
@@ -98,10 +96,8 @@ const columns = ref<Array<DataTableColumn>>([
     }
   },
   {
-    title: '难度',
-    key: 'difficulty',
-    sorter: true,
-    sortOrder: false,
+    title: '教程创建者',
+    key: 'creator',
     render: (rowData, rowIndex) => {
       return h(
         'div',

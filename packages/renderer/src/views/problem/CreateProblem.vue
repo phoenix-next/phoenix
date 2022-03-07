@@ -67,7 +67,7 @@ import { createProblem } from '../../api/judge'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getOrganization } from '../../api/social'
+import { getOrganization } from '../../api/user'
 
 const router = useRouter()
 const messager = useMessage()

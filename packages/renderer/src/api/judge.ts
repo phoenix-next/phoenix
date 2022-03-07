@@ -26,8 +26,8 @@ export function getProblem(data: { problemID: number }): Promise<
   return backend.get(`problems/${data.problemID}`)
 }
 
-export function updateProblem(data: { problemID: number }) {
-  return backend.put(`problems/${data.problemID}`)
+export function updateProblem(data: FormData) {
+  return backend.put(`problems/${data.get('id')}`, data)
 }
 
 export function deleteProblem(data: { problemID: number }) {
