@@ -95,11 +95,11 @@ onMounted(() => {
         localStorage.getItem('token') || ''
       )
     })
-    .then((des) => {
-      problem.description = des
+    .then((res) => {
+      problem.description = res
       pending.value = false
     })
-    .catch((res) => {
+    .catch(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
 })
