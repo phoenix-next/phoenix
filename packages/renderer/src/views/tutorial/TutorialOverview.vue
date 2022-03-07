@@ -22,7 +22,7 @@
           :disabled="!isLogin"
           @click="handleCreate"
         >
-          创建题目
+          创建教程
         </n-button>
       </n-gi>
     </n-grid>
@@ -152,7 +152,7 @@ function updateData() {
     })
 }
 function handleCreate() {
-  router.push({ path: '/toturial/create' })
+  router.push({ path: '/tutorial/create' })
 }
 function handleSearch() {
   if (!loading.value) {
@@ -161,7 +161,7 @@ function handleSearch() {
 }
 function handleClick(id: string) {
   return () => {
-    router.push({ path: '/toturial/' + id.substring(1) })
+    router.push({ path: '/tutorial/' + id.substring(1) })
   }
 }
 function handleSorterChange(sorter: any) {

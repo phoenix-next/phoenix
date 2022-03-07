@@ -25,6 +25,13 @@ function getProblemPath(problemID: string) {
   }
 }
 
+// 获取教程的本地存储位置
+function getTutorialPath(tutorialID: string) {
+  return {
+    detail: join(dataPath, 'tutorial_' + tutorialID)
+  }
+}
+
 // 下载一个文件，参数见https://www.npmjs.com/package/node-downloader-helper
 function download(url: string, savePath: string, option: any) {
   const download = new DownloaderHelper(url, savePath, {
@@ -42,13 +49,14 @@ function download(url: string, savePath: string, option: any) {
   })
 }
 
+// 将在主进程中执行的函数，基本用于注册回调
 export function handleUtils() {
   // 初始化保存数据的文件夹
   ensureDir(dataPath).catch((res) => {
     console.log('未知错误')
   })
 
-  // handler
+  // 各个处理函数
   ipcMain.handle('markdownToHTML', (event, text) => {
     return markdown.render(text)
   })
@@ -92,9 +100,9 @@ export function handleUtils() {
     'judgeProblem',
     async (
       event,
-      srcFilePath: string,
-      problemID: string,
-      language: string
+      srcFilePath,
+      problemID,
+      language
     ): Promise<'CE' | 'WA' | 'AC' | 'REG' | 'SystemError'> => {
       // set some paths
       const problem = getProblemPath(problemID)
@@ -149,4 +157,18 @@ export function handleUtils() {
         : 'AC'
     }
   )
+
+  ipcMain.handle('downloadTutorial', (event, tutorialID, detail, token) => {
+    const tutorial = getTutorialPath(tutorialID)
+    return download(remote + detail, dataPath, {
+      fileName: basename(tutorial.detail),
+      headers: { 'x-token': token }
+    })
+      .then((res) => {
+        return readFile(tutorial.detail, 'utf-8')
+      })
+      .then((res) => {
+        return markdown.render(res)
+      })
+  })
 }
