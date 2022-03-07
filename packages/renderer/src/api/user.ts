@@ -22,15 +22,6 @@ export function getProfile(data: { id: string }) {
   return backend.get(`users/${data.id}/profile`)
 }
 
-export function getOrganization(data: { id: string }): Promise<
-  AxiosResponse<{
-    success: boolean
-    organizations: {
-      id: number
-      isAdmin: boolean
-      name: string
-    }[]
-  }>
-> {
-  return backend.get(`users/${data.id}/organizations`)
+export function getUserOrganization() {
+  return backend.get(`users/organizations`)
 }

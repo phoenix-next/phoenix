@@ -66,7 +66,7 @@ import { createProblem } from '../../api/judge'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
 import { useRouter } from 'vue-router'
-import { getOrganization } from '../../api/user'
+import { getUserOrganization } from '../../api/user'
 
 const router = useRouter()
 
@@ -121,7 +121,7 @@ function clickCreate() {
 }
 
 onMounted(() => {
-  getOrganization({ id: localStorage.getItem('userID') || '' })
+  getUserOrganization()
     .then((res) => {
       organizationOptions.value = (res.data.organizations as Array<any>).map(
         (item) => {

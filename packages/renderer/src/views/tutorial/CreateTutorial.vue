@@ -54,7 +54,7 @@ import { createTutorial } from '../../api/tutorial'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
 import { useRouter } from 'vue-router'
-import { getOrganization } from '../../api/user'
+import { getUserOrganization } from '../../api/user'
 
 const router = useRouter()
 
@@ -96,7 +96,7 @@ function clickCreate() {
 }
 
 onMounted(() => {
-  getOrganization({ id: localStorage.getItem('userID') || '' })
+  getUserOrganization()
     .then((res) => {
       organizationOptions.value = (res.data.organizations as Array<any>).map(
         (item) => {
@@ -111,7 +111,7 @@ onMounted(() => {
 
 const readOptions: SelectMixedOption[] = [
   {
-    label: '仅题目创建者可见',
+    label: '仅教程创建者可见',
     value: 0
   },
   {
@@ -129,7 +129,7 @@ const readOptions: SelectMixedOption[] = [
 ]
 const writeOptions: SelectMixedOption[] = [
   {
-    label: '仅题目创建者可编辑',
+    label: '仅教程创建者可编辑',
     value: 0
   },
   {
@@ -140,7 +140,12 @@ const writeOptions: SelectMixedOption[] = [
 const rules: FormRules = {
   name: {
     required: true,
-    message: '请输入题目名称',
+    message: '请输入教程名称',
+    trigger: 'blur'
+  },
+  profile: {
+    required: true,
+    message: '请输入教程简介',
     trigger: 'blur'
   }
 }
