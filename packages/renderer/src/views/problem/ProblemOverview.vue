@@ -41,7 +41,7 @@
   </n-card>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
 import {
@@ -71,13 +71,13 @@ const columns = ref<Array<DataTableColumn>>([
     sorter: true,
     sortOrder: 'ascend',
     render: (rowData, rowIndex) => {
-      return h(
-        'div',
-        {
-          onClick: handleClick(rowData.id as string),
-          style: { cursor: 'pointer' }
-        },
-        rowData.id as string
+      return (
+        <div
+          onClick={handleClick(rowData.id as string)}
+          style={{ cursor: 'pointer' }}
+        >
+          {rowData.id}
+        </div>
       )
     }
   },
@@ -87,13 +87,13 @@ const columns = ref<Array<DataTableColumn>>([
     sorter: true,
     sortOrder: false,
     render: (rowData, rowIndex) => {
-      return h(
-        'div',
-        {
-          onClick: handleClick(rowData.id as string),
-          style: { cursor: 'pointer' }
-        },
-        rowData.name as string
+      return (
+        <div
+          onClick={handleClick(rowData.id as string)}
+          style={{ cursor: 'pointer' }}
+        >
+          {rowData.name}
+        </div>
       )
     }
   },
@@ -103,13 +103,13 @@ const columns = ref<Array<DataTableColumn>>([
     sorter: true,
     sortOrder: false,
     render: (rowData, rowIndex) => {
-      return h(
-        'div',
-        {
-          onClick: handleClick(rowData.id as string),
-          style: { cursor: 'pointer' }
-        },
-        rowData.difficulty as string
+      return (
+        <div
+          onClick={handleClick(rowData.id as string)}
+          style={{ cursor: 'pointer' }}
+        >
+          {rowData.difficulty}
+        </div>
       )
     }
   }
