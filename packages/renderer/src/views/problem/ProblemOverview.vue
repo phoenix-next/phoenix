@@ -46,7 +46,6 @@ import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
 import {
   DataTableColumn,
-  useMessage,
   NCard,
   NGrid,
   NGi,
@@ -60,7 +59,6 @@ import { getProblemList } from '../../api/judge'
 
 const { isLogin } = useAuthStore()
 const router = useRouter()
-const messager = useMessage()
 
 const data = ref<Array<{ id: string; difficulty: number; name: string }>>([
   { id: 'Loading...', difficulty: 1, name: 'Loading...' }
@@ -150,7 +148,7 @@ function updateData() {
       pagination.itemCount = res.data.total
     })
     .catch((res) => {
-      messager.error('网络故障, 请检查网络连接')
+      window.$message.error('网络故障, 请检查网络连接')
     })
     .finally(() => {
       loading.value = false
