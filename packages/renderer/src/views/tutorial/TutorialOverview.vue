@@ -45,7 +45,6 @@
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
 import {
-  DataTableColumn,
   NCard,
   NGrid,
   NGi,
@@ -55,22 +54,22 @@ import {
   NInput
 } from 'naive-ui'
 import { ref, reactive, onMounted, computed, h } from 'vue'
-import { getProblemList } from '../../api/judge'
+import { getToturialList } from '../../api/tutorial'
 
 const { isLogin } = useAuthStore()
 const router = useRouter()
 
-const data = ref<Array<{ name: string; profile: string; creator: string }>>([
-  { name: 'Loading...', profile: 'Loading...', creator: 'Loading...' }
+const data = ref<Array<{ id: string; name: string; creatorName: string }>>([
+  { id: 'Loading...', name: 'Loading...', creatorName: 'Loading...' }
 ])
 const loading = ref(true)
-const columns = ref<Array<DataTableColumn>>([
+const columns = ref<any>([
   {
-    title: '教程名称',
-    key: 'name',
+    title: '教程序号',
+    key: 'id',
     sorter: true,
     sortOrder: 'ascend',
-    render: (rowData, rowIndex) => {
+    render: (rowData: any, rowIndex: any) => {
       return h(
         'div',
         {
@@ -82,9 +81,11 @@ const columns = ref<Array<DataTableColumn>>([
     }
   },
   {
-    title: '教程简介',
-    key: 'profile',
-    render: (rowData, rowIndex) => {
+    title: '教程名称',
+    key: 'name',
+    sorter: true,
+    sortOrder: false,
+    render: (rowData: any, rowIndex: any) => {
       return h(
         'div',
         {
@@ -96,16 +97,16 @@ const columns = ref<Array<DataTableColumn>>([
     }
   },
   {
-    title: '教程创建者',
-    key: 'creator',
-    render: (rowData, rowIndex) => {
+    title: '创建者',
+    key: 'creatorName',
+    render: (rowData: any, rowIndex: any) => {
       return h(
         'div',
         {
           onClick: handleClick(rowData.id as string),
           style: { cursor: 'pointer' }
         },
-        rowData.difficulty as string
+        rowData.creatorName as string
       )
     }
   }
@@ -132,14 +133,14 @@ function rowKey(rowData: any) {
 }
 function updateData() {
   loading.value = true
-  getProblemList({
+  getToturialList({
     page: pagination.page as number,
     sorter: sortMethod.value,
     keyWord: keyWord.value
   })
     .then((res) => {
-      data.value = (res.data.problemList as Array<any>).map((item) => {
-        return { ...item, id: 'P' + item.id }
+      data.value = (res.data.tutorialList as Array<any>).map((item) => {
+        return { ...item, id: 'T' + item.id }
       })
       pagination.itemCount = res.data.total
     })
@@ -151,7 +152,7 @@ function updateData() {
     })
 }
 function handleCreate() {
-  router.push({ path: '/problem/create' })
+  router.push({ path: '/toturial/create' })
 }
 function handleSearch() {
   if (!loading.value) {
@@ -160,22 +161,20 @@ function handleSearch() {
 }
 function handleClick(id: string) {
   return () => {
-    router.push({ path: '/problem/' + id.substring(1) })
+    router.push({ path: '/toturial/' + id.substring(1) })
   }
 }
 function handleSorterChange(sorter: any) {
   // 建立从列名到索引的映射
   const sorterMap: Record<string, number> = {
     id: 0,
-    name: 1,
-    difficulty: 2
+    name: 1
   }
   // sorter不为空且不在加载中
   if (sorter && !loading.value) {
     // 设置columns的排序规则
-    columns.value.forEach((item: any) => {
-      item.sortOrder = false
-    })
+    columns.value[0].sortOrder = false
+    columns.value[1].sortOrder = false
     ;(columns.value[sorterMap[sorter.columnKey]] as any).sortOrder =
       sorter.order ? sorter.order : 'descend'
     // 发起请求

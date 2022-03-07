@@ -36,7 +36,6 @@ import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import {
   UploadFileInfo,
-  useMessage,
   NCard,
   NButton,
   NIcon,
@@ -51,7 +50,6 @@ import { getProblem } from '../../api/judge'
 
 const router = useRouter()
 const route = useRoute()
-const messager = useMessage()
 
 const problem = reactive({
   description: '<h2>题目描述</h2><h2>题目样例</h2><h2>数据范围</h2>',
@@ -74,9 +72,9 @@ function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
         .judgeProblem(url, route.params.id as string, language.value)
         .then((res) => {
           if (res === 'AC') {
-            messager.success('AC')
+            window.$message.success('AC')
           } else {
-            messager.warning(res)
+            window.$message.warning(res)
           }
           program.value = []
           pending.value = false
@@ -102,7 +100,7 @@ onMounted(() => {
       pending.value = false
     })
     .catch((res) => {
-      messager.error('网络故障, 请检查网络连接')
+      window.$message.error('网络故障, 请检查网络连接')
     })
 })
 

@@ -52,7 +52,6 @@
 import { ref, computed, onMounted, reactive } from 'vue'
 import {
   FormRules,
-  useMessage,
   NForm,
   NInput,
   NGi,
@@ -66,11 +65,10 @@ import {
 import { createProblem } from '../../api/judge'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
-import { useRoute, useRouter } from 'vue-router'
-import { getOrganization } from '../../api/user'
+import { useRouter } from 'vue-router'
+import { getUserOrganization } from '../../api/user'
 
 const router = useRouter()
-const messager = useMessage()
 
 const descriptionRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const inputRef = ref<InstanceType<typeof UploadButton> | null>(null)
@@ -101,7 +99,6 @@ function clickCreate() {
   Object.keys(data).forEach((key) => {
     formData.append(key, String(data[key as keyof typeof data]))
   })
-  formData.append('creator', localStorage.getItem('userID') as string)
   formData.append('input', inputRef.value?.file as File, 'input')
   formData.append('output', outputRef.value?.file as File, 'output')
   formData.append(
@@ -112,19 +109,19 @@ function clickCreate() {
   createProblem(formData)
     .then((res) => {
       if (res.data.success) {
-        messager.success(res.data.message)
+        window.$message.success(res.data.message)
         router.back()
       } else {
-        messager.warning(res.data.message)
+        window.$message.warning(res.data.message)
       }
     })
     .catch((res) => {
-      messager.error('网络故障, 请检查网络连接')
+      window.$message.error('网络故障, 请检查网络连接')
     })
 }
 
 onMounted(() => {
-  getOrganization({ id: localStorage.getItem('userID') || '' })
+  getUserOrganization()
     .then((res) => {
       organizationOptions.value = (res.data.organizations as Array<any>).map(
         (item) => {
@@ -133,7 +130,7 @@ onMounted(() => {
       )
     })
     .catch((res) => {
-      messager.error('网络故障, 请检查网络连接')
+      window.$message.error('网络故障, 请检查网络连接')
     })
 })
 
