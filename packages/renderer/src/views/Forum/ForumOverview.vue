@@ -1,12 +1,12 @@
 <template>
   <n-card>
     <n-grid>
-      <n-gi :span="5">
+      <n-gi :span="4">
         <n-h2>
           <n-text type="primary"> 最近讨论 </n-text>
         </n-h2>
       </n-gi>
-      <n-gi :span="14" :offset="2">
+      <n-gi :span="12" :offset="3">
         <n-input-group>
           <n-button type="primary" class="label">查找帖子</n-button>
           <n-input :style="{ width: '50%' }" />
@@ -48,6 +48,21 @@
       <n-gi :span="7" :offset="1">
         <n-card>
           <n-h2>
+            <n-text type="primary"> 选择组织 </n-text>
+          </n-h2>
+          <n-space>
+            <n-gi :span="5">
+              <n-space>
+                <n-select
+                  v-model:value="organization"
+                  filterable
+                  placeholder="努力寻找ing"
+                  :options="options"
+                />
+              </n-space>
+            </n-gi>
+          </n-space>
+          <n-h2>
             <n-text type="primary"> 进入板块 </n-text>
           </n-h2>
           <n-space>
@@ -84,15 +99,38 @@ import {
   NAvatar,
   NLayoutSider,
   NGi,
-  NSpace
+  NSpace,
+  NSelect
 } from 'naive-ui'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { getUserOrganization } from '../../api/user'
 
 const router = useRouter()
+const organization = ref<any>(null)
+const options = ref<Array<any>>([])
 
 function handleClick() {
   router.push('/forum/1')
 }
+
+onMounted(() => {
+  getUserOrganization()
+    .then((res: any) => {
+      organization.value = res.data.organization[0].orgID
+      res.data.organization.forEach((value: any) => {
+        console.log(value)
+        options.value.push({
+          label: value.orgName,
+          value: value.orgID
+        })
+      })
+      console.log(options.value)
+    })
+    .catch((res: any) => {
+      window.$message.error('网络故障, 请检查网络连接')
+    })
+})
 </script>
 
 <style scoped></style>
