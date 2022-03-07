@@ -99,7 +99,6 @@ function clickCreate() {
   Object.keys(data).forEach((key) => {
     formData.append(key, String(data[key as keyof typeof data]))
   })
-  formData.append('creator', localStorage.getItem('userID') as string)
   formData.append('input', inputRef.value?.file as File, 'input')
   formData.append('output', outputRef.value?.file as File, 'output')
   formData.append(

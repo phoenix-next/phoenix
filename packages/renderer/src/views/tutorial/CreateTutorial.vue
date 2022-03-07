@@ -1,11 +1,15 @@
 <template>
   <n-card>
     <n-form :rules="rules" :model="data">
-      <n-form-item-row label="题目名称" path="name">
-        <n-input v-model:value="data.name" placeholder="题目的名称" />
+      <n-form-item-row label="教程名称" path="name">
+        <n-input v-model:value="data.name" placeholder="教程的名称" />
       </n-form-item-row>
-      <n-form-item-row label="题目难度" path="difficulty">
-        <n-slider v-model:value="data.difficulty" :step="1" :max="10" />
+      <n-form-item-row label="教程简介" path="profile">
+        <n-input
+          v-model:value="data.profile"
+          type="textarea"
+          placeholder="教程的简介"
+        />
       </n-form-item-row>
       <n-form-item-row label="可读权限" path="readable">
         <n-select v-model:value="data.readable" :options="readOptions" />
@@ -18,10 +22,7 @@
         path="orgnization"
         v-if="organizationVisiable"
       >
-        <n-select
-          v-model:value="data.organization"
-          :options="organizationOptions"
-        />
+        <n-select v-model:value="data.orgID" :options="organizationOptions" />
       </n-form-item-row>
     </n-form>
     <upload-button ref="fileRef">选择文件</upload-button>
@@ -47,8 +48,7 @@ import {
   NButton,
   NSelect,
   NFormItemRow,
-  NCard,
-  NSlider
+  NCard
 } from 'naive-ui'
 import { createTutorial } from '../../api/tutorial'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
@@ -62,10 +62,10 @@ const fileRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const organizationOptions = ref<SelectMixedOption[]>([])
 const data = reactive({
   name: '',
-  difficulty: 5,
+  profile: '',
   readable: 0,
   writable: 0,
-  organization: 0
+  orgID: 0
 })
 
 const organizationVisiable = computed(() => {
@@ -80,7 +80,6 @@ function clickCreate() {
   Object.keys(data).forEach((key) => {
     formData.append(key, String(data[key as keyof typeof data]))
   })
-  formData.append('creator', localStorage.getItem('userID') as string)
   formData.append('file', fileRef.value?.file as File, 'file')
   createTutorial(formData)
     .then((res) => {
