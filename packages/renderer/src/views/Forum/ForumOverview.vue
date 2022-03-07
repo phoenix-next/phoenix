@@ -1,17 +1,66 @@
 <template>
+  <n-modal v-model:show="showModal">
+    <n-card
+      style="width: 600px"
+      title="新建一个帖子"
+      :bordered="false"
+      size="huge"
+      role="dialog"
+      aria-modal="true"
+    >
+      <n-form
+        ref="formRef"
+        :label-width="80"
+        :model="formValue"
+        :rules="rules"
+        size="large"
+      >
+        <n-form-item label="标题" path="title">
+          <n-input v-model:value="formValue.title" placeholder="输入标题" />
+        </n-form-item>
+        <n-form-item label="内容" path="content">
+          <n-input
+            v-model:value="formValue.content"
+            type="textarea"
+            :autosize="{
+              minRows: 3,
+              maxRows: 7
+            }"
+            placeholder="输入内容"
+          />
+        </n-form-item>
+        <n-space justify="end">
+          <n-button attr-type="button" @click="handleValidateClick">
+            发布
+          </n-button>
+        </n-space>
+      </n-form>
+    </n-card>
+  </n-modal>
   <n-card>
     <n-grid>
-      <n-gi :span="4">
+      <n-gi :span="5">
         <n-h2>
           <n-text type="primary"> 最近讨论 </n-text>
         </n-h2>
       </n-gi>
-      <n-gi :span="12" :offset="3">
+      <n-gi :span="14" :offset="2">
         <n-input-group>
           <n-button type="primary" class="label">查找帖子</n-button>
           <n-input :style="{ width: '50%' }" />
           <n-button type="primary" ghost>搜索</n-button>
         </n-input-group>
+      </n-gi>
+      <n-gi :span="2" :offset="1">
+        <n-button
+          type="primary"
+          block
+          secondary
+          strong
+          @click="showModal = true"
+        >
+          新建帖子
+        </n-button>
       </n-gi>
     </n-grid>
     <n-grid>
@@ -100,18 +149,68 @@ import {
   NLayoutSider,
   NGi,
   NSpace,
-  NSelect
+  NSelect,
+  NModal,
+  FormInst,
+  NForm,
+  NFormItem
 } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
+import { createPosts } from '../../api/forum'
 
 const router = useRouter()
+
 const organization = ref<any>(null)
 const options = ref<Array<any>>([])
+let showModal = ref(false)
+
+const formRef = ref<FormInst | null>(null)
+const formValue = ref({
+  title: '',
+  content: ''
+})
+const rules = {
+  title: {
+    required: true,
+    message: '请输入标题',
+    trigger: 'blur'
+  },
+  content: {
+    required: true,
+    message: '请输入内容',
+    trigger: 'blur'
+  }
+}
 
 function handleClick() {
   router.push('/forum/1')
+}
+
+function handleValidateClick(e: MouseEvent) {
+  e.preventDefault()
+  formRef.value?.validate((errors) => {
+    if (!errors) {
+      createPosts({
+        content: formValue.value.content,
+        orgID: organization.value,
+        title: formValue.value.title,
+        type: 0
+      })
+        .then((res) => {
+          window.$message.success('发帖成功')
+          formValue.value.content = ''
+          formValue.value.title = ''
+          showModal.value = false
+        })
+        .catch(() => {
+          window.$message.error('网络故障, 请检查网络连接')
+        })
+    } else {
+      window.$message.error('请把标题和内容填充完整')
+    }
+  })
 }
 
 onMounted(() => {
@@ -119,13 +218,11 @@ onMounted(() => {
     .then((res: any) => {
       organization.value = res.data.organization[0].orgID
       res.data.organization.forEach((value: any) => {
-        console.log(value)
         options.value.push({
           label: value.orgName,
           value: value.orgID
         })
       })
-      console.log(options.value)
     })
     .catch((res: any) => {
       window.$message.error('网络故障, 请检查网络连接')
