@@ -8,23 +8,7 @@
     <n-space justify="center">
       <n-h1 class="title">{{ problem.name }}</n-h1>
     </n-space>
-    <n-space justify="end">
-      <n-select
-        v-model:value="language"
-        :options="options"
-        :consistent-menu-width="false"
-      />
-      <n-upload
-        :default-upload="false"
-        :max="1"
-        :disabled="pending"
-        @change="handleProgramChange"
-        :file-list="program"
-        :show-file-list="false"
-      >
-        <n-button>提交</n-button>
-      </n-upload>
-    </n-space>
+
     <n-divider />
     <div v-html="problem.description"></div>
   </n-card>
@@ -41,8 +25,6 @@ import {
   NIcon,
   NSpace,
   NH1,
-  NSelect,
-  NUpload,
   NDivider
 } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'

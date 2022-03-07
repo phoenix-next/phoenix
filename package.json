@@ -6,9 +6,9 @@
   "author": "Matrix53 <1079207272@qq.com>",
   "scripts": {
     "dev": "node scripts/watch.mjs",
+    "debug": "vite ./packages/renderer",
     "prebuild": "vue-tsc --project packages/renderer/tsconfig.json --noEmit && node scripts/build.mjs",
-    "build": "electron-builder",
-    "debug": "npm run prebuild && vite ./packages/renderer"
+    "build": "electron-builder"
   },
   "engines": {
     "node": ">=14.17.0"
@@ -22,11 +22,12 @@
     "axios": "^0.26.0",
     "electron": "^17.1.0",
     "electron-builder": "^22.14.13",
-    "naive-ui": "^2.25.5",
+    "naive-ui": "^2.26.1",
     "pinia": "^2.0.11",
     "typescript": "^4.5.5",
     "vite": "^2.8.4",
-    "vite-plugin-resolve": "^1.4.4",
+    "vite-plugin-chunk-split": "^0.0.1",
+    "vite-plugin-resolve": "^1.8.0",
     "vue": "^3.2.29",
     "vue-router": "^4.0.12",
     "vue-tsc": "^0.32.0"

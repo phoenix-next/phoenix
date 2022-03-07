@@ -1,6 +1,5 @@
 <template>
-  <!-- TODO: tutorial page -->
-  Tutorial
+  <router-view />
 </template>
 
 <script setup lang="ts"></script>

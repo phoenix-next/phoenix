@@ -1,17 +1,14 @@
-import { builtinModules } from 'module'
-import { defineConfig, Plugin } from 'vite'
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import resolve from 'vite-plugin-resolve'
 import pkg from '../../package.json'
+import { chunkSplitPlugin } from 'vite-plugin-chunk-split'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   mode: process.env.NODE_ENV,
   root: __dirname,
-  plugins: [vue()],
+  plugins: [vue(), chunkSplitPlugin({ strategy: 'single-vendor' })],
   base: './',
   build: {
-    sourcemap: true,
     emptyOutDir: true,
     outDir: '../../dist/renderer'
   },

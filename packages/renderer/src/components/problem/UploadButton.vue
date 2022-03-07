@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { UploadFileInfo } from 'naive-ui'
+import { UploadFileInfo, NUpload, NButton } from 'naive-ui'
 
 const fileList = ref<UploadFileInfo[]>([])
 

@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: team page -->
   <n-card>
     <n-select
       placeholder="请选择当前组织"
@@ -38,10 +37,10 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useMessage } from 'naive-ui'
+import { useMessage, NCard, NSelect, NButton, NTabs, NTabPane } from 'naive-ui'
 import TeamList from '../components/team/TeamList.vue'
 import TeamSetting from '../components/team/TeamSetting.vue'
-import { getOrganization } from '../api/social'
+import { getUserOrganization } from '../api/user'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import TeamAdd from '../components/team/TeamAdd.vue'
 
@@ -68,10 +67,10 @@ const handleSelectTeam = (value: string) => {
 }
 
 function reload() {
-  getOrganization({ id: localStorage.getItem('userID') || '' })
+  getUserOrganization()
     .then((res) => {
       if (res.data.success) {
-        res.data.organizations.forEach((element) => {
+        res.data.organizations.forEach((element: any) => {
           teamsNameRef.value.push({
             label: element.name,
             value: element.name

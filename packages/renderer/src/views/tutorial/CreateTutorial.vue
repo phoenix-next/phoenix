@@ -1,11 +1,15 @@
 <template>
   <n-card>
     <n-form :rules="rules" :model="data">
-      <n-form-item-row label="题目名称" path="name">
-        <n-input v-model:value="data.name" placeholder="题目的名称" />
+      <n-form-item-row label="教程名称" path="name">
+        <n-input v-model:value="data.name" placeholder="教程的名称" />
       </n-form-item-row>
-      <n-form-item-row label="题目难度" path="difficulty">
-        <n-slider v-model:value="data.difficulty" :step="1" :max="10" />
+      <n-form-item-row label="教程简介" path="profile">
+        <n-input
+          v-model:value="data.profile"
+          type="textarea"
+          placeholder="教程的简介"
+        />
       </n-form-item-row>
       <n-form-item-row label="可读权限" path="readable">
         <n-select v-model:value="data.readable" :options="readOptions" />
@@ -18,23 +22,10 @@
         path="orgnization"
         v-if="organizationVisiable"
       >
-        <n-select
-          v-model:value="data.organization"
-          :options="organizationOptions"
-        />
+        <n-select v-model:value="data.orgID" :options="organizationOptions" />
       </n-form-item-row>
     </n-form>
-    <n-grid :x-gap="12">
-      <n-gi :span="8">
-        <upload-button ref="descriptionRef">选择题面</upload-button>
-      </n-gi>
-      <n-gi :span="8">
-        <upload-button ref="inputRef">选择输入</upload-button>
-      </n-gi>
-      <n-gi :span="8">
-        <upload-button ref="outputRef">选择输出</upload-button>
-      </n-gi>
-    </n-grid>
+    <upload-button ref="fileRef">选择文件</upload-button>
     <n-button
       type="primary"
       block
@@ -43,7 +34,7 @@
       @click="clickCreate"
       :disabled="!uploadEnable"
     >
-      创建题目
+      创建教程
     </n-button>
   </n-card>
 </template>
@@ -54,15 +45,12 @@ import {
   FormRules,
   NForm,
   NInput,
-  NGi,
-  NGrid,
   NButton,
   NSelect,
   NFormItemRow,
-  NCard,
-  NSlider
+  NCard
 } from 'naive-ui'
-import { createProblem } from '../../api/judge'
+import { createTutorial } from '../../api/tutorial'
 import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
 import { useRouter } from 'vue-router'
@@ -70,28 +58,21 @@ import { getUserOrganization } from '../../api/user'
 
 const router = useRouter()
 
-const descriptionRef = ref<InstanceType<typeof UploadButton> | null>(null)
-const inputRef = ref<InstanceType<typeof UploadButton> | null>(null)
-const outputRef = ref<InstanceType<typeof UploadButton> | null>(null)
+const fileRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const organizationOptions = ref<SelectMixedOption[]>([])
 const data = reactive({
   name: '',
-  difficulty: 5,
+  profile: '',
   readable: 0,
   writable: 0,
-  organization: 0
+  orgID: 0
 })
 
 const organizationVisiable = computed(() => {
   return data.readable > 0 || data.writable > 0
 })
 const uploadEnable = computed(() => {
-  return (
-    descriptionRef.value?.file &&
-    inputRef.value?.file &&
-    outputRef.value?.file &&
-    data.name !== ''
-  )
+  return fileRef.value?.file && data.name !== ''
 })
 
 function clickCreate() {
@@ -99,14 +80,8 @@ function clickCreate() {
   Object.keys(data).forEach((key) => {
     formData.append(key, String(data[key as keyof typeof data]))
   })
-  formData.append('input', inputRef.value?.file as File, 'input')
-  formData.append('output', outputRef.value?.file as File, 'output')
-  formData.append(
-    'description',
-    descriptionRef.value?.file as File,
-    'description'
-  )
-  createProblem(formData)
+  formData.append('file', fileRef.value?.file as File, 'file')
+  createTutorial(formData)
     .then((res) => {
       if (res.data.success) {
         window.$message.success(res.data.message)
@@ -136,7 +111,7 @@ onMounted(() => {
 
 const readOptions: SelectMixedOption[] = [
   {
-    label: '仅题目创建者可见',
+    label: '仅教程创建者可见',
     value: 0
   },
   {
@@ -154,7 +129,7 @@ const readOptions: SelectMixedOption[] = [
 ]
 const writeOptions: SelectMixedOption[] = [
   {
-    label: '仅题目创建者可编辑',
+    label: '仅教程创建者可编辑',
     value: 0
   },
   {
@@ -165,7 +140,12 @@ const writeOptions: SelectMixedOption[] = [
 const rules: FormRules = {
   name: {
     required: true,
-    message: '请输入题目名称',
+    message: '请输入教程名称',
+    trigger: 'blur'
+  },
+  profile: {
+    required: true,
+    message: '请输入教程简介',
     trigger: 'blur'
   }
 }

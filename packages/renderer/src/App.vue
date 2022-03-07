@@ -25,7 +25,15 @@ import {
   PersonCircleOutline
 } from '@vicons/ionicons5'
 import { createMenuOptions } from './utils/naive'
-import { useMessage } from 'naive-ui'
+import {
+  useMessage,
+  NLayout,
+  NLayoutSider,
+  NLayoutHeader,
+  NLayoutFooter,
+  NLayoutContent,
+  NMenu
+} from 'naive-ui'
 
 window.$message = useMessage()
 

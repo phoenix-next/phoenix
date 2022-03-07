@@ -26,12 +26,12 @@ async function createWindow() {
     width: 1100,
     height: 800,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.cjs'),
-    },
+      preload: join(__dirname, '../preload/index.cjs')
+    }
   }
   if (!app.isPackaged) {
     Object.assign(winConfig, {
-      icon: join(__dirname, '../renderer/images/icon.png'),
+      icon: join(__dirname, '../renderer/images/icon.png')
     })
   }
   win = new BrowserWindow(winConfig)
@@ -53,13 +53,13 @@ async function createWindow() {
         ...details.responseHeaders,
         'access-control-allow-origin': '*',
         'access-control-allow-headers':
-          'Origin,Content-Length,Content-Type,x-token',
-      },
+          'Origin,Content-Length,Content-Type,x-token'
+      }
     })
   })
 
   // load app content
-  if (app.isPackaged || process.env['DEBUG']) {
+  if (app.isPackaged) {
     win.loadFile(join(__dirname, '../renderer/index.html'))
   } else {
     // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
@@ -72,6 +72,19 @@ async function createWindow() {
   // Test active push message to Renderer-process
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())
+  })
+
+  // Disable in-app navigation
+  win.webContents.on('will-navigate', (event, url) => {
+    if (
+      app.isPackaged ||
+      !url.startsWith(
+        `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_DEV_SERVER_PORT']}`
+      )
+    ) {
+      event.preventDefault()
+      shell.openExternal(url)
+    }
   })
 
   // Make all links open with the browser, not with the application

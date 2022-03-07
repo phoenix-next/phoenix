@@ -16,6 +16,7 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
+import { NCard, NButton, NIcon, NSpace, NH1, NDivider } from 'naive-ui'
 
 const router = useRouter()
 

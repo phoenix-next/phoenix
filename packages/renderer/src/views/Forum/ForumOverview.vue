@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: forum page -->
   <n-card>
     <n-grid>
       <n-gi :span="5">
@@ -47,6 +46,20 @@
 </template>
 
 <script setup lang="ts">
+import {
+  NCard,
+  NGrid,
+  NLayout,
+  NText,
+  NLayoutContent,
+  NButton,
+  NInput,
+  NInputGroup,
+  NH2,
+  NAvatar,
+  NLayoutSider,
+  NGi
+} from 'naive-ui'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
