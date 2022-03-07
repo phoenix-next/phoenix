@@ -30,13 +30,18 @@ export function updateOrganizationMember(teamId: number) {
   return backend.post(`organizations/${teamId}/users`)
 }
 
+export function deleteOrganizationMember(teamId: number, userId: number) {
+  return backend.delete(`organizations/${teamId}/users/${userId}`)
+}
+
 export function getOrganizationMember(teamId: number): Promise<
   AxiosResponse<{
     success: boolean
-    teamList: {
+    members: {
+      id: number
       name: string
       isAdmin: boolean
-      email: string
+      email: string // To be add
     }[]
   }>
 > {

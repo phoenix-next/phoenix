@@ -20,12 +20,7 @@
     <n-card>
       <n-tabs default-value="team-list" size="large">
         <n-tab-pane name="team-list" tab="成员列表">
-          <team-list
-            :teamName="teamName"
-            :teamId="teamId"
-            :title-tooltip="isTeamAdmin ? '您当前是管理员' : ''"
-          >
-          </team-list>
+          <team-list :teamId="teamId" :isAdmin="isTeamAdmin"> </team-list>
         </n-tab-pane>
         <n-tab-pane name="team-setting" tab="组织设定">
           <team-setting> </team-setting>

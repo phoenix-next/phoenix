@@ -3,18 +3,18 @@
     <div class="table-toolbar-left">
       <div>
         共有
-        <span class="table-tool-bar-number">{{ teamUserNumber }}</span
+        <span class="table-tool-bar-number">{{ teamUsersNumber }}</span
         >个成员，
-        <span class="table-tool-bar-number">{{ teamAdminNumber }}</span
+        <span class="table-tool-bar-number">{{ teamAdminsNumber }}</span
         >个管理员
       </div>
-      <n-tooltip trigger="hover" v-if="titleTooltip">
+      <n-tooltip trigger="hover" v-if="isAdmin">
         <template #trigger>
           <n-icon size="18" class="cursor-pointer">
             <alert-circle />
           </n-icon>
         </template>
-        {{ titleTooltip }}
+        您是当前组织的管理员
       </n-tooltip>
     </div>
     <div class="table-toolbar-right">
@@ -25,11 +25,7 @@
             placeholder="请输入搜索的用户名"
             v-model:value="searchUserInfo"
           />
-          <n-button
-            type="primary"
-            ghost
-            @click="nameColum.filterOptionValue = searchUserInfo.value"
-          >
+          <n-button type="primary" ghost @click="handleFilterSearch">
             搜索
           </n-button>
         </n-input-group>
@@ -55,24 +51,12 @@
     <n-data-table
       ref="table"
       :columns="columns"
-      :data="tableDataRef"
+      :data="tableData"
       :loading="isReloading"
-      :pagination="paginationReactive"
-      :style="{ height: '600px' }"
-      :row-props="rowProps"
-      remote
+      :pagination="pagination"
+      :style="{ height: '620px' }"
     >
     </n-data-table>
-    <n-dropdown
-      placement="bottom-start"
-      trigger="manual"
-      :x="mouseX"
-      :y="mouseY"
-      :options="dropDownOptions"
-      :show="showDropdownRef"
-      :on-clickoutside="onClickoutside"
-      @select="handleSelectDropDown"
-    />
 
     <n-button @click="addUserInfoTable('kurino', 'kurino@163.com')">
       测试添加
@@ -80,7 +64,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 import {
   AlertCircle,
   ReloadOutline,
@@ -92,110 +76,41 @@ import {
   NIcon,
   NSpace,
   NButton,
+  NButtonGroup,
   DataTableBaseColumn,
   DataTableColumns,
-  DropdownOption,
   NTooltip,
   NInputGroup,
   NInput
 } from 'naive-ui'
-import { onMounted, ref, reactive, h, computed, nextTick } from 'vue'
-import { getOrganizationMember } from '../../api/social'
+import { onMounted, ref, reactive, h, computed, unref } from 'vue'
+import {
+  getOrganizationMember,
+  updateOrganizationAdmin
+} from '../../api/social'
 import TeamInvite from './TeamInvite.vue'
 
-defineProps<{ teamId: number; titleTooltip: string }>()
+const props = defineProps<{ teamId: number; isAdmin: boolean | undefined }>()
 
 onMounted(reload)
 
+const tableData = ref<Array<any>>([])
+const showAddModal = ref(false)
+const requestData = ref()
+const isReloading = ref(false)
 const searchUserInfo = ref()
-const teamUserNumber = computed(() => tableDataRef.value.length)
-const teamAdminNumber = computed(() => {
+const teamUsersNumber = computed(() => tableData.value.length)
+const teamAdminsNumber = computed(() => {
   var count = 0
-  tableDataRef.value.forEach((element: any) => {
+  tableData.value.forEach((element: any) => {
     if (element.identity == '管理员') count++
   })
   return count
 })
 
-function reload() {
-  isReloading.value = true
-  getOrganizationMember(requestData.value).then((res) => {
-    if (res.data.success) {
-      var counter = 0
-      res.data.teamList.forEach((element) => {
-        counter++
-        tableDataRef.value.push({
-          key: counter,
-          name: element.name,
-          email: element.email,
-          identity: element.isAdmin ? '管理员' : '组员'
-        })
-      })
-    } else {
-      window.$message.error('列表加载失败')
-    }
-    isReloading.value = false
-  })
-}
+const teamUsersId = ref<number[]>([])
 
-type RowData = {
-  key: number
-  name: string
-  email: string
-  identity: string
-}
-const tableDataRef = ref<Array<RowData>>([])
-const showAddModal = ref(false)
-const requestData = ref()
-const isReloading = ref(false)
-const mouseX = ref(0)
-const mouseY = ref(0)
-const dropDownOptions: DropdownOption[] = [
-  {
-    label: '管理身份',
-    key: 'edit'
-  },
-  {
-    label: '删除成员',
-    key: 'delete'
-  }
-]
-const showDropdownRef = ref(false)
-function onClickoutside() {
-  showDropdownRef.value = false
-}
-function handleSelectDropDown() {
-  showDropdownRef.value = false
-}
-
-const rowProps = (row: RowData) => {
-  return {
-    onContextmenu: (e: MouseEvent) => {
-      window.$message.info(JSON.stringify(row, null, 2))
-      e.preventDefault()
-      showDropdownRef.value = false
-      nextTick().then(() => {
-        showDropdownRef.value = true
-        mouseX.value = e.clientX
-        mouseY.value = e.clientY
-      })
-    }
-  }
-}
-function addUserInfoTable(name: string, email: string) {
-  var currentCounter = tableDataRef.value.length
-  tableDataRef.value.push({
-    key: currentCounter + 1,
-    name: name,
-    email: email,
-    identity: '组员'
-  })
-  paginationReactive.page =
-    tableDataRef.value.length / paginationReactive.pageSize
-  console.log(paginationReactive.page)
-}
-
-const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
+const identityColumn = reactive<DataTableBaseColumn>({
   title: '身份',
   key: 'identity',
   filter: 'default',
@@ -204,46 +119,36 @@ const identityColumn: DataTableBaseColumn = reactive<DataTableBaseColumn>({
     return h(NIcon, null, { default: () => h(SearchOutline) })
   },
   renderFilterMenu: ({ hide }) => {
-    return h(
-      NSpace,
-      { style: { padding: '12px' }, vertical: true },
-      {
-        default: () => [
-          h(
-            NButton,
-            {
-              onClick: () => {
-                identityColumn.filterOptionValue = '管理员'
-              }
-            },
-            { default: () => '管理员' }
-          ),
-          h(
-            NButton,
-            {
-              onClick: () => {
-                identityColumn.filterOptionValue = '组员'
-              }
-            },
-            { default: () => '组员' }
-          ),
-          h(
-            NButton,
-            {
-              onClick: () => {
-                identityColumn.filterOptionValue = null
-                hide()
-              }
-            },
-            { default: () => '所有人' }
-          )
-        ]
-      }
+    return (
+      <NSpace style={{ padding: '12px' }} vertical>
+        <NButton
+          onClick={() => {
+            identityColumn.filterOptionValue = '管理员'
+          }}
+        >
+          管理员
+        </NButton>
+        <NButton
+          onClick={() => {
+            identityColumn.filterOptionValue = '组员'
+          }}
+        >
+          组员
+        </NButton>
+        <NButton
+          onClick={() => {
+            identityColumn.filterOptionValue = null
+            hide()
+          }}
+        >
+          所有人
+        </NButton>
+      </NSpace>
     )
   }
 })
 
-const nameColum: DataTableBaseColumn = reactive<DataTableBaseColumn>({
+const nameColumn = reactive<DataTableBaseColumn>({
   title: '姓名',
   key: 'name',
   sorter(rowA: any, rowB: any) {
@@ -253,23 +158,114 @@ const nameColum: DataTableBaseColumn = reactive<DataTableBaseColumn>({
   filterOptionValue: null
 })
 
-const columns: DataTableColumns = reactive<DataTableColumns>([
-  nameColum,
+const buttomColumn = reactive<DataTableBaseColumn>({
+  title: '操作',
+  key: 'actions',
+  width: '200px',
+  render(rowData: any, rowIndex: number) {
+    return (
+      <NButtonGroup>
+        <NButton
+          size='small'
+          disabled={props.isAdmin}
+          onClick={() => {
+            handleDeleteMember(rowIndex)
+          }}
+        >
+          踢出组织
+        </NButton>
+        <NButton
+          size='small'
+          disabled={props.isAdmin}
+          type={rowData.identity === '管理员' ? 'primary' : 'tertiary'}
+          onClick={() => {
+            handleUpdateAdmin(rowIndex)
+          }}
+        >
+          管理员
+        </NButton>
+        <NButton
+          size={'small'}
+          disabled={props.isAdmin}
+          type={rowData.identity === '组员' ? 'primary' : 'tertiary'}
+          onClick={() => {
+            handleDeleteAdmin(rowIndex)
+          }}
+        >
+          组员
+        </NButton>
+      </NButtonGroup>
+    )
+  }
+})
+
+const columns = reactive<DataTableColumns>([
+  nameColumn,
   {
     title: '邮箱',
     key: 'email'
   },
-  identityColumn
+  identityColumn,
+  buttomColumn
 ])
 
-const paginationReactive = reactive({
-  page: 2,
-  itemCount: 100,
-  pageSize: 5,
+const pagination = reactive({
+  page: 1,
+  itemCount: unref(tableData).length,
+  pageSize: 10,
   onChange: (page: number) => {
-    paginationReactive.page = page
+    pagination.page = page
   }
 })
+
+function handleFilterSearch() {
+  nameColumn.filterOptionValue = searchUserInfo.value
+}
+
+function handleDeleteMember(rowIndex: number) {
+  window.$message.info(rowIndex.toString())
+}
+
+function handleUpdateAdmin(rowIndex: number) {
+  window.$message.info(rowIndex.toString())
+}
+
+function handleDeleteAdmin(rowIndex: number) {
+  window.$message.info(rowIndex.toString())
+}
+
+function reload() {
+  isReloading.value = true
+  getOrganizationMember(requestData.value).then((res) => {
+    if (res.data.success) {
+      var counter = 0
+      res.data.members.forEach((element) => {
+        counter++
+        tableData.value.push({
+          key: counter,
+          name: element.name,
+          email: element.email,
+          identity: element.isAdmin ? '管理员' : '组员'
+        })
+        teamUsersId.value.push(element.id)
+      })
+    } else {
+      window.$message.error('列表加载失败')
+    }
+    isReloading.value = false
+  })
+}
+
+function addUserInfoTable(name: string, email: string) {
+  var currentCounter = tableData.value.length
+  tableData.value.push({
+    key: currentCounter + 1,
+    name: name,
+    email: email,
+    identity: '组员'
+  })
+  pagination.itemCount += 1
+}
 </script>
 
 <style scoped>
