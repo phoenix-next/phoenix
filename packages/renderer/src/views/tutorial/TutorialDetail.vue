@@ -25,8 +25,6 @@ import {
   NIcon,
   NSpace,
   NH1,
-  NSelect,
-  NUpload,
   NDivider
 } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'

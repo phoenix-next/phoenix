@@ -76,8 +76,15 @@ async function createWindow() {
 
   // Disable in-app navigation
   win.webContents.on('will-navigate', (event, url) => {
-    event.preventDefault()
-    shell.openExternal(url)
+    if (
+      app.isPackaged ||
+      !url.startsWith(
+        `http://${process.env['VITE_DEV_SERVER_HOST']}:${process.env['VITE_DEV_SERVER_PORT']}`
+      )
+    ) {
+      event.preventDefault()
+      shell.openExternal(url)
+    }
   })
 
   // Make all links open with the browser, not with the application
