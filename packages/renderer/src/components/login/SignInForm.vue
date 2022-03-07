@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { login } from '../../api/social'
+import { login } from '../../api/user'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
 import { NForm, NFormItemRow, NButton, NInput } from 'naive-ui'

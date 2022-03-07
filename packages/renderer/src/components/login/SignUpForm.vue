@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { getCaptcha, register } from '../../api/social'
+import { getCaptcha, register } from '../../api/user'
 import { NForm, NFormItemRow, NInput, NButton } from 'naive-ui'
 
 const data = reactive({
