@@ -10,6 +10,13 @@
       <n-h1 class="title"> 这个帖子的标题大概这么长 </n-h1>
     </n-space>
     <n-divider />
+    <n-card
+      v-for="i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+      style="margin-top: 20px"
+    >
+      第 {{ i }} 个人的名字 <br />
+      第 {{ i }} 个人的回复内容
+    </n-card>
   </n-card>
 </template>
 
