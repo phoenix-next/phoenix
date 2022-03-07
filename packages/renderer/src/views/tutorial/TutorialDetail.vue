@@ -6,112 +6,51 @@
       </n-icon>
     </n-button>
     <n-space justify="center">
-      <n-h1 class="title">{{ problem.name }}</n-h1>
+      <n-h1 class="title">{{ tutorial.name }}</n-h1>
     </n-space>
-
     <n-divider />
-    <div v-html="problem.description"></div>
+    <div v-html="tutorial.detail"></div>
   </n-card>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, reactive } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
-import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
-import {
-  UploadFileInfo,
-  NCard,
-  NButton,
-  NIcon,
-  NSpace,
-  NH1,
-  NDivider
-} from 'naive-ui'
+import { NCard, NButton, NIcon, NSpace, NH1, NDivider } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
-import { getProblem } from '../../api/judge'
+import { getTutorial } from '../../api/tutorial'
 
 const router = useRouter()
 const route = useRoute()
 
-const problem = reactive({
-  description: '<h2>题目描述</h2><h2>题目样例</h2><h2>数据范围</h2>',
-  name: '题目名称'
+const tutorial = reactive({
+  detail: '<h2>前言</h2><h2>内容</h2><h2>结语</h2>',
+  name: '教程名称'
 })
-const language = ref('C')
-const program = ref<Array<UploadFileInfo>>([])
 const pending = ref(true)
 
 function clickReturn() {
   router.back()
 }
-function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
-  if (!pending.value) {
-    program.value = data.fileList
-    pending.value = true
-    const url = data.fileList[0].file?.path ?? ''
-    if (program.value.length > 0) {
-      window.utilsBridge
-        .judgeProblem(url, route.params.id as string, language.value)
-        .then((res) => {
-          if (res === 'AC') {
-            window.$message.success('AC')
-          } else {
-            window.$message.warning(res)
-          }
-          program.value = []
-          pending.value = false
-        })
-    }
-  }
-}
 
 onMounted(() => {
-  getProblem({ problemID: Number(route.params.id) })
+  getTutorial({ tutorialID: Number(route.params.id) })
     .then((res) => {
-      problem.name = res.data.name
-      return window.utilsBridge.downloadProblem(
+      tutorial.name = res.data.name
+      return window.utilsBridge.downloadTutorial(
         route.params.id as string,
-        res.data.input,
-        res.data.output,
-        res.data.description,
+        res.data.tutorialPath,
         localStorage.getItem('token') || ''
       )
     })
-    .then((des) => {
-      problem.description = des
+    .then((res) => {
+      tutorial.detail = res
       pending.value = false
     })
-    .catch((res) => {
+    .catch(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
 })
-
-const options: SelectMixedOption[] = [
-  {
-    label: 'C',
-    value: 'C'
-  },
-  {
-    label: 'C++',
-    value: 'C++'
-  },
-  {
-    label: 'Java',
-    value: 'Java'
-  },
-  {
-    label: 'Golang',
-    value: 'Golang'
-  },
-  {
-    label: 'JavaScript',
-    value: 'JavaScript'
-  },
-  {
-    label: 'Python',
-    value: 'Python'
-  }
-]
 </script>
 
 <style scoped>

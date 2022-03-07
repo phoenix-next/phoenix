@@ -4,7 +4,7 @@ import ForumOverviewVue from '../views/Forum/ForumOverview.vue'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: { name: 'tutorial' }
+    redirect: { name: 'tutorialOverview' }
   },
   {
     path: '/contest',
