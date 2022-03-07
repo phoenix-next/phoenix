@@ -27,7 +27,7 @@
     "typescript": "^4.5.5",
     "vite": "^2.8.4",
     "vite-plugin-chunk-split": "^0.0.1",
-    "vite-plugin-resolve": "^1.4.4",
+    "vite-plugin-resolve": "^1.8.0",
     "vue": "^3.2.29",
     "vue-router": "^4.0.12",
     "vue-tsc": "^0.32.0"
