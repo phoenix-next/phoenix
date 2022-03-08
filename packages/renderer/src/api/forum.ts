@@ -14,3 +14,7 @@ export function createPosts(data: {
 }) {
   return backend.post('posts', data)
 }
+
+export function deletePosts(data: { id: number }) {
+  return backend.delete(`posts/${data.id}`)
+}
