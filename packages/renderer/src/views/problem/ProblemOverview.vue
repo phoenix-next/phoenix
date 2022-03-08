@@ -54,7 +54,7 @@ import {
   NButton,
   NInput
 } from 'naive-ui'
-import { ref, reactive, onMounted, computed, h } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { getProblemList } from '../../api/judge'
 
 const { isLogin } = useAuthStore()
@@ -70,7 +70,7 @@ const columns = ref<Array<DataTableColumn>>([
     key: 'id',
     sorter: true,
     sortOrder: 'ascend',
-    render: (rowData, rowIndex) => {
+    render: (rowData) => {
       return (
         <div
           onClick={handleClick(rowData.id as string)}
@@ -86,7 +86,7 @@ const columns = ref<Array<DataTableColumn>>([
     key: 'name',
     sorter: true,
     sortOrder: false,
-    render: (rowData, rowIndex) => {
+    render: (rowData) => {
       return (
         <div
           onClick={handleClick(rowData.id as string)}
@@ -102,7 +102,7 @@ const columns = ref<Array<DataTableColumn>>([
     key: 'difficulty',
     sorter: true,
     sortOrder: false,
-    render: (rowData, rowIndex) => {
+    render: (rowData) => {
       return (
         <div
           onClick={handleClick(rowData.id as string)}
@@ -147,7 +147,7 @@ function updateData() {
       })
       pagination.itemCount = res.data.total
     })
-    .catch((res) => {
+    .catch(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
     .finally(() => {

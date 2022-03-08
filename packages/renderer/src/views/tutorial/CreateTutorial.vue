@@ -51,7 +51,6 @@ import {
   NCard
 } from 'naive-ui'
 import { createTutorial } from '../../api/tutorial'
-import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
@@ -59,17 +58,17 @@ import { getUserOrganization } from '../../api/user'
 const router = useRouter()
 
 const fileRef = ref<InstanceType<typeof UploadButton> | null>(null)
-const organizationOptions = ref<SelectMixedOption[]>([])
+const organizationOptions = ref<Array<any>>([])
 const data = reactive({
   name: '',
   profile: '',
   readable: 0,
   writable: 0,
-  orgID: 0
+  orgID: null
 })
 
 const organizationVisiable = computed(() => {
-  return data.readable > 0 || data.writable > 0
+  return (data.readable > 0 && data.readable < 3) || data.writable > 0
 })
 const uploadEnable = computed(() => {
   return fileRef.value?.file && data.name !== ''
@@ -81,6 +80,9 @@ function clickCreate() {
     formData.append(key, String(data[key as keyof typeof data]))
   })
   formData.append('file', fileRef.value?.file as File, 'file')
+  if (formData.get('orgID') === 'null') {
+    formData.set('orgID', '0')
+  }
   createTutorial(formData)
     .then((res) => {
       if (res.data.success) {
@@ -90,7 +92,7 @@ function clickCreate() {
         window.$message.warning(res.data.message)
       }
     })
-    .catch((res) => {
+    .catch(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
 }
@@ -104,12 +106,12 @@ onMounted(() => {
         }
       )
     })
-    .catch((res) => {
+    .catch(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
 })
 
-const readOptions: SelectMixedOption[] = [
+const readOptions = [
   {
     label: '仅教程创建者可见',
     value: 0
@@ -127,7 +129,7 @@ const readOptions: SelectMixedOption[] = [
     value: 3
   }
 ]
-const writeOptions: SelectMixedOption[] = [
+const writeOptions = [
   {
     label: '仅教程创建者可编辑',
     value: 0

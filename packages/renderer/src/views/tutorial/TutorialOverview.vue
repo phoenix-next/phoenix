@@ -69,7 +69,7 @@ const columns = ref<any>([
     key: 'id',
     sorter: true,
     sortOrder: 'ascend',
-    render: (rowData: any, rowIndex: any) => {
+    render: (rowData: any) => {
       return h(
         'div',
         {
@@ -85,7 +85,7 @@ const columns = ref<any>([
     key: 'name',
     sorter: true,
     sortOrder: false,
-    render: (rowData: any, rowIndex: any) => {
+    render: (rowData: any) => {
       return h(
         'div',
         {
@@ -99,7 +99,7 @@ const columns = ref<any>([
   {
     title: '创建者',
     key: 'creatorName',
-    render: (rowData: any, rowIndex: any) => {
+    render: (rowData: any) => {
       return h(
         'div',
         {
