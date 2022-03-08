@@ -79,7 +79,7 @@ const data = reactive({
   difficulty: 5,
   readable: 0,
   writable: 0,
-  organization: 0
+  organization: null
 })
 
 const organizationVisiable = computed(() => {
@@ -90,6 +90,7 @@ const uploadEnable = computed(() => {
     descriptionRef.value?.file &&
     inputRef.value?.file &&
     outputRef.value?.file &&
+    (!organizationVisiable.value || data.organization !== null) &&
     data.name !== ''
   )
 })
@@ -115,7 +116,7 @@ function clickCreate() {
         window.$message.warning(res.data.message)
       }
     })
-    .catch((res) => {
+    .catch(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
 }
@@ -123,13 +124,13 @@ function clickCreate() {
 onMounted(() => {
   getUserOrganization()
     .then((res) => {
-      organizationOptions.value = (res.data.organizations as Array<any>).map(
+      organizationOptions.value = (res.data.organization as Array<any>).map(
         (item) => {
-          return { label: item.name, value: item.id }
+          return { label: item.orgName, value: item.orgID }
         }
       )
     })
-    .catch((res) => {
+    .catch(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
 })
