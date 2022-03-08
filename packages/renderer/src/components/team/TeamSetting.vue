@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { NH1, NDescriptions, NDescriptionsItem } from 'naive-ui'
+import { NDescriptions, NDescriptionsItem } from 'naive-ui'
 defineProps({
   isAdmin: {
     type: Boolean,
@@ -18,4 +18,5 @@ defineProps({
   }
 })
 </script>
+
 <style scoped></style>

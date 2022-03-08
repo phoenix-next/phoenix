@@ -23,7 +23,7 @@
         type="text"
         placeholder="请输入添加的成员邮箱"
         style="width: 275px"
-      ></n-input>
+      />
     </n-space>
   </n-modal>
 </template>
