@@ -58,9 +58,7 @@
     >
     </n-data-table>
 
-    <n-button @click="addUserInfoTable('kurino', 'kurino@163.com')">
-      测试添加
-    </n-button>
+    <n-button @click="addUserInfoTable"> 测试添加 </n-button>
   </div>
 </template>
 
@@ -85,6 +83,8 @@ import {
 } from 'naive-ui'
 import { onMounted, ref, reactive, h, computed, unref } from 'vue'
 import {
+  deleteOrganizationAdmin,
+  deleteOrganizationMember,
   getOrganizationMember,
   updateOrganizationAdmin
 } from '../../api/social'
@@ -94,6 +94,7 @@ const props = defineProps<{ teamId: number; isAdmin: boolean | undefined }>()
 
 onMounted(reload)
 
+const teamUsersId = ref<Array<number>>([])
 const tableData = ref<Array<any>>([])
 const showAddModal = ref(false)
 const requestData = ref()
@@ -106,46 +107,6 @@ const teamAdminsNumber = computed(() => {
     if (element.identity == '管理员') count++
   })
   return count
-})
-
-const teamUsersId = ref<number[]>([])
-
-const identityColumn = reactive<DataTableBaseColumn>({
-  title: '身份',
-  key: 'identity',
-  filter: 'default',
-  filterOptionValue: null,
-  renderFilterIcon: () => {
-    return h(NIcon, null, { default: () => h(SearchOutline) })
-  },
-  renderFilterMenu: ({ hide }) => {
-    return (
-      <NSpace style={{ padding: '12px' }} vertical>
-        <NButton
-          onClick={() => {
-            identityColumn.filterOptionValue = '管理员'
-          }}
-        >
-          管理员
-        </NButton>
-        <NButton
-          onClick={() => {
-            identityColumn.filterOptionValue = '组员'
-          }}
-        >
-          组员
-        </NButton>
-        <NButton
-          onClick={() => {
-            identityColumn.filterOptionValue = null
-            hide()
-          }}
-        >
-          所有人
-        </NButton>
-      </NSpace>
-    )
-  }
 })
 
 const nameColumn = reactive<DataTableBaseColumn>({
@@ -162,14 +123,14 @@ const buttomColumn = reactive<DataTableBaseColumn>({
   title: '操作',
   key: 'actions',
   width: '200px',
-  render(rowData: any, rowIndex: number) {
+  render(rowData: any) {
     return (
       <NButtonGroup>
         <NButton
           size='small'
           disabled={props.isAdmin}
           onClick={() => {
-            handleDeleteMember(rowIndex)
+            handleDeleteMember(rowData.key)
           }}
         >
           踢出组织
@@ -179,7 +140,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
           disabled={props.isAdmin}
           type={rowData.identity === '管理员' ? 'primary' : 'tertiary'}
           onClick={() => {
-            handleUpdateAdmin(rowIndex)
+            handleUpdateAdmin(rowData.key)
           }}
         >
           管理员
@@ -189,7 +150,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
           disabled={props.isAdmin}
           type={rowData.identity === '组员' ? 'primary' : 'tertiary'}
           onClick={() => {
-            handleDeleteAdmin(rowIndex)
+            handleDeleteAdmin(rowData.key)
           }}
         >
           组员
@@ -205,7 +166,11 @@ const columns = reactive<DataTableColumns>([
     title: '邮箱',
     key: 'email'
   },
-  identityColumn,
+  {
+    title: '身份',
+    key: 'identity',
+    sorter: 'default'
+  },
   buttomColumn
 ])
 
@@ -222,16 +187,52 @@ function handleFilterSearch() {
   nameColumn.filterOptionValue = searchUserInfo.value
 }
 
-function handleDeleteMember(rowIndex: number) {
-  window.$message.info(rowIndex.toString())
+function handleDeleteMember(rowKey: number) {
+  deleteOrganizationMember(props.teamId, teamUsersId.value.at(rowKey))
+    .then((res) => {
+      if (res.data.success) {
+        window.$message.info('踢出成功')
+      } else {
+        window.$message.warning('踢出失败')
+      }
+    })
+    .catch((res) => {
+      window.$message.error('网络故障, 请检查网络连接')
+    })
+    .finally(reload)
 }
 
-function handleUpdateAdmin(rowIndex: number) {
-  window.$message.info(rowIndex.toString())
+function handleUpdateAdmin(rowKey: number) {
+  if (tableData.value.at(rowKey).identity == '管理员') return
+  updateOrganizationAdmin(
+    { id: teamUsersId.value.at(rowKey)?.toString() },
+    props.teamId
+  )
+    .then((res) => {
+      if (res.data.success) {
+        tableData.value.at(rowKey).identity = '管理员'
+      } else {
+        window.$message.warning('切换管理员失败')
+      }
+    })
+    .catch((res) => {
+      window.$message.error('网络故障, 请检查网络连接')
+    })
 }
 
-function handleDeleteAdmin(rowIndex: number) {
-  window.$message.info(rowIndex.toString())
+function handleDeleteAdmin(rowKey: number) {
+  if (tableData.value.at(rowKey).identity == '组员') return
+  deleteOrganizationAdmin(teamUsersId.value.at(rowKey), props.teamId)
+    .then((res) => {
+      if (res.data.success) {
+        tableData.value.at(rowKey).identity = '组员'
+      } else {
+        window.$message.warning('切换组员失败')
+      }
+    })
+    .catch((res) => {
+      window.$message.error('网络故障, 请检查网络连接')
+    })
 }
 
 function reload() {
@@ -240,7 +241,6 @@ function reload() {
     if (res.data.success) {
       var counter = 0
       res.data.members.forEach((element) => {
-        counter++
         tableData.value.push({
           key: counter,
           name: element.name,
@@ -248,6 +248,7 @@ function reload() {
           identity: element.isAdmin ? '管理员' : '组员'
         })
         teamUsersId.value.push(element.id)
+        counter++
       })
     } else {
       window.$message.error('列表加载失败')
@@ -256,12 +257,12 @@ function reload() {
   })
 }
 
-function addUserInfoTable(name: string, email: string) {
+function addUserInfoTable() {
   var currentCounter = tableData.value.length
   tableData.value.push({
-    key: currentCounter + 1,
-    name: name,
-    email: email,
+    key: currentCounter,
+    name: currentCounter.toString(),
+    email: currentCounter.toString(),
     identity: '组员'
   })
   pagination.itemCount += 1

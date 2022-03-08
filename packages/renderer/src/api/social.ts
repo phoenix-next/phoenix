@@ -30,7 +30,10 @@ export function updateOrganizationMember(teamId: number) {
   return backend.post(`organizations/${teamId}/users`)
 }
 
-export function deleteOrganizationMember(teamId: number, userId: number) {
+export function deleteOrganizationMember(
+  teamId: number,
+  userId: number | undefined
+) {
   return backend.delete(`organizations/${teamId}/users/${userId}`)
 }
 
@@ -48,10 +51,16 @@ export function getOrganizationMember(teamId: number): Promise<
   return backend.get(`organizations/${teamId}/users`)
 }
 
-export function updateOrganizationAdmin(data: { id: string }, teamId: number) {
+export function updateOrganizationAdmin(
+  data: { id: string | undefined },
+  teamId: number
+) {
   return backend.post(`organizations/${teamId}/admins`, data)
 }
 
-export function deleteOrganizationAdmin(adminId: number, teamId: number) {
+export function deleteOrganizationAdmin(
+  adminId: number | undefined,
+  teamId: number
+) {
   return backend.delete(`organizations/${teamId}/admins/${adminId}`)
 }
