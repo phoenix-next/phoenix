@@ -66,6 +66,18 @@
     <n-grid>
       <n-gi :span="16">
         <n-grid :x-gap="12" :y-gap="8" :cols="1">
+          <n-gi v-if="posts.length === 0">
+            <n-empty description="是一个飞机">
+              <template #icon>
+                <n-icon>
+                  <ios-airplane />
+                </n-icon>
+              </template>
+              <template #extra>
+                <!-- <n-button size="small"> 看看别的 </n-button> -->
+              </template>
+            </n-empty>
+          </n-gi>
           <n-gi v-for="post in posts">
             <n-card>
               <n-layout has-sider>
@@ -81,6 +93,13 @@
                     <n-text @click="handleClick">
                       {{ post.title }}
                     </n-text>
+                    <n-button
+                      @click="handleDelete(post.id)"
+                      size="small"
+                      style="position: absolute; right: 0"
+                    >
+                      删除
+                    </n-button>
                     <br />
                     <n-text> {{ post.creatorName }} </n-text>
                     <br />
@@ -88,8 +107,15 @@
                   </n-layout-content>
                 </n-layout>
               </n-layout>
-              <n-button @click="handleDelete(post.id)">删除</n-button>
             </n-card>
+          </n-gi>
+          <n-gi v-if="posts.length !== 0">
+            <n-pagination
+              v-model:page="page"
+              :page-size="5"
+              :item-count="total"
+              show-quick-jumper
+            />
           </n-gi>
         </n-grid>
       </n-gi>
@@ -176,8 +202,11 @@ import {
   NModal,
   FormInst,
   NForm,
-  NFormItem
+  NFormItem,
+  NPagination,
+  NEmpty
 } from 'naive-ui'
+import { IosAirplane } from '@vicons/ionicons5'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
@@ -209,7 +238,7 @@ const rules = {
 
 const posts = ref<Array<any>>([])
 const needChange = ref(false)
-const type = ref<any>(1)
+const type = ref<any>(0)
 const page = ref(1)
 const total = ref(0)
 
@@ -219,6 +248,7 @@ function handleClick() {
 
 function handleSwitch(number: any) {
   type.value = number
+  page.value = 1
 }
 
 function handleValidateClick(e: MouseEvent) {
