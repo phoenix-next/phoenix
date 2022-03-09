@@ -22,7 +22,7 @@
           :disabled="!isLogin"
           @click="handleCreate"
         >
-          创建题目
+          创建比赛
         </n-button>
       </n-gi>
     </n-grid>
@@ -45,7 +45,6 @@
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
 import {
-  DataTableColumn,
   NCard,
   NGrid,
   NGi,
@@ -60,17 +59,17 @@ import { getContestList } from '../../api/contest'
 const { isLogin } = useAuthStore()
 const router = useRouter()
 
-const data = ref<Array<{ id: string; difficulty: number; name: string }>>([
-  { id: 'Loading...', difficulty: 1, name: 'Loading...' }
+const data = ref<Array<{ id: string; profile: number; name: string }>>([
+  { id: 'Loading...', profile: 1, name: 'Loading...' }
 ])
 const loading = ref(true)
-const columns = ref<Array<DataTableColumn>>([
+const columns = ref<Array<any>>([
   {
-    title: '题号',
+    title: '序号',
     key: 'id',
     sorter: true,
     sortOrder: 'ascend',
-    render: (rowData) => {
+    render: (rowData: any) => {
       return (
         <div
           onClick={handleClick(rowData.id as string)}
@@ -82,11 +81,11 @@ const columns = ref<Array<DataTableColumn>>([
     }
   },
   {
-    title: '题目名称',
+    title: '比赛名称',
     key: 'name',
     sorter: true,
     sortOrder: false,
-    render: (rowData) => {
+    render: (rowData: any) => {
       return (
         <div
           onClick={handleClick(rowData.id as string)}
@@ -98,17 +97,15 @@ const columns = ref<Array<DataTableColumn>>([
     }
   },
   {
-    title: '难度',
-    key: 'difficulty',
-    sorter: true,
-    sortOrder: false,
-    render: (rowData) => {
+    title: '简介',
+    key: 'profile',
+    render: (rowData: any) => {
       return (
         <div
           onClick={handleClick(rowData.id as string)}
           style={{ cursor: 'pointer' }}
         >
-          {rowData.difficulty}
+          {rowData.profile}
         </div>
       )
     }
@@ -142,8 +139,8 @@ function updateData() {
     keyWord: keyWord.value
   })
     .then((res) => {
-      data.value = (res.data.problemList as Array<any>).map((item) => {
-        return { ...item, id: 'P' + item.id }
+      data.value = (res.data.contestList as Array<any>).map((item) => {
+        return { ...item, id: 'C' + item.id }
       })
       pagination.itemCount = res.data.total
     })
@@ -155,7 +152,7 @@ function updateData() {
     })
 }
 function handleCreate() {
-  router.push({ path: '/problem/create' })
+  router.push({ path: '/contest/create' })
 }
 function handleSearch() {
   if (!loading.value) {
@@ -164,22 +161,20 @@ function handleSearch() {
 }
 function handleClick(id: string) {
   return () => {
-    router.push({ path: '/problem/' + id.substring(1) })
+    router.push({ path: '/contest/' + id.substring(1) })
   }
 }
 function handleSorterChange(sorter: any) {
   // 建立从列名到索引的映射
   const sorterMap: Record<string, number> = {
     id: 0,
-    name: 1,
-    difficulty: 2
+    name: 1
   }
   // sorter不为空且不在加载中
   if (sorter && !loading.value) {
     // 设置columns的排序规则
-    columns.value.forEach((item: any) => {
-      item.sortOrder = false
-    })
+    columns.value[0].sortOrder = false
+    columns.value[1].sortOrder = false
     ;(columns.value[sorterMap[sorter.columnKey]] as any).sortOrder =
       sorter.order ? sorter.order : 'descend'
     // 发起请求
