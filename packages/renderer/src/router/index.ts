@@ -16,17 +16,17 @@ const routes: RouteRecordRaw[] = [
     path: '/forum',
     name: 'forumIndex',
     meta: { requiresAuth: true },
-    component: () => import('../views/Forum/Index.vue'),
+    component: () => import('../views/forum/Index.vue'),
     children: [
       {
         path: '',
         name: 'forumOverview',
-        component: () => import('../views/Forum/ForumOverview.vue')
+        component: () => import('../views/forum/ForumOverview.vue')
       },
       {
         path: ':id',
         name: 'forumDetail',
-        component: () => import('../views/Forum/ForumDetail.vue')
+        component: () => import('../views/forum/ForumDetail.vue')
       }
     ]
   },
