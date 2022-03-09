@@ -34,3 +34,7 @@ export function updateContest(data: {
 export function deleteContest(data: { id: string }) {
   return backend.delete('contests/' + data.id)
 }
+
+export function getOrgProblems(data: { id: number }) {
+  return backend.get(`organizations/${data.id}/problems`)
+}
