@@ -27,24 +27,27 @@
 <script setup lang="ts">
 import { NModal, NDivider, NInput } from 'naive-ui'
 import { onMounted, ref } from 'vue'
-import { updateOrganization } from '../../api/social'
-const props =
-  defineProps<{ teamId: number; teamName: string; teamProfile: string }>()
+import { updateOrganization } from '../../../api/social'
+const props = defineProps<{
+  show: boolean
+  id: number
+  name: string
+  profile: string
+}>()
 const emits = defineEmits(['update:show', 'update:team-profile'])
 
 const newTeamName = ref('')
 const newTeamProfile = ref('')
-const show = ref(false)
 
 onMounted(() => {
-  newTeamName.value = props.teamName
-  newTeamProfile.value = props.teamProfile
+  newTeamName.value = props.name
+  newTeamProfile.value = props.profile
 })
 
 function handlePositiveClick() {
   updateOrganization(
     { name: newTeamName.value, profile: newTeamProfile.value },
-    props.teamId
+    props.id
   )
     .then((res) => {
       if (res.data.success) {

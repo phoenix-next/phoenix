@@ -37,7 +37,7 @@ import { NCard, NSelect, NButton, NTabs, NTabPane } from 'naive-ui'
 import TeamList from '../components/team/TeamList.vue'
 import TeamSetting from '../components/team/TeamSetting.vue'
 import { getUserOrganization } from '../api/user'
-import TeamAdd from '../components/team/TeamAdd.vue'
+import TeamAdd from '../components/team/modal/TeamAdd.vue'
 
 const teamsIdDic = new Map<string, number>()
 const options = ref<any>([])

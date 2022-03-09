@@ -3,7 +3,7 @@
     <n-descriptions label-placement="left" :column="1" separator="   ">
       <n-descriptions-item label="组织名称">
         {{ teamName }}
-        <n-button text>
+        <n-button text @click="showUpdateModal = true">
           <template #icon>
             <n-icon><pencil-outline /></n-icon>
           </template>
@@ -20,16 +20,16 @@
     <n-button text v-if="isAdmin"> 解散组织 </n-button>
   </n-space>
   <team-update
-    :team-id="props.teamId"
-    :teamName="teamName"
-    :teamProfile="teamProfile"
+    :show="showUpdateModal"
+    :id="props.teamId"
+    :name="teamName"
+    :profile="teamProfile"
     @update:show="showUpdateModal = false"
     @update:team-profile="reload"
   ></team-update>
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD
 import {
   NDescriptions,
   NDescriptionsItem,
@@ -40,12 +40,8 @@ import {
 import { onMounted, ref } from 'vue'
 import { getOrganization } from '../../api/social'
 import { PencilOutline } from '@vicons/ionicons5'
-import TeamUpdate from './TeamUpdate.vue'
+import TeamUpdate from './modal/TeamUpdate.vue'
 const props = defineProps({
-=======
-import { NDescriptions, NDescriptionsItem } from 'naive-ui'
-defineProps({
->>>>>>> 0130ed8b0a34f68bc9542dedc1208e9315923f4f
   isAdmin: {
     type: Boolean,
     default: false

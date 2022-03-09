@@ -39,8 +39,6 @@ defineProps({
 })
 const emits = defineEmits(['update:show', 'update:team-created'])
 
-defineEmits(['update:show', 'update:team-created'])
-
 const newTeamName = ref('')
 const newTeamProfile = ref('')
 

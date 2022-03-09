@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { useMessage, NModal, NDivider, NSelect, NInput, NSpace } from 'naive-ui'
 import { ref } from 'vue'
-import { createInvitation } from '../../api/social'
+import { createInvitation } from '../../../api/social'
 
 const props = defineProps({
   show: {

@@ -88,7 +88,7 @@ import {
   getOrganizationMember,
   updateOrganizationAdmin
 } from '../../api/social'
-import TeamInvite from './TeamInvite.vue'
+import TeamInvite from './modal/TeamInvite.vue'
 
 const props = defineProps<{ teamId: number; isAdmin: boolean | undefined }>()
 
