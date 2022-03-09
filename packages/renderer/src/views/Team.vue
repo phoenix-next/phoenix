@@ -16,6 +16,7 @@
     <team-add
       v-model:show="showAddTeamModal"
       @update-show="showAddTeamModal = false"
+      @update:team-created="reload"
     ></team-add>
     <n-card>
       <n-tabs default-value="team-list" size="large">
@@ -51,7 +52,7 @@ const isTeamAdmin = ref<boolean | undefined>(false)
 
 const showAddTeamModal = ref(false)
 
-onMounted(() => reload)
+onMounted(reload)
 
 const handleSelectTeam = (value: string) => {
   if (teamName.value != value) {

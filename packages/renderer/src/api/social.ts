@@ -8,6 +8,10 @@ export function createOrganization(data: {
   return backend.post('organizations/', data)
 }
 
+export function getOrganization(teamId: number) {
+  return backend.get(`organizations/${teamId}`)
+}
+
 export function updateOrganization(
   data: { name: string; profile: string },
   teamId: number

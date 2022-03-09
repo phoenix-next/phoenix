@@ -26,6 +26,7 @@
 </template>
 <script setup lang="ts">
 import { useMessage, NModal, NDivider, NInput } from 'naive-ui'
+import { emit } from 'process'
 import { ref } from 'vue'
 import { createOrganization } from '../../api/social'
 
@@ -35,7 +36,7 @@ defineProps({
     default: null
   }
 })
-defineEmits(['update:show', 'update:team-created'])
+const emits = defineEmits(['update:show', 'update:team-created'])
 
 const message = useMessage()
 
@@ -57,6 +58,7 @@ function handlePositiveClick() {
       .then((res) => {
         if (res.data.success) {
           message.info('组织创建成功')
+          emits('update:team-created')
         } else {
           message.error('组织创建失败')
         }
