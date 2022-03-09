@@ -24,6 +24,7 @@
     </n-input>
   </n-modal>
 </template>
+
 <script setup lang="ts">
 import { useMessage, NModal, NDivider, NInput } from 'naive-ui'
 import { emit } from 'process'
@@ -38,16 +39,17 @@ defineProps({
 })
 const emits = defineEmits(['update:show', 'update:team-created'])
 
-const message = useMessage()
+defineEmits(['update:show', 'update:team-created'])
 
 const newTeamName = ref('')
 const newTeamProfile = ref('')
+
 function handlePositiveClick() {
   if (newTeamName.value == '') {
-    message.warning('组织名不能为空！')
+    window.$message.warning('组织名不能为空！')
     return false
   } else if (newTeamProfile.value == '') {
-    message.warning('组织信息不能为空！')
+    window.$message.warning('组织信息不能为空！')
     return false
   } else {
     const requestData = {
@@ -57,14 +59,14 @@ function handlePositiveClick() {
     createOrganization(requestData)
       .then((res) => {
         if (res.data.success) {
-          message.info('组织创建成功')
           emits('update:team-created')
+          window.$message.info('组织创建成功')
         } else {
-          message.error('组织创建失败')
+          window.$message.error('组织创建失败')
         }
       })
-      .catch((res) => {
-        message.error('网络故障, 请检查网络连接')
+      .catch(() => {
+        window.$message.error('网络故障, 请检查网络连接')
       })
   }
 }

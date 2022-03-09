@@ -4,7 +4,7 @@
       placeholder="请选择当前组织"
       size="large"
       v-model:value="teamName"
-      :options="teamsNameRef"
+      :options="options"
       @update-value="handleSelectTeam"
     >
       <template #action>
@@ -33,31 +33,28 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useMessage, NCard, NSelect, NButton, NTabs, NTabPane } from 'naive-ui'
+import { NCard, NSelect, NButton, NTabs, NTabPane } from 'naive-ui'
 import TeamList from '../components/team/TeamList.vue'
 import TeamSetting from '../components/team/TeamSetting.vue'
 import { getUserOrganization } from '../api/user'
-import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import TeamAdd from '../components/team/TeamAdd.vue'
 
-const message = useMessage()
-
 const teamsIdDic = new Map<string, number>()
-const teamsNameRef = ref<SelectMixedOption[]>([])
+const options = ref<any>([])
 const isTeamsAdminDic = new Map<string, boolean>()
 
 const teamId = ref()
 const teamName = ref()
-const isTeamAdmin = ref<boolean | undefined>(false)
+const isTeamAdmin = ref(false)
 
 const showAddTeamModal = ref(false)
 
 onMounted(reload)
 
-const handleSelectTeam = (value: string) => {
+function handleSelectTeam(value: string) {
   if (teamName.value != value) {
     teamName.value = value
-    isTeamAdmin.value = isTeamsAdminDic.get(value)
+    isTeamAdmin.value = isTeamsAdminDic.get(value) as boolean
     teamId.value = teamsIdDic.get(value)
   }
 }
@@ -67,21 +64,21 @@ function reload() {
     .then((res) => {
       if (res.data.success) {
         res.data.organizations.forEach((element: any) => {
-          teamsNameRef.value.push({
+          options.value.push({
             label: element.name,
             value: element.name
           })
           isTeamsAdminDic.set(element.name, element.isAdmin)
           teamsIdDic.set(element.name, element.id)
         })
-        teamName.value = teamsNameRef.value[0].label
+        teamName.value = options.value[0].label
         isTeamAdmin.value = res.data.organizations[0].isAdmin
       } else {
-        message.error('加载组织失败')
+        window.$message.error('加载组织失败')
       }
     })
-    .catch((res) => {
-      message.error('网络故障, 请检查网络连接')
+    .catch(() => {
+      window.$message.error('网络故障, 请检查网络连接')
     })
 }
 </script>

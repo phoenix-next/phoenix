@@ -63,7 +63,6 @@ import {
   NSlider
 } from 'naive-ui'
 import { createProblem } from '../../api/judge'
-import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
@@ -73,23 +72,24 @@ const router = useRouter()
 const descriptionRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const inputRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const outputRef = ref<InstanceType<typeof UploadButton> | null>(null)
-const organizationOptions = ref<SelectMixedOption[]>([])
+const organizationOptions = ref<Array<any>>([])
 const data = reactive({
   name: '',
   difficulty: 5,
   readable: 0,
   writable: 0,
-  organization: 0
+  organization: null
 })
 
 const organizationVisiable = computed(() => {
-  return data.readable > 0 || data.writable > 0
+  return (data.readable > 0 && data.readable < 3) || data.writable > 0
 })
 const uploadEnable = computed(() => {
   return (
     descriptionRef.value?.file &&
     inputRef.value?.file &&
     outputRef.value?.file &&
+    (!organizationVisiable.value || data.organization !== null) &&
     data.name !== ''
   )
 })
@@ -99,13 +99,12 @@ function clickCreate() {
   Object.keys(data).forEach((key) => {
     formData.append(key, String(data[key as keyof typeof data]))
   })
-  formData.append('input', inputRef.value?.file as File, 'input')
-  formData.append('output', outputRef.value?.file as File, 'output')
-  formData.append(
-    'description',
-    descriptionRef.value?.file as File,
-    'description'
-  )
+  formData.append('input', inputRef.value?.file as File)
+  formData.append('output', outputRef.value?.file as File)
+  formData.append('description', descriptionRef.value?.file as File)
+  if (formData.get('organization') === 'null') {
+    formData.set('organization', '0')
+  }
   createProblem(formData)
     .then((res) => {
       if (res.data.success) {
@@ -115,7 +114,7 @@ function clickCreate() {
         window.$message.warning(res.data.message)
       }
     })
-    .catch((res) => {
+    .catch(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
 }
@@ -123,18 +122,18 @@ function clickCreate() {
 onMounted(() => {
   getUserOrganization()
     .then((res) => {
-      organizationOptions.value = (res.data.organizations as Array<any>).map(
+      organizationOptions.value = (res.data.organization as Array<any>).map(
         (item) => {
-          return { label: item.name, value: item.id }
+          return { label: item.orgName, value: item.orgID }
         }
       )
     })
-    .catch((res) => {
+    .catch(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
 })
 
-const readOptions: SelectMixedOption[] = [
+const readOptions = [
   {
     label: '仅题目创建者可见',
     value: 0
@@ -152,7 +151,7 @@ const readOptions: SelectMixedOption[] = [
     value: 3
   }
 ]
-const writeOptions: SelectMixedOption[] = [
+const writeOptions = [
   {
     label: '仅题目创建者可编辑',
     value: 0

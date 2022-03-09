@@ -188,7 +188,7 @@ function handleFilterSearch() {
 }
 
 function handleDeleteMember(rowKey: number) {
-  deleteOrganizationMember(props.teamId, teamUsersId.value.at(rowKey))
+  deleteOrganizationMember(props.teamId, teamUsersId.value.at(rowKey) as number)
     .then((res) => {
       if (res.data.success) {
         window.$message.info('踢出成功')
@@ -205,7 +205,7 @@ function handleDeleteMember(rowKey: number) {
 function handleUpdateAdmin(rowKey: number) {
   if (tableData.value.at(rowKey).identity == '管理员') return
   updateOrganizationAdmin(
-    { id: teamUsersId.value.at(rowKey)?.toString() },
+    { id: teamUsersId.value.at(rowKey)?.toString() as string },
     props.teamId
   )
     .then((res) => {
@@ -222,7 +222,7 @@ function handleUpdateAdmin(rowKey: number) {
 
 function handleDeleteAdmin(rowKey: number) {
   if (tableData.value.at(rowKey).identity == '组员') return
-  deleteOrganizationAdmin(teamUsersId.value.at(rowKey), props.teamId)
+  deleteOrganizationAdmin(teamUsersId.value.at(rowKey) as number, props.teamId)
     .then((res) => {
       if (res.data.success) {
         tableData.value.at(rowKey).identity = '组员'
@@ -240,7 +240,7 @@ function reload() {
   getOrganizationMember(requestData.value).then((res) => {
     if (res.data.success) {
       var counter = 0
-      res.data.members.forEach((element) => {
+      res.data.members.forEach((element: any) => {
         tableData.value.push({
           key: counter,
           name: element.name,

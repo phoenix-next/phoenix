@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+<<<<<<< HEAD
 import {
   NDescriptions,
   NDescriptionsItem,
@@ -41,6 +42,10 @@ import { getOrganization } from '../../api/social'
 import { PencilOutline } from '@vicons/ionicons5'
 import TeamUpdate from './TeamUpdate.vue'
 const props = defineProps({
+=======
+import { NDescriptions, NDescriptionsItem } from 'naive-ui'
+defineProps({
+>>>>>>> 0130ed8b0a34f68bc9542dedc1208e9315923f4f
   isAdmin: {
     type: Boolean,
     default: false
@@ -72,4 +77,5 @@ const reload = () => {
 
 onMounted(reload)
 </script>
+
 <style scoped></style>

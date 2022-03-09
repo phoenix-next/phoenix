@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios'
 import { backend } from '../utils/request'
 
 export function login(data: { email: string; password: string }) {
