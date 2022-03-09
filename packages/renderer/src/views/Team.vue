@@ -24,7 +24,7 @@
           <team-list :teamId="teamId" :isAdmin="isTeamAdmin"> </team-list>
         </n-tab-pane>
         <n-tab-pane name="team-setting" tab="组织设定">
-          <team-setting> </team-setting>
+          <team-setting :teamId="teamId" :isAdmin="isTeamAdmin"> </team-setting>
         </n-tab-pane>
       </n-tabs>
     </n-card>

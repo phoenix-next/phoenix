@@ -26,10 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import { useMessage, NModal, NDivider, NInput } from 'naive-ui'
-import { emit } from 'process'
+import { NModal, NDivider, NInput } from 'naive-ui'
 import { ref } from 'vue'
-import { createOrganization } from '../../api/social'
+import { createOrganization } from '../../../api/social'
 
 defineProps({
   show: {
