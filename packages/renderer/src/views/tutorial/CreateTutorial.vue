@@ -79,7 +79,7 @@ function clickCreate() {
   Object.keys(data).forEach((key) => {
     formData.append(key, String(data[key as keyof typeof data]))
   })
-  formData.append('file', fileRef.value?.file as File, 'file')
+  formData.append('file', fileRef.value?.file as File)
   if (formData.get('orgID') === 'null') {
     formData.set('orgID', '0')
   }
@@ -100,9 +100,9 @@ function clickCreate() {
 onMounted(() => {
   getUserOrganization()
     .then((res) => {
-      organizationOptions.value = (res.data.organizations as Array<any>).map(
+      organizationOptions.value = (res.data.organization as Array<any>).map(
         (item) => {
-          return { label: item.name, value: item.id }
+          return { label: item.orgName, value: item.orgID }
         }
       )
     })
