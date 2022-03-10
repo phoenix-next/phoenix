@@ -129,8 +129,8 @@ function handleNext() {
         window.$message.error('网络故障, 请检查网络连接')
       })
   } else {
-    if (problemList.value.length > 10 || !problemList.value.length) {
-      window.$message.warning('一场比赛应具有1到10道题目')
+    if (problemList.value.length > 10 || problemList.value.length < 4) {
+      window.$message.warning('一场比赛应具有4到10道题目')
       return
     }
     CreateContest({
