@@ -135,7 +135,9 @@ function handleNext() {
     }
     CreateContest({
       ...data,
-      problemIDs: problemList.value
+      problemIDs: problemList.value,
+      endTime: new Date(data.endTime).toISOString(),
+      startTime: new Date(data.startTime).toISOString()
     } as any)
       .then((res) => {
         window.$message.success('创建比赛成功')
