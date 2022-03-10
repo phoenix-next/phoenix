@@ -66,7 +66,19 @@
     <n-grid>
       <n-gi :span="16">
         <n-grid :x-gap="12" :y-gap="8" :cols="1">
-          <n-gi v-for="i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]">
+          <n-gi v-if="posts.length === 0">
+            <n-empty description="是一个飞机">
+              <template #icon>
+                <n-icon>
+                  <airplane />
+                </n-icon>
+              </template>
+              <template #extra>
+                <!-- <n-button size="small"> 看看别的 </n-button> -->
+              </template>
+            </n-empty>
+          </n-gi>
+          <n-gi v-for="post in posts">
             <n-card>
               <n-layout has-sider>
                 <n-layout-sider bordered :width="80">
@@ -79,18 +91,31 @@
                 <n-layout>
                   <n-layout-content>
                     <n-text @click="handleClick">
-                      第 {{ i }} 个人的帖子标题
+                      {{ post.title }}
                     </n-text>
+                    <n-button
+                      @click="handleDelete(post.id)"
+                      size="small"
+                      style="position: absolute; right: 0"
+                    >
+                      删除
+                    </n-button>
                     <br />
-                    <n-text> 第 {{ i }} 个人的名字 </n-text>
+                    <n-text> {{ post.creatorName }} </n-text>
                     <br />
-                    <n-text>
-                      Last Mentioned in: 这玩意最后一次被回复 / 提及的时间
-                    </n-text>
+                    <n-text> Last Mentioned in: {{ post.updatedAt }} </n-text>
                   </n-layout-content>
                 </n-layout>
               </n-layout>
             </n-card>
+          </n-gi>
+          <n-gi v-if="posts.length !== 0">
+            <n-pagination
+              v-model:page="page"
+              :page-size="5"
+              :item-count="total"
+              show-quick-jumper
+            />
           </n-gi>
         </n-grid>
       </n-gi>
@@ -115,16 +140,40 @@
             <n-text type="primary"> 进入板块 </n-text>
           </n-h2>
           <n-space>
-            <n-button strong secondary round type="primary">
+            <n-button
+              strong
+              secondary
+              round
+              :type="type === 0 ? 'primary' : 'default'"
+              @click="handleSwitch(0)"
+            >
               可以这里聊点学术问题
             </n-button>
-            <n-button strong secondary round type="primary">
+            <n-button
+              strong
+              secondary
+              round
+              :type="type === 1 ? 'primary' : 'default'"
+              @click="handleSwitch(1)"
+            >
               大家平时都会灌水的吧
             </n-button>
-            <n-button strong secondary round type="primary">
+            <n-button
+              strong
+              secondary
+              round
+              :type="type === 2 ? 'primary' : 'default'"
+              @click="handleSwitch(2)"
+            >
               课程有啥公告都在这里
             </n-button>
-            <n-button strong secondary round type="primary">
+            <n-button
+              strong
+              secondary
+              round
+              :type="type === 3 ? 'primary' : 'default'"
+              @click="handleSwitch(3)"
+            >
               软件有了bug快来反馈
             </n-button>
           </n-space>
@@ -153,18 +202,21 @@ import {
   NModal,
   FormInst,
   NForm,
-  NFormItem
+  NFormItem,
+  NPagination,
+  NEmpty
 } from 'naive-ui'
-import { onMounted, ref } from 'vue'
+import { Airplane } from '@vicons/ionicons5'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
-import { createPosts } from '../../api/forum'
+import { createPosts, deletePosts, getPosts } from '../../api/forum'
 
 const router = useRouter()
 
 const organization = ref<any>(null)
 const options = ref<Array<any>>([])
-let showModal = ref(false)
+const showModal = ref(false)
 
 const formRef = ref<FormInst | null>(null)
 const formValue = ref({
@@ -184,8 +236,19 @@ const rules = {
   }
 }
 
+const posts = ref<Array<any>>([])
+const needChange = ref(false)
+const type = ref<any>(0)
+const page = ref(1)
+const total = ref(0)
+
 function handleClick() {
   router.push('/forum/1')
+}
+
+function handleSwitch(number: any) {
+  type.value = number
+  page.value = 1
 }
 
 function handleValidateClick(e: MouseEvent) {
@@ -196,13 +259,14 @@ function handleValidateClick(e: MouseEvent) {
         content: formValue.value.content,
         orgID: organization.value,
         title: formValue.value.title,
-        type: 0
+        type: type.value
       })
         .then((res) => {
           window.$message.success('发帖成功')
           formValue.value.content = ''
           formValue.value.title = ''
           showModal.value = false
+          needChange.value = !needChange.value
         })
         .catch(() => {
           window.$message.error('网络故障, 请检查网络连接')
@@ -211,6 +275,18 @@ function handleValidateClick(e: MouseEvent) {
       window.$message.error('请把标题和内容填充完整')
     }
   })
+}
+
+function handleDelete(id: any) {
+  window.$message.error(id)
+  deletePosts({ id: id })
+    .then((res) => {
+      window.$message.success(res.data.message)
+      needChange.value = !needChange.value
+    })
+    .catch(() => {
+      window.$message.error('网络故障, 请检查网络连接')
+    })
 }
 
 onMounted(() => {
@@ -228,6 +304,20 @@ onMounted(() => {
       window.$message.error('网络故障, 请检查网络连接')
     })
 })
+
+watch(
+  [needChange, organization, type, page],
+  ([needChange, organization, type, page]) => {
+    getPosts({
+      id: organization,
+      type: type,
+      page: page
+    }).then((res) => {
+      posts.value = res.data.posts
+      total.value = res.data.total
+    })
+  }
+)
 </script>
 
 <style scoped></style>
