@@ -54,6 +54,7 @@
       </n-button>
     </n-space>
   </div>
+  <change-password ref="modal" />
 </template>
 
 <script setup lang="ts">
@@ -69,6 +70,7 @@ import {
   NSpace
 } from 'naive-ui'
 import UploadButton from '../components/problem/UploadButton.vue'
+import ChangePassword from '../components/profile/ChangePassword.vue'
 import { getProfile, updateUserProfile } from '../api/user'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -78,6 +80,7 @@ const router = useRouter()
 const { signOut } = useAuthStore()
 
 const upload = ref<InstanceType<typeof UploadButton> | null>(null)
+const modal = ref<InstanceType<typeof ChangePassword> | null>(null)
 const data = reactive({
   avatar: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg',
   name: 'Loading...',
@@ -90,10 +93,20 @@ function clickUpload() {
   formData.append('avatar', upload.value?.file as File)
   updateUserProfile(formData).then((res) => {
     window.$message.success('更新头像成功')
+    upload.value?.clearFile()
   })
 }
-function clickRevise() {}
-function clickChangePassword() {}
+function clickRevise() {
+  const formData = new FormData()
+  formData.append('name', data.name)
+  formData.append('profile', data.profile)
+  updateUserProfile(formData).then((res) => {
+    window.$message.success('更新个人资料成功')
+  })
+}
+function clickChangePassword() {
+  modal.value?.openModal()
+}
 function clickLogout() {
   localStorage.removeItem('userID')
   localStorage.removeItem('token')
@@ -106,7 +119,7 @@ onMounted(() => {
   getProfile({ id: localStorage.getItem('userID') as string }).then((res) => {
     data.name = res.data.name
     data.avatar = res.data.avatar
-      ? res.data.avatar
+      ? 'https://phoenix.matrix53.top/api/v1/' + res.data.avatar
       : 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
     data.email = res.data.email
     data.profile = res.data.profile
