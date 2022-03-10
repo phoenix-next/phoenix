@@ -13,6 +13,8 @@ export function CreateContest(data: {
   orgID: number
   profile: string
   readable: number
+  startTime: number
+  endTime: number
   problemIDs: Array<number>
 }) {
   return backend.post('contests', data)

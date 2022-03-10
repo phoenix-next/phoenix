@@ -20,7 +20,11 @@
           />
         </n-form-item>
         <n-form-item path="orgID" label="绑定组织">
-          <n-select v-model:value="data.orgID" />
+          <n-select
+            v-model:value="data.orgID"
+            :options="orgOptions"
+            placeholder="选择创建比赛的组织"
+          />
         </n-form-item>
         <n-form-item path="readable" label="可读权限">
           <n-select v-model:value="data.readable" :options="readOptions" />
@@ -31,6 +35,7 @@
               type="datetime"
               class="date-picker"
               v-model:value="data.startTime"
+              placeholder="选择比赛开始时间"
             />
           </n-form-item-gi>
           <n-form-item-gi path="endTime" label="结束时间" span="12">
@@ -38,6 +43,7 @@
               type="datetime"
               class="date-picker"
               v-model:value="data.endTime"
+              placeholder="选择比赛结束时间"
             />
           </n-form-item-gi>
         </n-grid>
@@ -45,9 +51,14 @@
       <div v-else style="display: flex; justify-content: center">
         <n-transfer
           class="transfer"
-          source-title="已选题目"
-          target-title="可选题目"
+          source-title="可选题目"
+          target-title="已选题目"
           filterable
+          source-filter-placeholder="根据关键词搜索"
+          target-filter-placeholder="根据关键词搜索"
+          :options="sourceList"
+          v-model:value="problemList"
+          size="large"
         />
       </div>
     </div>
@@ -73,14 +84,16 @@ import {
   NButton,
   NTransfer
 } from 'naive-ui'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
-import { getOrgProblems } from '../../api/contest'
+import { getOrgProblems, CreateContest } from '../../api/contest'
 
 const router = useRouter()
 const current = ref(1)
-const problemList = ref([])
+const orgOptions = ref<Array<any>>([])
+const sourceList = ref<Array<any>>([])
+const problemList = ref<Array<any>>([])
 const data = reactive({
   name: '',
   profile: '',
@@ -92,16 +105,65 @@ const data = reactive({
 
 function handleNext() {
   if (current.value === 1) {
-    current.value += 1
-    console.log(data)
+    if (
+      !data.name ||
+      !data.profile ||
+      !data.startTime ||
+      !data.endTime ||
+      !data.orgID
+    ) {
+      window.$message.warning('请先完成所有信息的填写')
+      return
+    }
+    getOrgProblems({ id: data.orgID })
+      .then((res) => {
+        sourceList.value = (res.data.problemList as Array<any>).map((item) => {
+          return {
+            value: item.id,
+            label: `T${item.id} - ${item.name}`
+          }
+        })
+        current.value += 1
+      })
+      .catch(() => {
+        window.$message.error('网络故障, 请检查网络连接')
+      })
   } else {
-    current.value += 2
-    router.back()
+    if (problemList.value.length > 10 || !problemList.value.length) {
+      window.$message.warning('一场比赛应具有1到10道题目')
+      return
+    }
+    CreateContest({
+      ...data,
+      problemIDs: problemList.value
+    } as any)
+      .then((res) => {
+        window.$message.success('创建比赛成功')
+        current.value += 2
+        router.back()
+      })
+      .catch(() => {
+        window.$message.error('网络故障, 请检查网络连接')
+      })
   }
 }
 function handleCancel() {
   router.back()
 }
+
+onMounted(() => {
+  getUserOrganization()
+    .then((res) => {
+      orgOptions.value = (res.data.organization as Array<any>)
+        .filter((item) => item.isAdmin)
+        .map((item) => {
+          return { label: item.orgName, value: item.orgID }
+        })
+    })
+    .catch(() => {
+      window.$message.error('网络故障, 请检查网络连接')
+    })
+})
 
 const rules = {
   name: {
@@ -112,11 +174,6 @@ const rules = {
   profile: {
     required: true,
     message: '请输入比赛简介',
-    trigger: 'blur'
-  },
-  orgID: {
-    required: true,
-    message: '请选择绑定的组织',
     trigger: 'blur'
   }
 }
