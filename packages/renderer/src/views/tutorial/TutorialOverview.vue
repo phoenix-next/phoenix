@@ -151,9 +151,6 @@ function updateData() {
       })
       pagination.itemCount = res.data.total
     })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
     .finally(() => {
       loading.value = false
     })

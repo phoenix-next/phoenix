@@ -104,17 +104,13 @@ function clickRegister() {
     window.$message.warning('两次输入的密码不同')
     return
   }
-  register(data)
-    .then((res) => {
-      if (res.data.success) {
-        window.$message.success(res.data.message)
-      } else {
-        window.$message.warning(res.data.message)
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  register(data).then((res) => {
+    if (res.data.success) {
+      window.$message.success(res.data.message)
+    } else {
+      window.$message.warning(res.data.message)
+    }
+  })
 }
 
 function clickGetCaptcha() {
@@ -122,17 +118,13 @@ function clickGetCaptcha() {
     window.$message.warning('请先输入您的邮箱')
     return
   }
-  getCaptcha({ email: data.email })
-    .then((res) => {
-      if (res.data.success) {
-        window.$message.success(res.data.message)
-      } else {
-        window.$message.warning(res.data.message)
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  getCaptcha({ email: data.email }).then((res) => {
+    if (res.data.success) {
+      window.$message.success(res.data.message)
+    } else {
+      window.$message.warning(res.data.message)
+    }
+  })
 }
 </script>
 

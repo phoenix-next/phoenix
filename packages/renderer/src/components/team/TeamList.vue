@@ -196,9 +196,6 @@ function handleDeleteMember(rowKey: number) {
         window.$message.warning('踢出失败')
       }
     })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
     .finally(reload)
 }
 
@@ -207,32 +204,27 @@ function handleUpdateAdmin(rowKey: number) {
   updateOrganizationAdmin(
     { id: teamUsersId.value.at(rowKey)?.toString() as string },
     props.teamId
-  )
-    .then((res) => {
-      if (res.data.success) {
-        tableData.value.at(rowKey).identity = '管理员'
-      } else {
-        window.$message.warning('切换管理员失败')
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  ).then((res) => {
+    if (res.data.success) {
+      tableData.value.at(rowKey).identity = '管理员'
+    } else {
+      window.$message.warning('切换管理员失败')
+    }
+  })
 }
 
 function handleDeleteAdmin(rowKey: number) {
   if (tableData.value.at(rowKey).identity == '组员') return
-  deleteOrganizationAdmin(teamUsersId.value.at(rowKey) as number, props.teamId)
-    .then((res) => {
-      if (res.data.success) {
-        tableData.value.at(rowKey).identity = '组员'
-      } else {
-        window.$message.warning('切换组员失败')
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  deleteOrganizationAdmin(
+    teamUsersId.value.at(rowKey) as number,
+    props.teamId
+  ).then((res) => {
+    if (res.data.success) {
+      tableData.value.at(rowKey).identity = '组员'
+    } else {
+      window.$message.warning('切换组员失败')
+    }
+  })
 }
 
 function reload() {

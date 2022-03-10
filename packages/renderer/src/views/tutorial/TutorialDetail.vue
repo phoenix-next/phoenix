@@ -47,9 +47,6 @@ onMounted(() => {
       tutorial.detail = res
       pending.value = false
     })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
 })
 </script>
 

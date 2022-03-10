@@ -66,16 +66,12 @@ function handlePositiveClick() {
   createInvitation(
     { email: userEmail.value, isAdmin: userIdentity.value },
     props.teamId
-  )
-    .then((res) => {
-      if (res.data.success) {
-        message.info('已发送邀请')
-      } else {
-        message.error('邀请发送失败')
-      }
-    })
-    .catch((res) => {
-      message.error('网络故障, 请检查网络连接')
-    })
+  ).then((res) => {
+    if (res.data.success) {
+      message.info('已发送邀请')
+    } else {
+      message.error('邀请发送失败')
+    }
+  })
 }
 </script>

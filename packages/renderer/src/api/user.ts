@@ -24,3 +24,7 @@ export function getProfile(data: { id: string }) {
 export function getUserOrganization() {
   return backend.get(`users/organizations`)
 }
+
+export function updateUserProfile(data: FormData) {
+  return backend.put('users', data)
+}

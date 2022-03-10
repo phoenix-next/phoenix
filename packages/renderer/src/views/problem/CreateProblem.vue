@@ -105,32 +105,24 @@ function clickCreate() {
   if (formData.get('organization') === 'null') {
     formData.set('organization', '0')
   }
-  createProblem(formData)
-    .then((res) => {
-      if (res.data.success) {
-        window.$message.success(res.data.message)
-        router.back()
-      } else {
-        window.$message.warning(res.data.message)
-      }
-    })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  createProblem(formData).then((res) => {
+    if (res.data.success) {
+      window.$message.success(res.data.message)
+      router.back()
+    } else {
+      window.$message.warning(res.data.message)
+    }
+  })
 }
 
 onMounted(() => {
-  getUserOrganization()
-    .then((res) => {
-      organizationOptions.value = (res.data.organization as Array<any>).map(
-        (item) => {
-          return { label: item.orgName, value: item.orgID }
-        }
-      )
-    })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  getUserOrganization().then((res) => {
+    organizationOptions.value = (res.data.organization as Array<any>).map(
+      (item) => {
+        return { label: item.orgName, value: item.orgID }
+      }
+    )
+  })
 })
 
 const readOptions = [

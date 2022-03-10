@@ -69,7 +69,7 @@ import {
   NSpace
 } from 'naive-ui'
 import UploadButton from '../components/problem/UploadButton.vue'
-import { getProfile } from '../api/user'
+import { getProfile, updateUserProfile } from '../api/user'
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
@@ -85,7 +85,13 @@ const data = reactive({
   profile: 'Loading...'
 })
 
-function clickUpload() {}
+function clickUpload() {
+  const formData = new FormData()
+  formData.append('avatar', upload.value?.file as File)
+  updateUserProfile(formData).then((res) => {
+    window.$message.success('更新头像成功')
+  })
+}
 function clickRevise() {}
 function clickChangePassword() {}
 function clickLogout() {

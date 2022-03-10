@@ -56,25 +56,21 @@ function clickLogin() {
     window.$message.warning('请输入完整的登录信息')
     return
   }
-  login(data)
-    .then((res) => {
-      if (res.data.success) {
-        localStorage.setItem('token', res.data.token)
-        localStorage.setItem('userID', res.data.id)
-        signIn(res.data.token)
-        window.$message.success(res.data.message)
-        if (route.query['redirect']) {
-          router.push({ path: route.query['redirect'] as string })
-        } else {
-          router.push({ path: '/tutorial' })
-        }
+  login(data).then((res) => {
+    if (res.data.success) {
+      localStorage.setItem('token', res.data.token)
+      localStorage.setItem('userID', res.data.id)
+      signIn(res.data.token)
+      window.$message.success(res.data.message)
+      if (route.query['redirect']) {
+        router.push({ path: route.query['redirect'] as string })
       } else {
-        window.$message.warning(res.data.message)
+        router.push({ path: '/tutorial' })
       }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+    } else {
+      window.$message.warning(res.data.message)
+    }
+  })
 }
 </script>
 
