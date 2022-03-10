@@ -22,20 +22,24 @@
         show-password-on="mousedown"
       />
     </n-form-item-row>
-    <n-form-item-row label="验证码" path="captcha">
-      <n-input v-model:value="data.captcha" placeholder="输入验证码" />
-    </n-form-item-row>
+    <n-grid x-gap="12">
+      <n-form-item-grid-item span="12" label="验证码" path="captcha">
+        <n-input v-model:value="data.captcha" placeholder="输入验证码" />
+      </n-form-item-grid-item>
+      <n-form-item-grid-item span="12">
+        <n-button
+          type="primary"
+          block
+          secondary
+          strong
+          class="captcha-btn"
+          @click="clickGetCaptcha"
+        >
+          发送验证码
+        </n-button>
+      </n-form-item-grid-item>
+    </n-grid>
   </n-form>
-  <n-button
-    type="primary"
-    block
-    secondary
-    strong
-    class="captcha-btn"
-    @click="clickGetCaptcha"
-  >
-    发送验证码
-  </n-button>
   <n-button
     type="primary"
     block
@@ -51,7 +55,14 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { getCaptcha, register } from '../../api/user'
-import { NForm, NFormItemRow, NInput, NButton } from 'naive-ui'
+import {
+  NForm,
+  NFormItemRow,
+  NInput,
+  NButton,
+  NGrid,
+  NFormItemGridItem
+} from 'naive-ui'
 
 const data = reactive({
   email: '',
@@ -128,8 +139,4 @@ function clickGetCaptcha() {
 }
 </script>
 
-<style scoped>
-.signup-btn {
-  margin-top: 1.5vh;
-}
-</style>
+<style scoped></style>

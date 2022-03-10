@@ -20,19 +20,32 @@
   <n-button type="primary" block secondary strong @click="clickLogin">
     登录
   </n-button>
+  <n-button
+    type="primary"
+    block
+    secondary
+    strong
+    @click="clickForget"
+    style="margin-top: 1.5vh"
+  >
+    忘记密码
+  </n-button>
+  <forget-password ref="modal" />
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { login } from '../../api/user'
-import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
+import { useRoute, useRouter } from 'vue-router'
 import { NForm, NFormItemRow, NButton, NInput } from 'naive-ui'
+import ForgetPassword from './ForgetPassword.vue'
 
 const router = useRouter()
 const route = useRoute()
 const { signIn } = useAuthStore()
 
+const modal = ref<InstanceType<typeof ForgetPassword> | null>(null)
 const data = reactive({
   email: '',
   password: ''
@@ -51,6 +64,9 @@ const rules = {
   }
 }
 
+function clickForget() {
+  modal.value?.openModal()
+}
 function clickLogin() {
   if (data.email === '' || data.password === '') {
     window.$message.warning('请输入完整的登录信息')
