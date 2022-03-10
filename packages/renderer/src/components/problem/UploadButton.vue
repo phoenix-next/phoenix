@@ -16,14 +16,16 @@
 import { ref, computed } from 'vue'
 import { UploadFileInfo, NUpload, NButton } from 'naive-ui'
 
-const fileList = ref<UploadFileInfo[]>([])
+const emit = defineEmits(['change'])
 
+const fileList = ref<UploadFileInfo[]>([])
 const file = computed(() => {
   return fileList.value.length === 0 ? null : fileList.value[0].file
 })
 
 function handleFileChange(data: { fileList: UploadFileInfo[] }) {
   fileList.value = data.fileList
+  emit('change')
 }
 function clearFile() {
   fileList.value = []
