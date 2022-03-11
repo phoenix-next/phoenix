@@ -42,16 +42,16 @@
         </n-grid-item>
       </n-grid>
     </n-form>
-    <n-space style="margin-top: 20px; width: 40%" justify="space-between">
-      <n-button type="default" round size="large" @click="clickRevise">
-        确认修改
-      </n-button>
-      <n-button type="default" round size="large" @click="clickChangePassword">
+    <n-space
+      style="margin-top: 15px; width: 40%"
+      justify="space-between"
+      :wrap="false"
+    >
+      <n-button type="default" round @click="clickRevise"> 确认修改 </n-button>
+      <n-button type="default" round @click="clickChangePassword">
         修改密码
       </n-button>
-      <n-button type="default" round size="large" @click="clickLogout">
-        退出登录
-      </n-button>
+      <n-button type="default" round @click="clickLogout"> 退出登录 </n-button>
     </n-space>
   </div>
   <change-password ref="modal" />
