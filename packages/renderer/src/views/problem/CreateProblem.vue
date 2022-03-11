@@ -1,6 +1,7 @@
 <template>
-  <n-card>
-    <n-form :rules="rules" :model="data">
+  <div class="container">
+    <return-button />
+    <n-form :rules="rules" :model="data" style="width: 45%; margin-top: 80px">
       <n-form-item-row label="题目名称" path="name">
         <n-input v-model:value="data.name" placeholder="题目的名称" />
       </n-form-item-row>
@@ -23,29 +24,29 @@
           :options="organizationOptions"
         />
       </n-form-item-row>
+      <n-grid :x-gap="12">
+        <n-gi :span="8">
+          <upload-button ref="descriptionRef">选择题面</upload-button>
+        </n-gi>
+        <n-gi :span="8">
+          <upload-button ref="inputRef">选择输入</upload-button>
+        </n-gi>
+        <n-gi :span="8">
+          <upload-button ref="outputRef">选择输出</upload-button>
+        </n-gi>
+      </n-grid>
+      <n-button
+        type="primary"
+        block
+        secondary
+        strong
+        @click="clickCreate"
+        :disabled="!uploadEnable"
+      >
+        创建题目
+      </n-button>
     </n-form>
-    <n-grid :x-gap="12">
-      <n-gi :span="8">
-        <upload-button ref="descriptionRef">选择题面</upload-button>
-      </n-gi>
-      <n-gi :span="8">
-        <upload-button ref="inputRef">选择输入</upload-button>
-      </n-gi>
-      <n-gi :span="8">
-        <upload-button ref="outputRef">选择输出</upload-button>
-      </n-gi>
-    </n-grid>
-    <n-button
-      type="primary"
-      block
-      secondary
-      strong
-      @click="clickCreate"
-      :disabled="!uploadEnable"
-    >
-      创建题目
-    </n-button>
-  </n-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -59,11 +60,11 @@ import {
   NButton,
   NSelect,
   NFormItemRow,
-  NCard,
   NSlider
 } from 'naive-ui'
 import { createProblem } from '../../api/judge'
 import UploadButton from '../../components/problem/UploadButton.vue'
+import ReturnButton from '../../components/problem/ReturnButton.vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
 
@@ -162,4 +163,12 @@ const rules: FormRules = {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+</style>

@@ -33,7 +33,6 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
-import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import {
   UploadFileInfo,
   NCard,
@@ -101,7 +100,7 @@ onMounted(() => {
     })
 })
 
-const options: SelectMixedOption[] = [
+const options: any[] = [
   {
     label: 'C',
     value: 'C'
