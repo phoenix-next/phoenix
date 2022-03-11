@@ -52,8 +52,12 @@ onMounted(() => {
     })
     .then(() => {
       const detail = document.getElementById('detail')
-      const editor = new CustomEditor()
-      detail?.appendChild(editor)
+      detail?.querySelectorAll('code').forEach((item) => {
+        if (item.classList.length > 0) {
+          let editor = new CustomEditor({ text: item.textContent })
+          item.parentNode?.replaceChild(editor, item)
+        }
+      })
     })
 })
 </script>

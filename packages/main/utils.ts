@@ -8,7 +8,7 @@ import { diffWords } from 'diff'
 import spawn from '@npmcli/promise-spawn'
 import { DownloaderHelper } from 'node-downloader-helper'
 
-const markdown = new MarkdownIt().use(latex).use(prism)
+const markdown = new MarkdownIt().use(latex)
 const configPath = app.getPath('userData')
 const tmpPath = app.getPath('temp')
 const dataPath = join(configPath, 'data')
