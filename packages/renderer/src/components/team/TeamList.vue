@@ -43,6 +43,7 @@
       </n-space>
     </div>
     <team-invite
+      :team-id="teamId"
       v-model:show="showAddModal"
       @update:show="showAddModal = false"
     />
@@ -63,12 +64,7 @@
 </template>
 
 <script setup lang="tsx">
-import {
-  AlertCircle,
-  ReloadOutline,
-  SearchOutline,
-  AddCircleOutline
-} from '@vicons/ionicons5'
+import { AlertCircle, ReloadOutline, AddCircleOutline } from '@vicons/ionicons5'
 import {
   NDataTable,
   NIcon,
@@ -81,23 +77,24 @@ import {
   NInputGroup,
   NInput
 } from 'naive-ui'
-import { onMounted, ref, reactive, h, computed, unref } from 'vue'
+import { onMounted, ref, reactive, h, computed, unref, watch } from 'vue'
 import {
   deleteOrganizationAdmin,
   deleteOrganizationMember,
   getOrganizationMember,
   updateOrganizationAdmin
 } from '../../api/social'
-import TeamInvite from './TeamInvite.vue'
+import TeamInvite from './modal/TeamInvite.vue'
 
-const props = defineProps<{ teamId: number; isAdmin: boolean | undefined }>()
+const props = defineProps<{ teamId: number; isAdmin: boolean }>()
 
 onMounted(reload)
+
+watch(() => props.teamId, reload)
 
 const teamUsersId = ref<Array<number>>([])
 const tableData = ref<Array<any>>([])
 const showAddModal = ref(false)
-const requestData = ref()
 const isReloading = ref(false)
 const searchUserInfo = ref()
 const teamUsersNumber = computed(() => tableData.value.length)
@@ -128,7 +125,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
       <NButtonGroup>
         <NButton
           size='small'
-          disabled={props.isAdmin}
+          disabled={!props.isAdmin}
           onClick={() => {
             handleDeleteMember(rowData.key)
           }}
@@ -137,7 +134,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
         </NButton>
         <NButton
           size='small'
-          disabled={props.isAdmin}
+          disabled={!props.isAdmin}
           type={rowData.identity === '管理员' ? 'primary' : 'tertiary'}
           onClick={() => {
             handleUpdateAdmin(rowData.key)
@@ -147,7 +144,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
         </NButton>
         <NButton
           size={'small'}
-          disabled={props.isAdmin}
+          disabled={!props.isAdmin}
           type={rowData.identity === '组员' ? 'primary' : 'tertiary'}
           onClick={() => {
             handleDeleteAdmin(rowData.key)
@@ -228,19 +225,19 @@ function handleDeleteAdmin(rowKey: number) {
 }
 
 function reload() {
+  if (!props.teamId) return
   isReloading.value = true
-  getOrganizationMember(requestData.value).then((res) => {
+  getOrganizationMember(props.teamId).then((res) => {
     if (res.data.success) {
-      var counter = 0
-      res.data.members.forEach((element: any) => {
-        tableData.value.push({
-          key: counter,
-          name: element.name,
-          email: element.email,
-          identity: element.isAdmin ? '管理员' : '组员'
-        })
-        teamUsersId.value.push(element.id)
-        counter++
+      teamUsersId.value = []
+      tableData.value = res.data.Members.map((item: any, index: number) => {
+        teamUsersId.value.push(item.id)
+        return {
+          key: index,
+          name: item.name,
+          email: item.email,
+          identity: item.isAdmin ? '管理员' : '组员'
+        }
       })
     } else {
       window.$message.error('列表加载失败')

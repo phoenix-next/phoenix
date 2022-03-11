@@ -16,14 +16,16 @@
     <team-add
       v-model:show="showAddTeamModal"
       @update-show="showAddTeamModal = false"
+      @update:team-created="reload"
     ></team-add>
     <n-card>
       <n-tabs default-value="team-list" size="large">
         <n-tab-pane name="team-list" tab="成员列表">
-          <team-list :teamId="teamId" :isAdmin="isTeamAdmin"> </team-list>
+          <team-list :team-id="teamId" :is-admin="isTeamAdmin"> </team-list>
         </n-tab-pane>
         <n-tab-pane name="team-setting" tab="组织设定">
-          <team-setting> </team-setting>
+          <team-setting :team-id="teamId" :is-admin="isTeamAdmin">
+          </team-setting>
         </n-tab-pane>
       </n-tabs>
     </n-card>
@@ -36,13 +38,13 @@ import { NCard, NSelect, NButton, NTabs, NTabPane } from 'naive-ui'
 import TeamList from '../components/team/TeamList.vue'
 import TeamSetting from '../components/team/TeamSetting.vue'
 import { getUserOrganization } from '../api/user'
-import TeamAdd from '../components/team/TeamAdd.vue'
+import TeamAdd from '../components/team/modal/TeamAdd.vue'
 
 const teamsIdDic = new Map<string, number>()
 const options = ref<any>([])
 const isTeamsAdminDic = new Map<string, boolean>()
 
-const teamId = ref()
+const teamId = ref(0)
 const teamName = ref()
 const isTeamAdmin = ref(false)
 
@@ -54,23 +56,25 @@ function handleSelectTeam(value: string) {
   if (teamName.value != value) {
     teamName.value = value
     isTeamAdmin.value = isTeamsAdminDic.get(value) as boolean
-    teamId.value = teamsIdDic.get(value)
+    teamId.value = teamsIdDic.get(value) as number
   }
 }
 
 function reload() {
   getUserOrganization().then((res) => {
     if (res.data.success) {
-      res.data.organizations.forEach((element: any) => {
+      options.value.length = []
+      res.data.organization.forEach((element: any) => {
         options.value.push({
-          label: element.name,
-          value: element.name
+          label: element.orgName,
+          value: element.orgName
         })
-        isTeamsAdminDic.set(element.name, element.isAdmin)
-        teamsIdDic.set(element.name, element.id)
+        isTeamsAdminDic.set(element.orgName, element.isAdmin)
+        teamsIdDic.set(element.orgName, element.orgID)
       })
       teamName.value = options.value[0].label
-      isTeamAdmin.value = res.data.organizations[0].isAdmin
+      isTeamAdmin.value = res.data.organization[0].isAdmin
+      teamId.value = res.data.organization[0].orgID
     } else {
       window.$message.error('加载组织失败')
     }

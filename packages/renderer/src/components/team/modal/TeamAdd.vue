@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { NModal, NDivider, NInput } from 'naive-ui'
 import { ref } from 'vue'
-import { createOrganization } from '../../api/social'
+import { createOrganization } from '../../../api/social'
 
 defineProps({
   show: {
@@ -36,8 +36,7 @@ defineProps({
     default: null
   }
 })
-
-defineEmits(['update:show', 'update:team-created'])
+const emits = defineEmits(['update:show', 'update:team-created'])
 
 const newTeamName = ref('')
 const newTeamProfile = ref('')
@@ -57,6 +56,7 @@ function handlePositiveClick() {
     createOrganization(requestData).then((res) => {
       if (res.data.success) {
         window.$message.info('组织创建成功')
+        emits('update:team-created')
       } else {
         window.$message.error('组织创建失败')
       }

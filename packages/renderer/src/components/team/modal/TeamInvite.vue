@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { useMessage, NModal, NDivider, NSelect, NInput, NSpace } from 'naive-ui'
 import { ref } from 'vue'
-import { createInvitation } from '../../api/social'
+import { createInvitation } from '../../../api/social'
 
 const props = defineProps({
   show: {
@@ -63,8 +63,12 @@ const identityOptions = [
 ]
 
 function handlePositiveClick() {
+  console.log(props.teamId)
   createInvitation(
-    { email: userEmail.value, isAdmin: userIdentity.value },
+    {
+      email: userEmail.value,
+      isAdmin: userIdentity.value == '管理员' ? true : false
+    },
     props.teamId
   ).then((res) => {
     if (res.data.success) {
