@@ -22,20 +22,24 @@
         show-password-on="mousedown"
       />
     </n-form-item-row>
-    <n-form-item-row label="验证码" path="captcha">
-      <n-input v-model:value="data.captcha" placeholder="输入验证码" />
-    </n-form-item-row>
+    <n-grid x-gap="12">
+      <n-form-item-grid-item span="12" label="验证码" path="captcha">
+        <n-input v-model:value="data.captcha" placeholder="输入验证码" />
+      </n-form-item-grid-item>
+      <n-form-item-grid-item span="12">
+        <n-button
+          type="primary"
+          block
+          secondary
+          strong
+          class="captcha-btn"
+          @click="clickGetCaptcha"
+        >
+          发送验证码
+        </n-button>
+      </n-form-item-grid-item>
+    </n-grid>
   </n-form>
-  <n-button
-    type="primary"
-    block
-    secondary
-    strong
-    class="captcha-btn"
-    @click="clickGetCaptcha"
-  >
-    发送验证码
-  </n-button>
   <n-button
     type="primary"
     block
@@ -51,7 +55,14 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { getCaptcha, register } from '../../api/user'
-import { NForm, NFormItemRow, NInput, NButton } from 'naive-ui'
+import {
+  NForm,
+  NFormItemRow,
+  NInput,
+  NButton,
+  NGrid,
+  NFormItemGridItem
+} from 'naive-ui'
 
 const data = reactive({
   email: '',
@@ -104,17 +115,13 @@ function clickRegister() {
     window.$message.warning('两次输入的密码不同')
     return
   }
-  register(data)
-    .then((res) => {
-      if (res.data.success) {
-        window.$message.success(res.data.message)
-      } else {
-        window.$message.warning(res.data.message)
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  register(data).then((res) => {
+    if (res.data.success) {
+      window.$message.success(res.data.message)
+    } else {
+      window.$message.warning(res.data.message)
+    }
+  })
 }
 
 function clickGetCaptcha() {
@@ -122,22 +129,14 @@ function clickGetCaptcha() {
     window.$message.warning('请先输入您的邮箱')
     return
   }
-  getCaptcha({ email: data.email })
-    .then((res) => {
-      if (res.data.success) {
-        window.$message.success(res.data.message)
-      } else {
-        window.$message.warning(res.data.message)
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  getCaptcha({ email: data.email }).then((res) => {
+    if (res.data.success) {
+      window.$message.success(res.data.message)
+    } else {
+      window.$message.warning(res.data.message)
+    }
+  })
 }
 </script>
 
-<style scoped>
-.signup-btn {
-  margin-top: 1.5vh;
-}
-</style>
+<style scoped></style>

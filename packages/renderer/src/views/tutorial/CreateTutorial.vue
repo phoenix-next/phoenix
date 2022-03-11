@@ -1,6 +1,7 @@
 <template>
-  <n-card>
-    <n-form :rules="rules" :model="data">
+  <div class="container">
+    <return-button />
+    <n-form :rules="rules" :model="data" style="width: 45%; margin-top: 80px">
       <n-form-item-row label="教程名称" path="name">
         <n-input v-model:value="data.name" placeholder="教程的名称" />
       </n-form-item-row>
@@ -24,19 +25,19 @@
       >
         <n-select v-model:value="data.orgID" :options="organizationOptions" />
       </n-form-item-row>
+      <upload-button ref="fileRef">选择文件</upload-button>
+      <n-button
+        type="primary"
+        block
+        secondary
+        strong
+        @click="clickCreate"
+        :disabled="!uploadEnable"
+      >
+        创建教程
+      </n-button>
     </n-form>
-    <upload-button ref="fileRef">选择文件</upload-button>
-    <n-button
-      type="primary"
-      block
-      secondary
-      strong
-      @click="clickCreate"
-      :disabled="!uploadEnable"
-    >
-      创建教程
-    </n-button>
-  </n-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -47,11 +48,11 @@ import {
   NInput,
   NButton,
   NSelect,
-  NFormItemRow,
-  NCard
+  NFormItemRow
 } from 'naive-ui'
 import { createTutorial } from '../../api/tutorial'
 import UploadButton from '../../components/problem/UploadButton.vue'
+import ReturnButton from '../../components/problem/ReturnButton.vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
 
@@ -83,32 +84,24 @@ function clickCreate() {
   if (formData.get('orgID') === 'null') {
     formData.set('orgID', '0')
   }
-  createTutorial(formData)
-    .then((res) => {
-      if (res.data.success) {
-        window.$message.success(res.data.message)
-        router.back()
-      } else {
-        window.$message.warning(res.data.message)
-      }
-    })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  createTutorial(formData).then((res) => {
+    if (res.data.success) {
+      window.$message.success(res.data.message)
+      router.back()
+    } else {
+      window.$message.warning(res.data.message)
+    }
+  })
 }
 
 onMounted(() => {
-  getUserOrganization()
-    .then((res) => {
-      organizationOptions.value = (res.data.organization as Array<any>).map(
-        (item) => {
-          return { label: item.orgName, value: item.orgID }
-        }
-      )
-    })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  getUserOrganization().then((res) => {
+    organizationOptions.value = (res.data.organization as Array<any>).map(
+      (item) => {
+        return { label: item.orgName, value: item.orgID }
+      }
+    )
+  })
 })
 
 const readOptions = [
@@ -153,4 +146,12 @@ const rules: FormRules = {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+</style>

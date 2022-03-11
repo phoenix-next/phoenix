@@ -9,7 +9,7 @@
       <n-h1 class="title">{{ tutorial.name }}</n-h1>
     </n-space>
     <n-divider />
-    <div v-html="tutorial.detail"></div>
+    <div v-html="tutorial.detail" id="detail"></div>
   </n-card>
 </template>
 
@@ -47,8 +47,13 @@ onMounted(() => {
       tutorial.detail = res
       pending.value = false
     })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
+    .then(() => {
+      const detail = document.getElementById('detail')
+      detail?.querySelectorAll('code').forEach((item) => {
+        if (item.classList.length > 0) {
+          // todo
+        }
+      })
     })
 })
 </script>

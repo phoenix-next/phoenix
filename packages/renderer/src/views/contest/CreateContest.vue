@@ -115,22 +115,18 @@ function handleNext() {
       window.$message.warning('请先完成所有信息的填写')
       return
     }
-    getOrgProblems({ id: data.orgID })
-      .then((res) => {
-        sourceList.value = (res.data.problemList as Array<any>).map((item) => {
-          return {
-            value: item.id,
-            label: `T${item.id} - ${item.name}`
-          }
-        })
-        current.value += 1
+    getOrgProblems({ id: data.orgID }).then((res) => {
+      sourceList.value = (res.data.problemList as Array<any>).map((item) => {
+        return {
+          value: item.id,
+          label: `T${item.id} - ${item.name}`
+        }
       })
-      .catch(() => {
-        window.$message.error('网络故障, 请检查网络连接')
-      })
+      current.value += 1
+    })
   } else {
-    if (problemList.value.length > 10 || !problemList.value.length) {
-      window.$message.warning('一场比赛应具有1到10道题目')
+    if (problemList.value.length > 10 || problemList.value.length < 4) {
+      window.$message.warning('一场比赛应具有4到10道题目')
       return
     }
     CreateContest({
@@ -138,15 +134,11 @@ function handleNext() {
       problemIDs: problemList.value,
       endTime: new Date(data.endTime).toISOString(),
       startTime: new Date(data.startTime).toISOString()
-    } as any)
-      .then((res) => {
-        window.$message.success('创建比赛成功')
-        current.value += 2
-        router.back()
-      })
-      .catch(() => {
-        window.$message.error('网络故障, 请检查网络连接')
-      })
+    } as any).then((res) => {
+      window.$message.success('创建比赛成功')
+      current.value += 2
+      router.back()
+    })
   }
 }
 function handleCancel() {
@@ -154,17 +146,13 @@ function handleCancel() {
 }
 
 onMounted(() => {
-  getUserOrganization()
-    .then((res) => {
-      orgOptions.value = (res.data.organization as Array<any>)
-        .filter((item) => item.isAdmin)
-        .map((item) => {
-          return { label: item.orgName, value: item.orgID }
-        })
-    })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  getUserOrganization().then((res) => {
+    orgOptions.value = (res.data.organization as Array<any>)
+      .filter((item) => item.isAdmin)
+      .map((item) => {
+        return { label: item.orgName, value: item.orgID }
+      })
+  })
 })
 
 const rules = {

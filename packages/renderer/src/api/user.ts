@@ -18,9 +18,13 @@ export function register(data: {
 }
 
 export function getProfile(data: { id: string }) {
-  return backend.get(`users/${data.id}/profile`)
+  return backend.get(`users/${data.id}`)
 }
 
 export function getUserOrganization() {
   return backend.get(`users/organizations`)
+}
+
+export function updateUserProfile(data: FormData) {
+  return backend.put('users', data)
 }

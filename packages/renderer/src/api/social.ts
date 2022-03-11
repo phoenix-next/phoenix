@@ -1,7 +1,7 @@
 import { backend } from '../utils/request'
 
 export function createOrganization(data: { name: string; profile: string }) {
-  return backend.post('organizations/', data)
+  return backend.post('organizations', data)
 }
 
 export function getOrganization(teamId: number) {

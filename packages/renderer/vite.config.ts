@@ -7,7 +7,17 @@ import { chunkSplitPlugin } from 'vite-plugin-chunk-split'
 export default defineConfig({
   mode: process.env.NODE_ENV,
   root: __dirname,
-  plugins: [vue(), vueJsx(), chunkSplitPlugin({ strategy: 'single-vendor' })],
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith('custom')
+        }
+      }
+    }),
+    vueJsx(),
+    chunkSplitPlugin({ strategy: 'single-vendor' })
+  ],
   base: './',
   build: {
     emptyOutDir: true,

@@ -60,26 +60,22 @@ function handleSelectTeam(value: string) {
 }
 
 function reload() {
-  getUserOrganization()
-    .then((res) => {
-      if (res.data.success) {
-        res.data.organizations.forEach((element: any) => {
-          options.value.push({
-            label: element.name,
-            value: element.name
-          })
-          isTeamsAdminDic.set(element.name, element.isAdmin)
-          teamsIdDic.set(element.name, element.id)
+  getUserOrganization().then((res) => {
+    if (res.data.success) {
+      res.data.organizations.forEach((element: any) => {
+        options.value.push({
+          label: element.name,
+          value: element.name
         })
-        teamName.value = options.value[0].label
-        isTeamAdmin.value = res.data.organizations[0].isAdmin
-      } else {
-        window.$message.error('加载组织失败')
-      }
-    })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+        isTeamsAdminDic.set(element.name, element.isAdmin)
+        teamsIdDic.set(element.name, element.id)
+      })
+      teamName.value = options.value[0].label
+      isTeamAdmin.value = res.data.organizations[0].isAdmin
+    } else {
+      window.$message.error('加载组织失败')
+    }
+  })
 }
 </script>
 
