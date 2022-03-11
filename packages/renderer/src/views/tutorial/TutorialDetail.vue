@@ -14,17 +14,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive, defineCustomElement } from 'vue'
+import { onMounted, ref, reactive } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { NCard, NButton, NIcon, NSpace, NH1, NDivider } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
 import { getTutorial } from '../../api/tutorial'
-import Editor from '../../components/tutorial/Editor.ce.vue'
 
 const router = useRouter()
 const route = useRoute()
-const CustomEditor = defineCustomElement(Editor)
-customElements.define('custom-editor', CustomEditor)
 
 const tutorial = reactive({
   detail: '<h2>前言</h2><h2>内容</h2><h2>结语</h2>',
@@ -54,8 +51,7 @@ onMounted(() => {
       const detail = document.getElementById('detail')
       detail?.querySelectorAll('code').forEach((item) => {
         if (item.classList.length > 0) {
-          let editor = new CustomEditor({ text: item.textContent })
-          item.parentNode?.replaceChild(editor, item)
+          // todo
         }
       })
     })
