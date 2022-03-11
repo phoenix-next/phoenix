@@ -33,7 +33,6 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
-import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import {
   UploadFileInfo,
   NCard,
@@ -99,12 +98,9 @@ onMounted(() => {
       problem.description = res
       pending.value = false
     })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
 })
 
-const options: SelectMixedOption[] = [
+const options: any[] = [
   {
     label: 'C',
     value: 'C'

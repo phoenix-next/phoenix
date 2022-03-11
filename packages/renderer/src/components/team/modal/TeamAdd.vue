@@ -53,18 +53,13 @@ function handlePositiveClick() {
       name: newTeamName.value,
       profile: newTeamProfile.value
     }
-    createOrganization(requestData)
-      .then((res) => {
-        if (res.data.success) {
-          emits('update:team-created')
-          window.$message.info('组织创建成功')
-        } else {
-          window.$message.error('组织创建失败')
-        }
-      })
-      .catch(() => {
-        window.$message.error('网络故障, 请检查网络连接')
-      })
+    createOrganization(requestData).then((res) => {
+      if (res.data.success) {
+        window.$message.info('组织创建成功')
+      } else {
+        window.$message.error('组织创建失败')
+      }
+    })
   }
 }
 </script>

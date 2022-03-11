@@ -3,12 +3,12 @@
     <n-grid>
       <n-gi span="4" offset="1">
         <n-h2>
-          <n-text type="primary">教程</n-text>
+          <n-text type="primary">比赛</n-text>
         </n-h2>
       </n-gi>
       <n-gi span="14" offset="2">
         <n-input-group>
-          <n-button type="primary" class="label">查找教程</n-button>
+          <n-button type="primary" class="label">查找比赛</n-button>
           <n-input
             :style="{ width: '50%' }"
             v-model:value="keyWord"
@@ -27,7 +27,7 @@
           :disabled="!isLogin"
           @click="handleCreate"
         >
-          创建教程
+          创建比赛
         </n-button>
       </n-gi>
     </n-grid>
@@ -46,7 +46,7 @@
   </n-card>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
 import {
@@ -57,63 +57,63 @@ import {
   NDataTable,
   NButton,
   NInput,
-  NH2,
-  NText
+  NText,
+  NH2
 } from 'naive-ui'
-import { ref, reactive, onMounted, computed, h } from 'vue'
-import { getToturialList } from '../../api/tutorial'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { getContestList } from '../../api/contest'
 
 const { isLogin } = useAuthStore()
 const router = useRouter()
 
-const data = ref<Array<{ id: string; name: string; creatorName: string }>>([
-  { id: 'Loading...', name: 'Loading...', creatorName: 'Loading...' }
+const data = ref<Array<{ id: string; profile: number; name: string }>>([
+  { id: 'Loading...', profile: 1, name: 'Loading...' }
 ])
 const loading = ref(true)
-const columns = ref<any>([
+const columns = ref<Array<any>>([
   {
-    title: '教程序号',
+    title: '序号',
     key: 'id',
     sorter: true,
     sortOrder: 'ascend',
     render: (rowData: any) => {
-      return h(
-        'div',
-        {
-          onClick: handleClick(rowData.id as string),
-          style: { cursor: 'pointer' }
-        },
-        rowData.id as string
+      return (
+        <div
+          onClick={handleClick(rowData.id as string)}
+          style={{ cursor: 'pointer' }}
+        >
+          {rowData.id}
+        </div>
       )
     }
   },
   {
-    title: '教程名称',
+    title: '比赛名称',
     key: 'name',
     sorter: true,
     sortOrder: false,
     render: (rowData: any) => {
-      return h(
-        'div',
-        {
-          onClick: handleClick(rowData.id as string),
-          style: { cursor: 'pointer' }
-        },
-        rowData.name as string
+      return (
+        <div
+          onClick={handleClick(rowData.id as string)}
+          style={{ cursor: 'pointer' }}
+        >
+          {rowData.name}
+        </div>
       )
     }
   },
   {
-    title: '创建者',
-    key: 'creatorName',
+    title: '简介',
+    key: 'profile',
     render: (rowData: any) => {
-      return h(
-        'div',
-        {
-          onClick: handleClick(rowData.id as string),
-          style: { cursor: 'pointer' }
-        },
-        rowData.creatorName as string
+      return (
+        <div
+          onClick={handleClick(rowData.id as string)}
+          style={{ cursor: 'pointer' }}
+        >
+          {rowData.profile}
+        </div>
       )
     }
   }
@@ -140,14 +140,14 @@ function rowKey(rowData: any) {
 }
 function updateData() {
   loading.value = true
-  getToturialList({
+  getContestList({
     page: pagination.page as number,
     sorter: sortMethod.value,
     keyWord: keyWord.value
   })
     .then((res) => {
-      data.value = (res.data.tutorialList as Array<any>).map((item) => {
-        return { ...item, id: 'T' + item.id }
+      data.value = (res.data.contestList as Array<any>).map((item) => {
+        return { ...item, id: 'C' + item.id }
       })
       pagination.itemCount = res.data.total
     })
@@ -156,7 +156,7 @@ function updateData() {
     })
 }
 function handleCreate() {
-  router.push({ path: '/tutorial/create' })
+  router.push({ path: '/contest/create' })
 }
 function handleSearch() {
   if (!loading.value) {
@@ -165,7 +165,7 @@ function handleSearch() {
 }
 function handleClick(id: string) {
   return () => {
-    router.push({ path: '/tutorial/' + id.substring(1) })
+    router.push({ path: '/contest/' + id.substring(1) })
   }
 }
 function handleSorterChange(sorter: any) {

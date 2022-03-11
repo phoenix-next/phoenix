@@ -1,6 +1,5 @@
 <template>
-  <!-- TODO: contest page -->
-  Contest
+  <router-view />
 </template>
 
 <script setup lang="ts"></script>

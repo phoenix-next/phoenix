@@ -1,5 +1,4 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import ForumOverviewVue from '../views/Forum/ForumOverview.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -8,25 +7,42 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/contest',
-    name: 'contest',
+    name: 'contestIndex',
     meta: { requiresAuth: true },
-    component: () => import('../views/Contest.vue')
+    component: () => import('../views/contest/Index.vue'),
+    children: [
+      {
+        path: '',
+        name: 'contestOverview',
+        component: () => import('../views/contest/ContestOverview.vue')
+      },
+      {
+        path: 'create',
+        name: 'createContest',
+        component: () => import('../views/contest/CreateContest.vue')
+      },
+      {
+        path: ':id',
+        name: 'contestDetail',
+        component: () => import('../views/contest/ContestDetail.vue')
+      }
+    ]
   },
   {
     path: '/forum',
     name: 'forumIndex',
     meta: { requiresAuth: true },
-    component: () => import('../views/Forum/Index.vue'),
+    component: () => import('../views/forum/Index.vue'),
     children: [
       {
         path: '',
         name: 'forumOverview',
-        component: () => import('../views/Forum/ForumOverview.vue')
+        component: () => import('../views/forum/ForumOverview.vue')
       },
       {
         path: ':id',
         name: 'forumDetail',
-        component: () => import('../views/Forum/ForumDetail.vue')
+        component: () => import('../views/forum/ForumDetail.vue')
       }
     ]
   },
@@ -61,7 +77,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/tutorial',
-    name: 'tutorial',
+    name: 'tutorialIndex',
     component: () => import('../views/tutorial/Index.vue'),
     children: [
       {
