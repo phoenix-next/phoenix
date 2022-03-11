@@ -52,9 +52,8 @@ onMounted(() => {
       detail?.querySelectorAll('code').forEach((item) => {
         if (item.classList.length > 0) {
           const div = document.createElement('div')
-          div.style.width = '80%'
+          div.style.width = '70%'
           div.style.height = item.offsetHeight + 'px'
-          div.style.margin = 'auto'
           item.parentNode?.replaceChild(div, item)
           monaco.editor.create(div, {
             value: item.textContent as string,
