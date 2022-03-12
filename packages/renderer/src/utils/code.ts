@@ -103,6 +103,7 @@ export function addEditorAction(editor: monaco.editor.IStandaloneCodeEditor) {
             terminal.write('output:\r\n' + res)
             fitAddon.fit()
           } else {
+            // 若已有xterm实例则直接写入
             const terminal = (pre?.lastChild as any).terminal as Terminal
             terminal.clear()
             terminal.write('output:\r\n' + res)
