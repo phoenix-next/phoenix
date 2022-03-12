@@ -199,7 +199,7 @@ function handleDeleteMember(rowKey: number) {
 function handleUpdateAdmin(rowKey: number) {
   if (tableData.value.at(rowKey).identity == '管理员') return
   updateOrganizationAdmin(
-    { id: teamUsersId.value.at(rowKey)?.toString() as string },
+    { id: teamUsersId.value.at(rowKey) || 0 },
     props.teamId
   ).then((res) => {
     if (res.data.success) {

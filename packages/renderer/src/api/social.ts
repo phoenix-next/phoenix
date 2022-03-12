@@ -38,7 +38,7 @@ export function getOrganizationMember(teamId: number) {
   return backend.get(`organizations/${teamId}/users`)
 }
 
-export function updateOrganizationAdmin(data: { id: string }, teamId: number) {
+export function updateOrganizationAdmin(data: { id: number }, teamId: number) {
   return backend.post(`organizations/${teamId}/admins`, data)
 }
 
