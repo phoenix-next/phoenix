@@ -116,7 +116,7 @@ export function handleUtils() {
       // 编译源文件，并运行程序
       let compiler,
         runner,
-        stdio = [input, output, 'pipe']
+        stdio = [input, output, 'ignore']
       switch (language) {
         case 'c':
           compiler = await spawn('gcc', [srcFilePath, '-o', problem.exec], {})

@@ -55,7 +55,7 @@ const problem = reactive({
   description: '<h2>题目描述</h2><h2>题目样例</h2><h2>数据范围</h2>',
   name: '题目名称'
 })
-const language = ref('C')
+const language = ref('c')
 const program = ref<Array<UploadFileInfo>>([])
 const pending = ref(true)
 
