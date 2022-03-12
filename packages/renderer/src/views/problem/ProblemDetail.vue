@@ -26,7 +26,7 @@
       </n-upload>
     </n-space>
     <n-divider />
-    <div v-html="problem.description"></div>
+    <div v-html="problem.description" id="detail"></div>
   </n-card>
 </template>
 
@@ -97,6 +97,21 @@ onMounted(() => {
     .then((res) => {
       problem.description = res
       pending.value = false
+    })
+    .then(() => {
+      const detail = document.getElementById('detail')
+      detail?.querySelectorAll('code').forEach((item) => {
+        if (item.classList.length > 0) {
+          const div = document.createElement('div')
+          div.style.width = '70%'
+          div.style.height = item.offsetHeight + 'px'
+          item.parentNode?.replaceChild(div, item)
+          monaco.editor.create(div, {
+            value: item.textContent as string,
+            language: item.className.substring(9)
+          })
+        }
+      })
     })
 })
 
