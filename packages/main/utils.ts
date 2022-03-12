@@ -116,35 +116,50 @@ export function handleUtils() {
       // 编译源文件，并运行程序
       let compiler,
         runner,
-        stdio = [input, output, 'ignore']
+        stdio = [input, output, 'pipe']
       switch (language) {
         case 'c':
-          compiler = await spawn('gcc', [srcFilePath, '-o', problem.exec], {})
+          compiler = await spawn('gcc', [srcFilePath, '-o', problem.exec], {
+            windowsHide: true
+          })
           if (compiler.code != 0) return 'CE'
-          runner = await spawn(problem.exec, [], { stdio })
+          runner = await spawn(problem.exec, [], { stdio, windowsHide: true })
           break
         case 'cpp':
-          compiler = await spawn('g++', [srcFilePath, '-o', problem.exec], {})
+          compiler = await spawn('g++', [srcFilePath, '-o', problem.exec], {
+            windowsHide: true
+          })
           if (compiler.code != 0) return 'CE'
-          runner = await spawn(problem.exec, [], { stdio })
+          runner = await spawn(problem.exec, [], { stdio, windowsHide: true })
           break
         case 'java':
-          compiler = await spawn('javac', [srcFilePath, '-d', tmpPath], {})
+          compiler = await spawn('javac', [srcFilePath, '-d', tmpPath], {
+            windowsHide: true
+          })
           if (compiler.code != 0) return 'CE'
           runner = await spawn(
             'java',
             ['-classpath', tmpPath, basename(srcFilePath, '.java')],
-            { stdio }
+            { stdio, windowsHide: true }
           )
           break
         case 'go':
-          runner = await spawn('go', ['run', srcFilePath], { stdio })
+          runner = await spawn('go', ['run', srcFilePath], {
+            stdio,
+            windowsHide: true
+          })
           break
         case 'javascript':
-          runner = await spawn('node', [srcFilePath], { stdio })
+          runner = await spawn('node', [srcFilePath], {
+            stdio,
+            windowsHide: true
+          })
           break
         case 'python':
-          runner = await spawn('python', [srcFilePath], { stdio })
+          runner = await spawn('python', [srcFilePath], {
+            stdio,
+            windowsHide: true
+          })
           break
       }
       if (runner.code !== 0) return 'REG'
@@ -195,29 +210,44 @@ export function handleUtils() {
       stdio = ['pipe', output, 'pipe']
     switch (language) {
       case 'c':
-        compiler = await spawn('gcc', [problem.temp, '-o', problem.exec])
-        runner = await spawn(problem.exec, [], { stdio })
+        compiler = await spawn('gcc', [problem.temp, '-o', problem.exec], {
+          windowsHide: true
+        })
+        runner = await spawn(problem.exec, [], { stdio, windowsHide: true })
         break
       case 'cpp':
-        compiler = await spawn('g++', [problem.temp, '-o', problem.exec])
-        runner = await spawn(problem.exec, [], { stdio })
+        compiler = await spawn('g++', [problem.temp, '-o', problem.exec], {
+          windowsHide: true
+        })
+        runner = await spawn(problem.exec, [], { stdio, windowsHide: true })
         break
       case 'java':
-        compiler = await spawn('javac', [problem.temp, '-d', tmpPath])
+        compiler = await spawn('javac', [problem.temp, '-d', tmpPath], {
+          windowsHide: true
+        })
         runner = await spawn(
           'java',
           ['-classpath', tmpPath, basename(problem.temp, '.java')],
-          { stdio }
+          { stdio, windowsHide: true }
         )
         break
       case 'go':
-        runner = await spawn('go', ['run', problem.temp], { stdio })
+        runner = await spawn('go', ['run', problem.temp], {
+          stdio,
+          windowsHide: true
+        })
         break
       case 'javascript':
-        runner = await spawn('node', [problem.temp], { stdio })
+        runner = await spawn('node', [problem.temp], {
+          stdio,
+          windowsHide: true
+        })
         break
       case 'python':
-        runner = await spawn('python', [problem.temp], { stdio })
+        runner = await spawn('python', [problem.temp], {
+          stdio,
+          windowsHide: true
+        })
         break
     }
     // 返回标准输出的结果
