@@ -97,6 +97,7 @@ const tableData = ref<Array<any>>([])
 const showAddModal = ref(false)
 const isReloading = ref(false)
 const searchUserInfo = ref()
+const currentUserId = parseInt(localStorage.getItem('userID') as string)
 const teamUsersNumber = computed(() => tableData.value.length)
 const teamAdminsNumber = computed(() => {
   var count = 0
@@ -125,7 +126,9 @@ const buttomColumn = reactive<DataTableBaseColumn>({
       <NButtonGroup>
         <NButton
           size='small'
-          disabled={!props.isAdmin}
+          disabled={
+            !props.isAdmin || teamUsersId.value[rowData.key] == currentUserId
+          }
           onClick={() => {
             handleDeleteMember(rowData.key)
           }}
@@ -219,7 +222,7 @@ function handleDeleteAdmin(rowKey: number) {
     if (res.data.success) {
       tableData.value.at(rowKey).identity = '组员'
     } else {
-      window.$message.warning('切换组员失败')
+      window.$message.warning('切换组员失败,失败原因:' + res.data.message)
     }
   })
 }

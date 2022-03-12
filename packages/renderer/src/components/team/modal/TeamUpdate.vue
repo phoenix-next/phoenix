@@ -26,7 +26,7 @@
 </template>
 <script setup lang="ts">
 import { NModal, NDivider, NInput } from 'naive-ui'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { updateOrganization } from '../../../api/social'
 const props = defineProps<{
   show: boolean
@@ -36,13 +36,22 @@ const props = defineProps<{
 }>()
 const emits = defineEmits(['update:show', 'update:team-profile'])
 
+watch(
+  () => props.name,
+  (newName: string, oldName: string) => {
+    newTeamName.value = newName
+  }
+)
+
+watch(
+  () => props.profile,
+  (newProfile: string, oldProfile: string) => {
+    newTeamProfile.value = newProfile
+  }
+)
+
 const newTeamName = ref('')
 const newTeamProfile = ref('')
-
-onMounted(() => {
-  newTeamName.value = props.name
-  newTeamProfile.value = props.profile
-})
 
 function handlePositiveClick() {
   updateOrganization(

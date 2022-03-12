@@ -27,7 +27,7 @@
     :name="teamName"
     :profile="teamProfile"
     @update:show="showUpdateModal = false"
-    @update:team-profile="reload"
+    @update:team-profile="handleUpdateTeamProfile"
   ></team-update>
   <n-modal
     v-model:show="showQuitModal"
@@ -82,6 +82,8 @@ const props = defineProps({
   }
 })
 
+const emits = defineEmits(['update:team-setting'])
+
 const router = useRouter()
 
 const teamName = ref('')
@@ -99,6 +101,11 @@ const reload = () => {
       window.$message.info('组织信息获取失败')
     }
   })
+}
+
+function handleUpdateTeamProfile() {
+  reload()
+  emits('update:team-setting')
 }
 
 function handleQuitClick() {
