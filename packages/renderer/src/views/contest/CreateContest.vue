@@ -125,8 +125,8 @@ function handleNext() {
       current.value += 1
     })
   } else {
-    if (problemList.value.length > 10 || problemList.value.length < 4) {
-      window.$message.warning('一场比赛应具有4到10道题目')
+    if (problemList.value.length > 10 || problemList.value.length < 2) {
+      window.$message.warning('一场比赛应具有2到10道题目')
       return
     }
     CreateContest({
