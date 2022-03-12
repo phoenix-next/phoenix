@@ -48,18 +48,14 @@ function handlePositiveClick() {
   updateOrganization(
     { name: newTeamName.value, profile: newTeamProfile.value },
     props.id
-  )
-    .then((res) => {
-      if (res.data.success) {
-        emits('update:team-profile')
-        window.$message.info('组织信息已更改')
-      } else {
-        window.$message.warning('组织信息更改失败')
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  ).then((res) => {
+    if (res.data.success) {
+      emits('update:team-profile')
+      window.$message.info('组织信息已更改')
+    } else {
+      window.$message.warning('组织信息更改失败')
+    }
+  })
 }
 </script>
 
