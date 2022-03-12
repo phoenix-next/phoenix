@@ -97,12 +97,7 @@ export function handleUtils() {
 
   ipcMain.handle(
     'judgeProblem',
-    async (
-      event,
-      srcFilePath,
-      problemID,
-      language
-    ): Promise<'CE' | 'WA' | 'AC' | 'REG' | 'SystemError'> => {
+    async (event, srcFilePath, problemID, language) => {
       // set some paths
       const problem = getProblemPath(problemID)
       const output = await open(problem.output, 'w')

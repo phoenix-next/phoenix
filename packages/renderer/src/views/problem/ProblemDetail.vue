@@ -106,10 +106,19 @@ onMounted(() => {
           div.style.width = '70%'
           div.style.height = item.offsetHeight + 'px'
           item.parentNode?.replaceChild(div, item)
-          monaco.editor.create(div, {
-            value: item.textContent as string,
-            language: item.className.substring(9)
-          })
+          monaco.editor
+            .create(div, {
+              value: item.textContent as string,
+              language: item.className.substring(9),
+              scrollBeyondLastLine: false
+            })
+            .addAction({
+              id: 'Run as C',
+              label: 'Run as C',
+              run: () => {
+                console.log('test')
+              }
+            })
         }
       })
     })
