@@ -10,10 +10,6 @@ export default {
     return ipcRenderer.invoke('download', ...arguments)
   },
 
-  isProblemUpToDate(problemID: number) {
-    return ipcRenderer.invoke('isProblemUpToDate', ...arguments)
-  },
-
   downloadProblem(
     problemID: string,
     input: string,
@@ -24,11 +20,15 @@ export default {
     return ipcRenderer.invoke('downloadProblem', ...arguments)
   },
 
+  downloadTutorial(tutorialID: string, detail: string, token: string) {
+    return ipcRenderer.invoke('downloadTutorial', ...arguments)
+  },
+
   judgeProblem(srcFilePath: string, problemID: string, language: string) {
     return ipcRenderer.invoke('judgeProblem', ...arguments)
   },
 
-  downloadTutorial(tutorialID: string, detail: string, token: string) {
-    return ipcRenderer.invoke('downloadTutorial', ...arguments)
+  runCode(code: string) {
+    return ipcRenderer.invoke('runCode', code)
   }
 }

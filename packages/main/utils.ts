@@ -4,7 +4,7 @@ import { ipcMain, app } from 'electron'
 import MarkdownIt from 'markdown-it'
 import latex from 'markdown-it-texmath'
 import { diffWords } from 'diff'
-import spawn from '@npmcli/promise-spawn'
+import spawn from '@npmcli/promise-spawn' // 源码位于https://github.com/npm/promise-spawn/blob/main/index.js
 import { DownloaderHelper } from 'node-downloader-helper'
 
 const markdown = new MarkdownIt().use(latex)
@@ -64,10 +64,6 @@ export function handleUtils() {
     return download(url, savePath, option)
   })
 
-  ipcMain.handle('isProblemUpToDate', (event, problemID) => {
-    return true
-  })
-
   ipcMain.handle(
     'downloadProblem',
     (event, problemID, input, output, description, token) => {
@@ -95,6 +91,20 @@ export function handleUtils() {
     }
   )
 
+  ipcMain.handle('downloadTutorial', (event, tutorialID, detail, token) => {
+    const tutorial = getTutorialPath(tutorialID)
+    return download(remote + detail, dataPath, {
+      fileName: basename(tutorial.detail),
+      headers: { 'x-token': token }
+    })
+      .then((res) => {
+        return readFile(tutorial.detail, 'utf-8')
+      })
+      .then((res) => {
+        return markdown.render(res)
+      })
+  })
+
   ipcMain.handle(
     'judgeProblem',
     async (event, srcFilePath, problemID, language) => {
@@ -107,17 +117,17 @@ export function handleUtils() {
         runner,
         stdio = [input, output, 'pipe']
       switch (language) {
-        case 'C':
+        case 'c':
           compiler = await spawn('gcc', [srcFilePath, '-o', problem.exec], {})
           if (compiler.code != 0) return 'CE'
-          runner = await spawn(problem.exec, [], { stdio })
+          compiler.runner = await spawn(problem.exec, [], { stdio })
           break
-        case 'C++':
+        case 'cpp':
           compiler = await spawn('g++', [srcFilePath, '-o', problem.exec], {})
           if (compiler.code != 0) return 'CE'
           runner = await spawn(problem.exec, [], { stdio })
           break
-        case 'Java':
+        case 'java':
           compiler = await spawn('javac', [srcFilePath, '-d', tmpPath], {})
           if (compiler.code != 0) return 'CE'
           runner = await spawn(
@@ -126,13 +136,13 @@ export function handleUtils() {
             { stdio }
           )
           break
-        case 'Golang':
+        case 'go':
           runner = await spawn('go', ['run', srcFilePath], { stdio })
           break
-        case 'JavaScript':
+        case 'javascript':
           runner = await spawn('node', [srcFilePath], { stdio })
           break
-        case 'Python':
+        case 'python':
           runner = await spawn('python', [srcFilePath], { stdio })
           break
       }
@@ -152,17 +162,7 @@ export function handleUtils() {
     }
   )
 
-  ipcMain.handle('downloadTutorial', (event, tutorialID, detail, token) => {
-    const tutorial = getTutorialPath(tutorialID)
-    return download(remote + detail, dataPath, {
-      fileName: basename(tutorial.detail),
-      headers: { 'x-token': token }
-    })
-      .then((res) => {
-        return readFile(tutorial.detail, 'utf-8')
-      })
-      .then((res) => {
-        return markdown.render(res)
-      })
+  ipcMain.handle('runCode', (event, code: string) => {
+    return 'AC'
   })
 }

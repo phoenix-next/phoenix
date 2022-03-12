@@ -114,27 +114,27 @@ onMounted(() => {
 const options: any[] = [
   {
     label: 'C',
-    value: 'C'
+    value: 'c'
   },
   {
     label: 'C++',
-    value: 'C++'
+    value: 'cpp'
   },
   {
     label: 'Java',
-    value: 'Java'
+    value: 'java'
   },
   {
     label: 'Golang',
-    value: 'Golang'
+    value: 'go'
   },
   {
     label: 'JavaScript',
-    value: 'JavaScript'
+    value: 'javascript'
   },
   {
     label: 'Python',
-    value: 'Python'
+    value: 'python'
   }
 ]
 </script>
