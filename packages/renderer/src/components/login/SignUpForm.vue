@@ -55,7 +55,6 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { getCaptcha, register } from '../../api/user'
-import { useRouter } from 'vue-router'
 import {
   NForm,
   NFormItemRow,
@@ -64,7 +63,8 @@ import {
   NGrid,
   NFormItemGridItem
 } from 'naive-ui'
-import router from '../../router'
+
+const emit = defineEmits(['finishRegister'])
 
 const data = reactive({
   email: '',
@@ -120,7 +120,7 @@ function clickRegister() {
   register(data).then((res) => {
     if (res.data.success) {
       window.$message.success(res.data.message)
-      router.push('/profile')
+      emit('finishRegister')
     } else {
       window.$message.warning(res.data.message)
     }
