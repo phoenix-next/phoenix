@@ -1,5 +1,5 @@
 import { join, basename } from 'path'
-import { open, close, readFile, ensureDir } from 'fs-extra'
+import { open, close, readFile, ensureDir, outputFile } from 'fs-extra'
 import { ipcMain, app } from 'electron'
 import MarkdownIt from 'markdown-it'
 import latex from 'markdown-it-texmath'
@@ -16,11 +16,12 @@ const remote = 'https://phoenix.matrix53.top/api/v1/'
 // 获取题面、输入、输出的本地存储位置，以及临时程序、临时输出文件的本地存储位置
 function getProblemPath(problemID: string) {
   return {
-    input: join(dataPath, 'in_' + problemID),
-    answer: join(dataPath, 'ans_' + problemID),
     description: join(dataPath, 'des_' + problemID),
+    answer: join(dataPath, 'ans_' + problemID),
     exec: join(tmpPath, 'exec_' + problemID),
-    output: join(tmpPath, 'out_' + problemID)
+    input: join(dataPath, 'in_' + problemID),
+    output: join(tmpPath, 'out_' + problemID),
+    temp: join(tmpPath, 'temp_' + problemID)
   }
 }
 
@@ -108,11 +109,11 @@ export function handleUtils() {
   ipcMain.handle(
     'judgeProblem',
     async (event, srcFilePath, problemID, language) => {
-      // set some paths
       const problem = getProblemPath(problemID)
+      // 设置程序的输入文件和输出文件
       const output = await open(problem.output, 'w')
       const input = await open(problem.input, 'r')
-      // compile and run
+      // 编译源文件，并运行程序
       let compiler,
         runner,
         stdio = [input, output, 'pipe']
@@ -120,7 +121,7 @@ export function handleUtils() {
         case 'c':
           compiler = await spawn('gcc', [srcFilePath, '-o', problem.exec], {})
           if (compiler.code != 0) return 'CE'
-          compiler.runner = await spawn(problem.exec, [], { stdio })
+          runner = await spawn(problem.exec, [], { stdio })
           break
         case 'cpp':
           compiler = await spawn('g++', [srcFilePath, '-o', problem.exec], {})
@@ -146,8 +147,8 @@ export function handleUtils() {
           runner = await spawn('python', [srcFilePath], { stdio })
           break
       }
-      if (runner.code != 0) return 'REG'
-      // compare output and answer
+      if (runner.code !== 0) return 'REG'
+      // 比较正确答案和实际输出的答案
       close(input)
       close(output)
       const ansStr = await readFile(problem.answer, 'utf8')
@@ -162,7 +163,66 @@ export function handleUtils() {
     }
   )
 
-  ipcMain.handle('runCode', (event, code: string) => {
-    return 'AC'
+  ipcMain.handle('runCode', async (event, code: string, language: string) => {
+    const problem = getProblemPath('pseudo')
+    // 将源代码输出到临时文件，并添加文件后缀
+    switch (language) {
+      case 'c':
+        problem.temp += '.c'
+        break
+      case 'cpp':
+        problem.temp += '.cpp'
+        break
+      case 'java':
+        problem.temp += '.java'
+        break
+      case 'go':
+        problem.temp += '.go'
+        break
+      case 'javascript':
+        problem.temp += '.js'
+        break
+      case 'python':
+        problem.temp += '.py'
+        break
+    }
+    await outputFile(problem.temp, code)
+    // 程序运行的输出文件，目前没有实现输入功能
+    const output = await open(problem.output, 'w')
+    // 编译临时文件，并运行程序
+    let compiler,
+      runner,
+      stdio = ['pipe', output, 'pipe']
+    switch (language) {
+      case 'c':
+        compiler = await spawn('gcc', [problem.temp, '-o', problem.exec])
+        runner = await spawn(problem.exec, [], { stdio })
+        break
+      case 'cpp':
+        compiler = await spawn('g++', [problem.temp, '-o', problem.exec])
+        runner = await spawn(problem.exec, [], { stdio })
+        break
+      case 'java':
+        compiler = await spawn('javac', [problem.temp, '-d', tmpPath])
+        runner = await spawn(
+          'java',
+          ['-classpath', tmpPath, basename(problem.temp, '.java')],
+          { stdio }
+        )
+        break
+      case 'go':
+        runner = await spawn('go', ['run', problem.temp], { stdio })
+        break
+      case 'javascript':
+        runner = await spawn('node', [problem.temp], { stdio })
+        break
+      case 'python':
+        runner = await spawn('python', [problem.temp], { stdio })
+        break
+    }
+    // 返回标准输出的结果
+    close(output)
+    const outStr = await readFile(problem.output, 'utf8')
+    return outStr
   })
 }

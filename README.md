@@ -13,7 +13,7 @@
 ```bash
 git clone https://github.com/phoenix-next/phoenix
 cd phoenix
-npm install
+npm ci
 npm run dev
 ```
 

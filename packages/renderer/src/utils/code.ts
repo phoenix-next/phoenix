@@ -55,7 +55,14 @@ export function addEditorAction(editor: monaco.editor.IStandaloneCodeEditor) {
     label: 'Run code in editor',
     id: 'Run code in editor',
     run: (instance) => {
-      console.log(instance.getValue())
+      window.utilsBridge
+        .runCode(
+          instance.getValue(),
+          instance.getModel()?.getLanguageId() || ''
+        )
+        .then((res) => {
+          console.log(res)
+        })
       console.log(instance.getDomNode())
     }
   })

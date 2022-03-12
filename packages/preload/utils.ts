@@ -28,7 +28,7 @@ export default {
     return ipcRenderer.invoke('judgeProblem', ...arguments)
   },
 
-  runCode(code: string) {
-    return ipcRenderer.invoke('runCode', code)
+  runCode(code: string, language: string) {
+    return ipcRenderer.invoke('runCode', ...arguments)
   }
 }
