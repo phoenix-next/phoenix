@@ -110,7 +110,7 @@ function handleQuitClick() {
   deleteOrganizationMember(props.teamId, parseInt(userId))
     .then((res) => {
       if (res.data.success) {
-        router.push({ path: `/profile/${userId}` })
+        router.push({ path: '/profile' })
       } else {
         window.$message.warning('退出组织失败')
       }
@@ -124,7 +124,7 @@ function handleDeleteClick() {
   deleteOrganization(props.teamId)
     .then((res) => {
       if (res.data.success) {
-        router.push({ path: `/profile/${localStorage.getItem('userID')}` })
+        router.push({ path: '/profile' })
       } else {
         window.$message.warning('解散组织失败')
       }

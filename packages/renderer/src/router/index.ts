@@ -110,12 +110,12 @@ const routes: RouteRecordRaw[] = [
     beforeEnter: (to, from) => {
       let userID = localStorage.getItem('userID')
       if (userID !== null) {
-        return { path: '/profile/' + userID }
+        return { path: '/profile' }
       }
     }
   },
   {
-    path: '/profile/:userID',
+    path: '/profile',
     name: 'profile',
     meta: { requiresAuth: true },
     component: () => import('../views/Profile.vue')
