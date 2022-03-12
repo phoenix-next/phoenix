@@ -19,6 +19,7 @@ import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { NCard, NButton, NIcon, NSpace, NH1, NDivider } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
 import { getTutorial } from '../../api/tutorial'
+import { addEditorAction, createEditor } from '../../utils/code'
 
 const router = useRouter()
 const route = useRoute()
@@ -51,14 +52,9 @@ onMounted(() => {
       const detail = document.getElementById('detail')
       detail?.querySelectorAll('code').forEach((item) => {
         if (item.classList.length > 0) {
-          const div = document.createElement('div')
-          div.style.width = '70%'
-          div.style.height = item.offsetHeight + 'px'
-          item.parentNode?.replaceChild(div, item)
-          monaco.editor.create(div, {
-            value: item.textContent as string,
-            language: item.className.substring(9)
-          })
+          ;(item.parentElement as HTMLElement).style.width = '100%'
+          const editor = createEditor(item, item.className.substring(9))
+          addEditorAction(editor)
         }
       })
     })
