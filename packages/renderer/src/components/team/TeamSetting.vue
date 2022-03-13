@@ -27,7 +27,7 @@
     :name="teamName"
     :profile="teamProfile"
     @update:show="showUpdateModal = false"
-    @update:team-profile="reload"
+    @update:team-profile="handleUpdateTeamProfile"
   ></team-update>
   <n-modal
     v-model:show="showQuitModal"
@@ -82,6 +82,8 @@ const props = defineProps({
   }
 })
 
+const emits = defineEmits(['update:team-setting'])
+
 const router = useRouter()
 
 const teamName = ref('')
@@ -91,47 +93,40 @@ const showQuitModal = ref(false)
 const showDeleteModal = ref(false)
 
 const reload = () => {
-  getOrganization(props.teamId)
-    .then((res) => {
-      if (res.data.success) {
-        teamName.value = res.data.name
-        teamProfile.value = res.data.profile
-      } else {
-        window.$message.info('组织信息获取失败')
-      }
-    })
-    .catch((res) => {
-      window.$message.info('网络故障, 请检查网络连接')
-    })
+  getOrganization(props.teamId).then((res) => {
+    if (res.data.success) {
+      teamName.value = res.data.name
+      teamProfile.value = res.data.profile
+    } else {
+      window.$message.info('组织信息获取失败')
+    }
+  })
+}
+
+function handleUpdateTeamProfile() {
+  reload()
+  emits('update:team-setting')
 }
 
 function handleQuitClick() {
   const userId = localStorage.getItem('userID') as string
-  deleteOrganizationMember(props.teamId, parseInt(userId))
-    .then((res) => {
-      if (res.data.success) {
-        router.push({ path: '/profile' })
-      } else {
-        window.$message.warning('退出组织失败')
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  deleteOrganizationMember(props.teamId, parseInt(userId)).then((res) => {
+    if (res.data.success) {
+      router.push({ path: '/profile' })
+    } else {
+      window.$message.warning('退出组织失败')
+    }
+  })
 }
 
 function handleDeleteClick() {
-  deleteOrganization(props.teamId)
-    .then((res) => {
-      if (res.data.success) {
-        router.push({ path: '/profile' })
-      } else {
-        window.$message.warning('解散组织失败')
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  deleteOrganization(props.teamId).then((res) => {
+    if (res.data.success) {
+      router.push({ path: '/profile' })
+    } else {
+      window.$message.warning('解散组织失败')
+    }
+  })
 }
 
 onMounted(reload)
