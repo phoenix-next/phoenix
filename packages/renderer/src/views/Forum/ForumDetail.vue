@@ -98,6 +98,7 @@ const rules = {
   }
 }
 
+const isAdmin = ref(false)
 const title = ref('')
 const content = ref('')
 const creatorID = ref(0)
@@ -125,6 +126,7 @@ function handleDel() {
 }
 
 function canDelPost() {
+  if (isAdmin.value) return true
   if (creatorID.value == parseInt(localStorage.getItem('userID') as string))
     return true
   return false
