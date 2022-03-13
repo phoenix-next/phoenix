@@ -39,12 +39,12 @@ const newTeamName = ref('')
 const newTeamProfile = ref('')
 
 function handlePositiveClick() {
-  updateOrganization(
-    { name: newTeamName.value, profile: newTeamProfile.value },
-    route.params.id as string
-  ).then((res) => {
+  updateOrganization({
+    name: newTeamName.value,
+    profile: newTeamProfile.value,
+    teamID: route.params.id as string
+  }).then((res) => {
     if (res.data.success) {
-      window.$message.info('组织信息已更改')
       emits('update:team-profile')
     }
   })

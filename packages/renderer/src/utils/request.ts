@@ -13,6 +13,8 @@ backend.interceptors.response.use(
   (response) => {
     if (!response.data.success) {
       window.$message.warning(response.data.message)
+    } else if (response.data.message) {
+      window.$message.success(response.data.message)
     }
     return response
   },

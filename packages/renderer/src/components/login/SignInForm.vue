@@ -77,7 +77,6 @@ function clickLogin() {
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('userID', res.data.id)
       signIn(res.data.token)
-      window.$message.success(res.data.message)
       if (route.query['redirect']) {
         router.push({ path: route.query['redirect'] as string })
       } else {

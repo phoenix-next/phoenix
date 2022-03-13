@@ -69,7 +69,6 @@ function clickConfirm() {
   formData.append('password', data.password)
   updateUserProfile(formData).then((res) => {
     if (res.data.success) {
-      window.$message.success('修改密码成功')
       data.oldPassword = ''
       data.password = ''
       data.repeatPassword = ''

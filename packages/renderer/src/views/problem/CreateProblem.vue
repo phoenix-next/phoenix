@@ -108,7 +108,6 @@ function clickCreate() {
   }
   createProblem(formData).then((res) => {
     if (res.data.success) {
-      window.$message.success(res.data.message)
       router.back()
     }
   })

@@ -49,7 +49,6 @@ function handlePositiveClick() {
     profile: newTeamProfile.value
   }).then((res) => {
     if (res.data.success) {
-      window.$message.info('组织创建成功')
       emits('update:team-created')
     }
   })

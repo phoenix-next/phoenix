@@ -49,16 +49,10 @@ const identityOptions = [
 ]
 
 function handlePositiveClick() {
-  createInvitation(
-    {
-      email: userEmail.value,
-      isAdmin: userIdentity.value === '管理员'
-    },
-    route.params.id as string
-  ).then((res) => {
-    if (res.data.success) {
-      window.$message.info('已发送邀请')
-    }
+  createInvitation({
+    email: userEmail.value,
+    isAdmin: userIdentity.value === '管理员',
+    teamID: route.params.id as string
   })
 }
 function open() {

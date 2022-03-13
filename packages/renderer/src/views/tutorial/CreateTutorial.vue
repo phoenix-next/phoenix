@@ -86,7 +86,6 @@ function clickCreate() {
   }
   createTutorial(formData).then((res) => {
     if (res.data.success) {
-      window.$message.success(res.data.message)
       router.back()
     }
   })
