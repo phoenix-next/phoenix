@@ -130,7 +130,7 @@ function clickGetCaptcha() {
     window.$message.warning('请先输入您的邮箱')
     return
   }
-  getCaptcha({ email: data.email }).then((res) => {
+  getCaptcha({ email: data.email, type: 1 }).then((res) => {
     if (res.data.success) {
       window.$message.success(res.data.message)
     }
