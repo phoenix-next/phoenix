@@ -70,7 +70,7 @@
             <n-empty description="是一个飞机">
               <template #icon>
                 <n-icon>
-                  <ios-airplane />
+                  <airplane />
                 </n-icon>
               </template>
               <template #extra>
@@ -206,7 +206,7 @@ import {
   NPagination,
   NEmpty
 } from 'naive-ui'
-// import { IosAirplane } from '@vicons/ionicons5'
+import { Airplane } from '@vicons/ionicons5'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
