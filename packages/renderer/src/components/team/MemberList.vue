@@ -8,7 +8,7 @@
         </span>
         个成员，
         <span class="table-tool-bar-number">
-          {{ teamAdminsNumber }}
+          {{ tableData.filter((item) => item.isAdmin).length }}
         </span>
         个管理员
       </div>
@@ -48,7 +48,6 @@
   </div>
   <div class="table-context">
     <n-data-table
-      ref="table"
       :columns="columns"
       :data="tableData"
       :loading="isReloading"
@@ -74,7 +73,7 @@ import {
   NInputGroup,
   NInput
 } from 'naive-ui'
-import { onMounted, ref, reactive, computed, unref } from 'vue'
+import { onMounted, ref, reactive, unref } from 'vue'
 import {
   deleteOrganizationAdmin,
   deleteOrganizationMember,
@@ -93,18 +92,14 @@ const isAdmin = ref(false)
 const searchUserInfo = ref('')
 const teamInvite = ref<InstanceType<typeof TeamInvite> | null>(null)
 
-const teamAdminsNumber = computed(() => {
-  return tableData.value.filter((item) => item.isAdmin).length
-})
-
 const nameColumn = reactive<DataTableBaseColumn>({
   title: '姓名',
   key: 'name',
+  filter: 'default',
+  filterOptionValue: null,
   sorter(rowA: any, rowB: any) {
     return rowA.name.length - rowB.name.length
-  },
-  filter: 'default',
-  filterOptionValue: null
+  }
 })
 const buttomColumn = reactive<DataTableBaseColumn>({
   title: '操作',
@@ -161,8 +156,8 @@ const columns = reactive<DataTableColumns>([
 ])
 const pagination = reactive({
   page: 1,
-  itemCount: unref(tableData).length,
   pageSize: 10,
+  itemCount: unref(tableData).length,
   onChange: (page: number) => {
     pagination.page = page
   }
@@ -185,7 +180,8 @@ function handleUpdateAdmin(rowData: any) {
   updateOrganizationAdmin({ id: rowData.id }, route.params.id as string).then(
     (res) => {
       if (res.data.success) {
-        tableData.value.at(rowData.key).identity = '管理员'
+        tableData.value[rowData.key].identity = '管理员'
+        tableData.value[rowData.key].isAdmin = true
       }
     }
   )
@@ -194,7 +190,8 @@ function handleDeleteAdmin(rowData: any) {
   if (!rowData.isAdmin) return
   deleteOrganizationAdmin(rowData.id, route.params.id as string).then((res) => {
     if (res.data.success) {
-      tableData.value.at(rowData.key).identity = '组员'
+      tableData.value[rowData.key].identity = '组员'
+      tableData.value[rowData.key].isAdmin = false
     }
   })
 }

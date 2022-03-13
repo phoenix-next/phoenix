@@ -12,7 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
 import { NTabs, NTabPane } from 'naive-ui'
 import MemberList from '../../components/team/MemberList.vue'
 import TeamSetting from '../../components/team/TeamSetting.vue'
