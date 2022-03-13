@@ -4,7 +4,7 @@ export function login(data: { email: string; password: string }) {
   return backend.post('tokens', data)
 }
 
-export function getCaptcha(data: { email: string }) {
+export function getCaptcha(data: { email: string; type: number }) {
   return backend.post('captcha', data)
 }
 
