@@ -206,7 +206,7 @@ import {
   NPagination,
   NEmpty
 } from 'naive-ui'
-import { IosAirplane } from '@vicons/ionicons5'
+// import { IosAirplane } from '@vicons/ionicons5'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
