@@ -8,21 +8,13 @@
         <team-invitation />
       </n-tab-pane>
     </n-tabs>
-    <n-button @click="handleClick">重构中</n-button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { NTabs, NTabPane, NButton } from 'naive-ui'
+import { NTabs, NTabPane } from 'naive-ui'
 import TeamList from '../../components/team/TeamList.vue'
 import TeamInvitation from '../../components/team/TeamInvitation.vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-function handleClick() {
-  router.push({ path: '/team/1' })
-}
 </script>
 
 <style scoped>
