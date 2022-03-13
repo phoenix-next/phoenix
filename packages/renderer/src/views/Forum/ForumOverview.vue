@@ -90,7 +90,7 @@
                 </n-layout-sider>
                 <n-layout>
                   <n-layout-content>
-                    <n-text @click="handleClick">
+                    <n-text @click="handleClick(post.id)">
                       {{ post.title }}
                     </n-text>
                     <n-button
@@ -242,8 +242,8 @@ const type = ref<any>(0)
 const page = ref(1)
 const total = ref(0)
 
-function handleClick() {
-  router.push('/forum/1')
+function handleClick(id: number) {
+  router.push(`/forum/${id}`)
 }
 
 function handleSwitch(number: any) {
@@ -261,7 +261,7 @@ function handleValidateClick(e: MouseEvent) {
         title: formValue.value.title,
         type: type.value
       }).then((res) => {
-        window.$message.success('发帖成功')
+        if (res.data.success) window.$message.success('发帖成功')
         formValue.value.content = ''
         formValue.value.title = ''
         showModal.value = false

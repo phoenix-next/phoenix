@@ -18,3 +18,11 @@ export function createPosts(data: {
 export function deletePosts(data: { id: number }) {
   return backend.delete(`posts/${data.id}`)
 }
+
+export function createComments(data: {
+  id: number
+  content: string
+  toID: number
+}) {
+  return backend.post(`posts/${data.id}/comments`, data)
+}
