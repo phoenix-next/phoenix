@@ -26,3 +26,7 @@ export function createComments(data: {
 }) {
   return backend.post(`posts/${data.id}/comments`, data)
 }
+
+export function getAllComments(data: { id: number }) {
+  return backend.get(`posts/${data.id}/comments`)
+}

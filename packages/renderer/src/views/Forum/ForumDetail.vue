@@ -48,12 +48,9 @@
       <n-button @click="handleReply">回复</n-button>
     </n-space>
     <n-divider />
-    <n-card
-      v-for="i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-      style="margin-top: 20px"
-    >
-      第 {{ i }} 个人的名字 <br />
-      第 {{ i }} 个人的回复内容
+    <n-card v-for="comment in comments" style="margin-top: 20px">
+      Replyed by: {{ comment.creatorName }} <br />
+      {{ comment.content }}
     </n-card>
   </n-card>
 </template>
@@ -61,8 +58,8 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
-import { createComments } from '../../api/forum'
-import { ref } from 'vue'
+import { createComments, getAllComments } from '../../api/forum'
+import { onMounted, ref, watch } from 'vue'
 import {
   NCard,
   NButton,
@@ -92,6 +89,10 @@ const rules = {
   }
 }
 
+const comments = ref<Array<any>>([])
+const total = ref(0)
+const needChange = ref(false)
+
 function clickReturn() {
   router.back()
 }
@@ -113,13 +114,33 @@ function handleValidateClick(e: MouseEvent) {
         window.$message.success('回复成功')
         formValue.value.content = ''
         showModal.value = false
-        console.log(res.data)
+        needChange.value = !needChange.value
       })
     } else {
       window.$message.error('回复的内容不能为空')
     }
   })
 }
+
+onMounted(() => {
+  getAllComments({ id: parseInt(route.params.id as string) }).then((res) => {
+    console.log(res.data)
+    if (res.data.success) {
+      comments.value = res.data.comments
+      window.$message.success(res.data.message)
+    }
+  })
+})
+
+watch([needChange], () => {
+  getAllComments({ id: parseInt(route.params.id as string) }).then((res) => {
+    console.log(res.data)
+    if (res.data.success) {
+      comments.value = res.data.comments
+      window.$message.success(res.data.message)
+    }
+  })
+})
 </script>
 
 <style scoped>
