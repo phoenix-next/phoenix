@@ -32,3 +32,7 @@ export function updateUserProfile(data: FormData) {
 export function quitOrganization(data: { id: string }) {
   return backend.delete(`users/organizations/${data.id}`)
 }
+
+export function getUserInvitation() {
+  return backend.get('users/invitations')
+}
