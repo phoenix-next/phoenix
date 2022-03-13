@@ -21,7 +21,7 @@
     <n-card>
       <n-tabs default-value="team-list" size="large">
         <n-tab-pane name="team-list" tab="成员列表">
-          <team-list :team-id="teamId" :is-admin="isTeamAdmin"> </team-list>
+          <member-list :team-id="teamId" :is-admin="isTeamAdmin"> </member-list>
         </n-tab-pane>
         <n-tab-pane name="team-setting" tab="组织设定">
           <team-setting
@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { NCard, NSelect, NButton, NTabs, NTabPane } from 'naive-ui'
-import TeamList from '../components/team/TeamList.vue'
+import MemberList from '../components/team/MemberList.vue'
 import TeamSetting from '../components/team/TeamSetting.vue'
 import { getUserOrganization } from '../api/user'
 import TeamAdd from '../components/team/modal/TeamAdd.vue'
