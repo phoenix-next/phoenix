@@ -12,7 +12,7 @@
         </span>
         个管理员
       </div>
-      <n-tooltip trigger="hover" v-if="teamInfo.isAdmin">
+      <n-tooltip trigger="hover" v-if="isAdmin">
         <template #trigger>
           <n-icon size="18" class="cursor-pointer">
             <alert-circle />
@@ -25,7 +25,7 @@
       <n-space justify="space-between">
         <n-input-group>
           <n-input
-            :style="{ width: '100%' }"
+            style="width: 100%"
             placeholder="请输入搜索的用户名"
             v-model:value="searchUserInfo"
           />
@@ -79,32 +79,27 @@ import {
   deleteOrganizationAdmin,
   deleteOrganizationMember,
   getOrganizationMember,
-  updateOrganizationAdmin,
-  getOrganization
+  updateOrganizationAdmin
 } from '../../api/social'
 import TeamInvite from './modal/TeamInvite.vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
+const userID = parseInt(localStorage.getItem('userID') as string)
 
-const teamUsersId = ref<Array<number>>([])
 const tableData = ref<Array<any>>([])
 const isReloading = ref(false)
-const searchUserInfo = ref()
+const isAdmin = ref(false)
+const searchUserInfo = ref('')
 const teamInvite = ref<InstanceType<typeof TeamInvite> | null>(null)
+
 const teamUsersNumber = computed(() => tableData.value.length)
 const teamAdminsNumber = computed(() => {
   return tableData.value.filter((item) => {
-    item.identity == '管理员'
+    item.identity === '管理员'
   }).length
 })
 
-const teamInfo = reactive({
-  isAdmin: false,
-  isValid: false,
-  name: '',
-  profile: ''
-})
 const nameColumn = reactive<DataTableBaseColumn>({
   title: '姓名',
   key: 'name',
@@ -123,33 +118,29 @@ const buttomColumn = reactive<DataTableBaseColumn>({
       <NButtonGroup>
         <NButton
           size='small'
-          disabled={
-            !teamInfo.isAdmin ||
-            teamUsersId.value[rowData.key] ===
-              parseInt(localStorage.getItem('userID') as string)
-          }
+          disabled={!isAdmin || rowData.id === userID}
           onClick={() => {
-            handleDeleteMember(rowData.key)
+            handleDeleteMember(rowData)
           }}
         >
           踢出组织
         </NButton>
         <NButton
           size='small'
-          disabled={!teamInfo.isAdmin}
-          type={rowData.identity === '管理员' ? 'primary' : 'tertiary'}
+          disabled={!isAdmin}
+          type={rowData.isAdmin ? 'primary' : 'tertiary'}
           onClick={() => {
-            handleUpdateAdmin(rowData.key)
+            handleUpdateAdmin(rowData)
           }}
         >
           管理员
         </NButton>
         <NButton
           size={'small'}
-          disabled={!teamInfo.isAdmin}
-          type={rowData.identity === '组员' ? 'primary' : 'tertiary'}
+          disabled={!isAdmin}
+          type={rowData.isAdmin ? 'tertiary' : 'primary'}
           onClick={() => {
-            handleDeleteAdmin(rowData.key)
+            handleDeleteAdmin(rowData)
           }}
         >
           组员
@@ -183,11 +174,8 @@ const pagination = reactive({
 function handleFilterSearch() {
   nameColumn.filterOptionValue = searchUserInfo.value
 }
-function handleDeleteMember(rowKey: number) {
-  deleteOrganizationMember(
-    route.params.id as string,
-    teamUsersId.value.at(rowKey) as number
-  )
+function handleDeleteMember(rowData: any) {
+  deleteOrganizationMember(route.params.id as string, rowData.id)
     .then((res) => {
       if (res.data.success) {
         window.$message.info('踢出成功')
@@ -197,29 +185,25 @@ function handleDeleteMember(rowKey: number) {
     })
     .finally(reload)
 }
-function handleUpdateAdmin(rowKey: number) {
-  if (tableData.value.at(rowKey).identity == '管理员') return
-  updateOrganizationAdmin(
-    { id: teamUsersId.value.at(rowKey) || 0 },
-    route.params.id as string
-  ).then((res) => {
-    if (res.data.success) {
-      tableData.value.at(rowKey).identity = '管理员'
-    } else {
-      window.$message.warning('切换管理员失败')
+function handleUpdateAdmin(rowData: any) {
+  if (rowData.isAdmin) return
+  updateOrganizationAdmin({ id: rowData.id }, route.params.id as string).then(
+    (res) => {
+      if (res.data.success) {
+        tableData.value.at(rowData.key).identity = '管理员'
+      } else {
+        window.$message.warning(res.data.message)
+      }
     }
-  })
+  )
 }
-function handleDeleteAdmin(rowKey: number) {
-  if (tableData.value.at(rowKey).identity == '组员') return
-  deleteOrganizationAdmin(
-    teamUsersId.value.at(rowKey) as number,
-    route.params.id as string
-  ).then((res) => {
+function handleDeleteAdmin(rowData: any) {
+  if (!rowData.isAdmin) return
+  deleteOrganizationAdmin(rowData.id, route.params.id as string).then((res) => {
     if (res.data.success) {
-      tableData.value.at(rowKey).identity = '组员'
+      tableData.value.at(rowData.key).identity = '组员'
     } else {
-      window.$message.warning('切换组员失败,失败原因:' + res.data.message)
+      window.$message.warning(res.data.message)
     }
   })
 }
@@ -227,13 +211,13 @@ function reload() {
   isReloading.value = true
   getOrganizationMember(route.params.id as string).then((res) => {
     if (res.data.success) {
-      teamUsersId.value = []
       tableData.value = res.data.Members.map((item: any, index: number) => {
-        teamUsersId.value.push(item.id)
+        if (userID === item.id && item.isAdmin) {
+          isAdmin.value = true
+        }
         return {
+          ...item,
           key: index,
-          name: item.name,
-          email: item.email,
           identity: item.isAdmin ? '管理员' : '组员'
         }
       })
@@ -244,15 +228,7 @@ function reload() {
   })
 }
 
-onMounted(() => {
-  getOrganization(route.params.id as string).then((res) => {
-    teamInfo.isAdmin = res.data.isAdmin
-    teamInfo.isValid = res.data.isValid
-    teamInfo.name = res.data.name
-    teamInfo.profile = res.data.profile
-    reload()
-  })
-})
+onMounted(reload)
 </script>
 
 <style scoped>
