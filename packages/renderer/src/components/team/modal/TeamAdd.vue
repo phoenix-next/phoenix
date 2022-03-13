@@ -7,9 +7,8 @@
     positive-text="确认"
     negative-text="取消"
     @positive-click="handlePositiveClick"
-    @update-show="$emit('update:show')"
   >
-    <n-divider />
+    <n-divider style="margin: 15px auto" />
     <n-input
       v-model:value="newTeamName"
       type="text"
@@ -19,7 +18,8 @@
     <n-input
       v-model:value="newTeamProfile"
       type="textarea"
-      placeholder="请输入组织信息"
+      placeholder="请输入组织简介"
+      style="margin-top: 15px"
     >
     </n-input>
   </n-modal>
@@ -30,39 +30,37 @@ import { NModal, NDivider, NInput } from 'naive-ui'
 import { ref } from 'vue'
 import { createOrganization } from '../../../api/social'
 
-defineProps({
-  show: {
-    type: Boolean,
-    default: null
-  }
-})
-const emits = defineEmits(['update:show', 'update:team-created'])
-
+const emits = defineEmits(['update:team-created'])
+const show = ref(false)
 const newTeamName = ref('')
 const newTeamProfile = ref('')
 
 function handlePositiveClick() {
   if (newTeamName.value == '') {
-    window.$message.warning('组织名不能为空！')
+    window.$message.warning('组织名不能为空')
     return false
-  } else if (newTeamProfile.value == '') {
-    window.$message.warning('组织信息不能为空！')
-    return false
-  } else {
-    const requestData = {
-      name: newTeamName.value,
-      profile: newTeamProfile.value
-    }
-    createOrganization(requestData).then((res) => {
-      if (res.data.success) {
-        window.$message.info('组织创建成功')
-        emits('update:team-created')
-      } else {
-        window.$message.error('组织创建失败')
-      }
-    })
   }
+  if (newTeamProfile.value == '') {
+    window.$message.warning('组织简介不能为空')
+    return false
+  }
+  createOrganization({
+    name: newTeamName.value,
+    profile: newTeamProfile.value
+  }).then((res) => {
+    if (res.data.success) {
+      window.$message.info('组织创建成功')
+      emits('update:team-created')
+    } else {
+      window.$message.error('组织创建失败')
+    }
+  })
 }
+function open() {
+  show.value = true
+}
+
+defineExpose({ open })
 </script>
 
 <style scoped></style>

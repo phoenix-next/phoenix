@@ -13,11 +13,6 @@
         </n-button>
       </template>
     </n-select>
-    <team-add
-      v-model:show="showAddTeamModal"
-      @update-show="showAddTeamModal = false"
-      @update:team-created="reload"
-    ></team-add>
     <n-card>
       <n-tabs default-value="team-list" size="large">
         <n-tab-pane name="team-list" tab="成员列表">
@@ -42,7 +37,6 @@ import { NCard, NSelect, NButton, NTabs, NTabPane } from 'naive-ui'
 import MemberList from '../components/team/MemberList.vue'
 import TeamSetting from '../components/team/TeamSetting.vue'
 import { getUserOrganization } from '../api/user'
-import TeamAdd from '../components/team/modal/TeamAdd.vue'
 
 const teamsIdDic = new Map<string, number>()
 const options = ref<any>([])
