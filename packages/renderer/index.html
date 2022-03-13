@@ -11,11 +11,18 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css"
     />
-    <link rel="stylesheet" href="/css/prism.css" />
+    <link rel="stylesheet" href="/css/xterm.css" />
     <title>Phoenix</title>
   </head>
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script src="/js/vs/loader.js"></script>
+    <script>
+      require.config({ paths: { vs: './js/vs' } })
+      require(['vs/editor/editor.main'], function () {
+        window.monaco = monaco
+      })
+    </script>
   </body>
 </html>

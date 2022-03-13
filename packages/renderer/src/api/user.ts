@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios'
 import { backend } from '../utils/request'
 
 export function login(data: { email: string; password: string }) {
@@ -19,9 +18,21 @@ export function register(data: {
 }
 
 export function getProfile(data: { id: string }) {
-  return backend.get(`users/${data.id}/profile`)
+  return backend.get(`users/${data.id}`)
 }
 
 export function getUserOrganization() {
   return backend.get(`users/organizations`)
+}
+
+export function updateUserProfile(data: FormData) {
+  return backend.put('users', data)
+}
+
+export function quitOrganization(data: { id: string }) {
+  return backend.delete(`users/organizations/${data.id}`)
+}
+
+export function getUserInvitation() {
+  return backend.get('users/invitations')
 }

@@ -26,14 +26,13 @@
       </n-upload>
     </n-space>
     <n-divider />
-    <div v-html="problem.description"></div>
+    <div v-html="problem.description" id="detail"></div>
   </n-card>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, reactive } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
-import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import {
   UploadFileInfo,
   NCard,
@@ -47,6 +46,7 @@ import {
 } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
 import { getProblem } from '../../api/judge'
+import { addEditorAction, createEditor } from '../../utils/code'
 
 const router = useRouter()
 const route = useRoute()
@@ -55,7 +55,7 @@ const problem = reactive({
   description: '<h2>题目描述</h2><h2>题目样例</h2><h2>数据范围</h2>',
   name: '题目名称'
 })
-const language = ref('C')
+const language = ref('c')
 const program = ref<Array<UploadFileInfo>>([])
 const pending = ref(true)
 
@@ -99,35 +99,42 @@ onMounted(() => {
       problem.description = res
       pending.value = false
     })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
+    .then(() => {
+      const detail = document.getElementById('detail')
+      detail?.querySelectorAll('code').forEach((item) => {
+        if (item.classList.length > 0) {
+          ;(item.parentElement as HTMLElement).style.width = '100%'
+          const editor = createEditor(item, item.className.substring(9))
+          addEditorAction(editor)
+        }
+      })
     })
 })
 
-const options: SelectMixedOption[] = [
+const options: any[] = [
   {
     label: 'C',
-    value: 'C'
+    value: 'c'
   },
   {
     label: 'C++',
-    value: 'C++'
+    value: 'cpp'
   },
   {
     label: 'Java',
-    value: 'Java'
+    value: 'java'
   },
   {
     label: 'Golang',
-    value: 'Golang'
+    value: 'go'
   },
   {
     label: 'JavaScript',
-    value: 'JavaScript'
+    value: 'javascript'
   },
   {
     label: 'Python',
-    value: 'Python'
+    value: 'python'
   }
 ]
 </script>

@@ -1,6 +1,7 @@
 <template>
-  <n-card>
-    <n-form :rules="rules" :model="data">
+  <div class="container">
+    <return-button />
+    <n-form :rules="rules" :model="data" style="width: 45%; margin-top: 80px">
       <n-form-item-row label="题目名称" path="name">
         <n-input v-model:value="data.name" placeholder="题目的名称" />
       </n-form-item-row>
@@ -23,29 +24,29 @@
           :options="organizationOptions"
         />
       </n-form-item-row>
+      <n-grid :x-gap="12">
+        <n-gi :span="8">
+          <upload-button ref="descriptionRef">选择题面</upload-button>
+        </n-gi>
+        <n-gi :span="8">
+          <upload-button ref="inputRef">选择输入</upload-button>
+        </n-gi>
+        <n-gi :span="8">
+          <upload-button ref="outputRef">选择输出</upload-button>
+        </n-gi>
+      </n-grid>
+      <n-button
+        type="primary"
+        block
+        secondary
+        strong
+        @click="clickCreate"
+        :disabled="!uploadEnable"
+      >
+        创建题目
+      </n-button>
     </n-form>
-    <n-grid :x-gap="12">
-      <n-gi :span="8">
-        <upload-button ref="descriptionRef">选择题面</upload-button>
-      </n-gi>
-      <n-gi :span="8">
-        <upload-button ref="inputRef">选择输入</upload-button>
-      </n-gi>
-      <n-gi :span="8">
-        <upload-button ref="outputRef">选择输出</upload-button>
-      </n-gi>
-    </n-grid>
-    <n-button
-      type="primary"
-      block
-      secondary
-      strong
-      @click="clickCreate"
-      :disabled="!uploadEnable"
-    >
-      创建题目
-    </n-button>
-  </n-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -59,12 +60,11 @@ import {
   NButton,
   NSelect,
   NFormItemRow,
-  NCard,
   NSlider
 } from 'naive-ui'
 import { createProblem } from '../../api/judge'
-import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
+import ReturnButton from '../../components/problem/ReturnButton.vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
 
@@ -73,23 +73,24 @@ const router = useRouter()
 const descriptionRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const inputRef = ref<InstanceType<typeof UploadButton> | null>(null)
 const outputRef = ref<InstanceType<typeof UploadButton> | null>(null)
-const organizationOptions = ref<SelectMixedOption[]>([])
+const organizationOptions = ref<Array<any>>([])
 const data = reactive({
   name: '',
   difficulty: 5,
   readable: 0,
   writable: 0,
-  organization: 0
+  organization: null
 })
 
 const organizationVisiable = computed(() => {
-  return data.readable > 0 || data.writable > 0
+  return (data.readable > 0 && data.readable < 3) || data.writable > 0
 })
 const uploadEnable = computed(() => {
   return (
     descriptionRef.value?.file &&
     inputRef.value?.file &&
     outputRef.value?.file &&
+    (!organizationVisiable.value || data.organization !== null) &&
     data.name !== ''
   )
 })
@@ -99,42 +100,31 @@ function clickCreate() {
   Object.keys(data).forEach((key) => {
     formData.append(key, String(data[key as keyof typeof data]))
   })
-  formData.append('input', inputRef.value?.file as File, 'input')
-  formData.append('output', outputRef.value?.file as File, 'output')
-  formData.append(
-    'description',
-    descriptionRef.value?.file as File,
-    'description'
-  )
-  createProblem(formData)
-    .then((res) => {
-      if (res.data.success) {
-        window.$message.success(res.data.message)
-        router.back()
-      } else {
-        window.$message.warning(res.data.message)
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  formData.append('input', inputRef.value?.file as File)
+  formData.append('output', outputRef.value?.file as File)
+  formData.append('description', descriptionRef.value?.file as File)
+  if (formData.get('organization') === 'null') {
+    formData.set('organization', '0')
+  }
+  createProblem(formData).then((res) => {
+    if (res.data.success) {
+      window.$message.success(res.data.message)
+      router.back()
+    }
+  })
 }
 
 onMounted(() => {
-  getUserOrganization()
-    .then((res) => {
-      organizationOptions.value = (res.data.organizations as Array<any>).map(
-        (item) => {
-          return { label: item.name, value: item.id }
-        }
-      )
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  getUserOrganization().then((res) => {
+    organizationOptions.value = (res.data.organization as Array<any>).map(
+      (item) => {
+        return { label: item.orgName, value: item.orgID }
+      }
+    )
+  })
 })
 
-const readOptions: SelectMixedOption[] = [
+const readOptions = [
   {
     label: '仅题目创建者可见',
     value: 0
@@ -152,7 +142,7 @@ const readOptions: SelectMixedOption[] = [
     value: 3
   }
 ]
-const writeOptions: SelectMixedOption[] = [
+const writeOptions = [
   {
     label: '仅题目创建者可编辑',
     value: 0
@@ -171,4 +161,12 @@ const rules: FormRules = {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+</style>

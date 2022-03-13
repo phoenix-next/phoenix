@@ -1,6 +1,7 @@
 <template>
-  <n-card>
-    <n-form :rules="rules" :model="data">
+  <div class="container">
+    <return-button />
+    <n-form :rules="rules" :model="data" style="width: 45%; margin-top: 80px">
       <n-form-item-row label="教程名称" path="name">
         <n-input v-model:value="data.name" placeholder="教程的名称" />
       </n-form-item-row>
@@ -24,19 +25,19 @@
       >
         <n-select v-model:value="data.orgID" :options="organizationOptions" />
       </n-form-item-row>
+      <upload-button ref="fileRef">选择文件</upload-button>
+      <n-button
+        type="primary"
+        block
+        secondary
+        strong
+        @click="clickCreate"
+        :disabled="!uploadEnable"
+      >
+        创建教程
+      </n-button>
     </n-form>
-    <upload-button ref="fileRef">选择文件</upload-button>
-    <n-button
-      type="primary"
-      block
-      secondary
-      strong
-      @click="clickCreate"
-      :disabled="!uploadEnable"
-    >
-      创建教程
-    </n-button>
-  </n-card>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -47,29 +48,28 @@ import {
   NInput,
   NButton,
   NSelect,
-  NFormItemRow,
-  NCard
+  NFormItemRow
 } from 'naive-ui'
 import { createTutorial } from '../../api/tutorial'
-import { SelectMixedOption } from 'naive-ui/lib/select/src/interface'
 import UploadButton from '../../components/problem/UploadButton.vue'
+import ReturnButton from '../../components/problem/ReturnButton.vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
 
 const router = useRouter()
 
 const fileRef = ref<InstanceType<typeof UploadButton> | null>(null)
-const organizationOptions = ref<SelectMixedOption[]>([])
+const organizationOptions = ref<Array<any>>([])
 const data = reactive({
   name: '',
   profile: '',
   readable: 0,
   writable: 0,
-  orgID: 0
+  orgID: null
 })
 
 const organizationVisiable = computed(() => {
-  return data.readable > 0 || data.writable > 0
+  return (data.readable > 0 && data.readable < 3) || data.writable > 0
 })
 const uploadEnable = computed(() => {
   return fileRef.value?.file && data.name !== ''
@@ -80,36 +80,29 @@ function clickCreate() {
   Object.keys(data).forEach((key) => {
     formData.append(key, String(data[key as keyof typeof data]))
   })
-  formData.append('file', fileRef.value?.file as File, 'file')
-  createTutorial(formData)
-    .then((res) => {
-      if (res.data.success) {
-        window.$message.success(res.data.message)
-        router.back()
-      } else {
-        window.$message.warning(res.data.message)
-      }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  formData.append('file', fileRef.value?.file as File)
+  if (formData.get('orgID') === 'null') {
+    formData.set('orgID', '0')
+  }
+  createTutorial(formData).then((res) => {
+    if (res.data.success) {
+      window.$message.success(res.data.message)
+      router.back()
+    }
+  })
 }
 
 onMounted(() => {
-  getUserOrganization()
-    .then((res) => {
-      organizationOptions.value = (res.data.organizations as Array<any>).map(
-        (item) => {
-          return { label: item.name, value: item.id }
-        }
-      )
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  getUserOrganization().then((res) => {
+    organizationOptions.value = (res.data.organization as Array<any>).map(
+      (item) => {
+        return { label: item.orgName, value: item.orgID }
+      }
+    )
+  })
 })
 
-const readOptions: SelectMixedOption[] = [
+const readOptions = [
   {
     label: '仅教程创建者可见',
     value: 0
@@ -127,7 +120,7 @@ const readOptions: SelectMixedOption[] = [
     value: 3
   }
 ]
-const writeOptions: SelectMixedOption[] = [
+const writeOptions = [
   {
     label: '仅教程创建者可编辑',
     value: 0
@@ -151,4 +144,12 @@ const rules: FormRules = {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+</style>

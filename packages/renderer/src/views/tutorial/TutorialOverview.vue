@@ -1,7 +1,12 @@
 <template>
   <n-card>
     <n-grid>
-      <n-gi :span="14" :offset="7">
+      <n-gi span="4" offset="1">
+        <n-h2>
+          <n-text type="primary">教程</n-text>
+        </n-h2>
+      </n-gi>
+      <n-gi span="14" offset="2">
         <n-input-group>
           <n-button type="primary" class="label">查找教程</n-button>
           <n-input
@@ -13,7 +18,7 @@
           <n-button type="primary" ghost @click="handleSearch">搜索</n-button>
         </n-input-group>
       </n-gi>
-      <n-gi :span="2" :offset="1">
+      <n-gi span="2" offset="1">
         <n-button
           type="primary"
           block
@@ -51,7 +56,9 @@ import {
   NInputGroup,
   NDataTable,
   NButton,
-  NInput
+  NInput,
+  NH2,
+  NText
 } from 'naive-ui'
 import { ref, reactive, onMounted, computed, h } from 'vue'
 import { getToturialList } from '../../api/tutorial'
@@ -69,7 +76,7 @@ const columns = ref<any>([
     key: 'id',
     sorter: true,
     sortOrder: 'ascend',
-    render: (rowData: any, rowIndex: any) => {
+    render: (rowData: any) => {
       return h(
         'div',
         {
@@ -85,7 +92,7 @@ const columns = ref<any>([
     key: 'name',
     sorter: true,
     sortOrder: false,
-    render: (rowData: any, rowIndex: any) => {
+    render: (rowData: any) => {
       return h(
         'div',
         {
@@ -99,7 +106,7 @@ const columns = ref<any>([
   {
     title: '创建者',
     key: 'creatorName',
-    render: (rowData: any, rowIndex: any) => {
+    render: (rowData: any) => {
       return h(
         'div',
         {
@@ -143,9 +150,6 @@ function updateData() {
         return { ...item, id: 'T' + item.id }
       })
       pagination.itemCount = res.data.total
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
     })
     .finally(() => {
       loading.value = false

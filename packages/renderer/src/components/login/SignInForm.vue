@@ -20,19 +20,32 @@
   <n-button type="primary" block secondary strong @click="clickLogin">
     登录
   </n-button>
+  <n-button
+    type="primary"
+    block
+    secondary
+    strong
+    @click="clickForget"
+    style="margin-top: 1.5vh"
+  >
+    忘记密码
+  </n-button>
+  <forget-password ref="modal" />
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { login } from '../../api/user'
-import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth'
+import { useRoute, useRouter } from 'vue-router'
 import { NForm, NFormItemRow, NButton, NInput } from 'naive-ui'
+import ForgetPassword from './ForgetPassword.vue'
 
 const router = useRouter()
 const route = useRoute()
 const { signIn } = useAuthStore()
 
+const modal = ref<InstanceType<typeof ForgetPassword> | null>(null)
 const data = reactive({
   email: '',
   password: ''
@@ -51,30 +64,27 @@ const rules = {
   }
 }
 
+function clickForget() {
+  modal.value?.openModal()
+}
 function clickLogin() {
   if (data.email === '' || data.password === '') {
     window.$message.warning('请输入完整的登录信息')
     return
   }
-  login(data)
-    .then((res) => {
-      if (res.data.success) {
-        localStorage.setItem('token', res.data.token)
-        localStorage.setItem('userID', res.data.id)
-        signIn(res.data.token)
-        window.$message.success(res.data.message)
-        if (route.query['redirect']) {
-          router.push({ path: route.query['redirect'] as string })
-        } else {
-          router.push({ path: '/tutorial' })
-        }
+  login(data).then((res) => {
+    if (res.data.success) {
+      localStorage.setItem('token', res.data.token)
+      localStorage.setItem('userID', res.data.id)
+      signIn(res.data.token)
+      window.$message.success(res.data.message)
+      if (route.query['redirect']) {
+        router.push({ path: route.query['redirect'] as string })
       } else {
-        window.$message.warning(res.data.message)
+        router.push({ path: '/tutorial' })
       }
-    })
-    .catch((res) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+    }
+  })
 }
 </script>
 

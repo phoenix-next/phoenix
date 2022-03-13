@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios'
 import { backend } from '../utils/request'
 
 export function getToturialList(data: {
@@ -15,17 +14,7 @@ export function createTutorial(data: FormData) {
   return backend.post('tutorials', data)
 }
 
-export function getTutorial(data: { tutorialID: number }): Promise<
-  AxiosResponse<{
-    creatorID: number
-    creatorName: number
-    name: string
-    orgID: number
-    profile: string
-    tutorialPath: string
-    version: number
-  }>
-> {
+export function getTutorial(data: { tutorialID: number }) {
   return backend.get(`tutorials/${data.tutorialID}`)
 }
 

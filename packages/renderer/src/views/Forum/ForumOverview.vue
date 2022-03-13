@@ -260,17 +260,13 @@ function handleValidateClick(e: MouseEvent) {
         orgID: organization.value,
         title: formValue.value.title,
         type: type.value
+      }).then((res) => {
+        window.$message.success('发帖成功')
+        formValue.value.content = ''
+        formValue.value.title = ''
+        showModal.value = false
+        needChange.value = !needChange.value
       })
-        .then((res) => {
-          window.$message.success('发帖成功')
-          formValue.value.content = ''
-          formValue.value.title = ''
-          showModal.value = false
-          needChange.value = !needChange.value
-        })
-        .catch(() => {
-          window.$message.error('网络故障, 请检查网络连接')
-        })
     } else {
       window.$message.error('请把标题和内容填充完整')
     }
@@ -279,30 +275,22 @@ function handleValidateClick(e: MouseEvent) {
 
 function handleDelete(id: any) {
   window.$message.error(id)
-  deletePosts({ id: id })
-    .then((res) => {
-      window.$message.success(res.data.message)
-      needChange.value = !needChange.value
-    })
-    .catch(() => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  deletePosts({ id: id }).then((res) => {
+    window.$message.success(res.data.message)
+    needChange.value = !needChange.value
+  })
 }
 
 onMounted(() => {
-  getUserOrganization()
-    .then((res: any) => {
-      organization.value = res.data.organization[0].orgID
-      res.data.organization.forEach((value: any) => {
-        options.value.push({
-          label: value.orgName,
-          value: value.orgID
-        })
+  getUserOrganization().then((res: any) => {
+    organization.value = res.data.organization[0].orgID
+    res.data.organization.forEach((value: any) => {
+      options.value.push({
+        label: value.orgName,
+        value: value.orgID
       })
     })
-    .catch((res: any) => {
-      window.$message.error('网络故障, 请检查网络连接')
-    })
+  })
 })
 
 watch(

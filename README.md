@@ -13,7 +13,7 @@
 ```bash
 git clone https://github.com/phoenix-next/phoenix
 cd phoenix
-npm install
+npm ci
 npm run dev
 ```
 
@@ -52,7 +52,7 @@ npm config set ELECTRON_BUILDER_BINARIES_MIRROR="https://npmmirror.com/mirrors/e
 
 ## Tips
 
-- 本项目在开发过程中可以热更新(HMR)，不需要重启应用来查看代码的更改效果
+- 本项目在开发过程中可以热更新(HMR)，一般不需要重启应用来查看代码的更改效果
 - Vite 静态服务器需要在命令行中关闭(不能靠关闭 PhoeniX 来关闭)
 - 开发过程中建议使用 vscode，并启用 Volar 的 [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussion-3561961)
 - 项目的路径**不能包含中文**，否则项目可能会无法正常运行

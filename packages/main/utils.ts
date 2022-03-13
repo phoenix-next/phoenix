@@ -1,14 +1,13 @@
 import { join, basename } from 'path'
-import { open, close, readFile, ensureDir } from 'fs-extra'
+import { open, close, readFile, ensureDir, outputFile } from 'fs-extra'
 import { ipcMain, app } from 'electron'
 import MarkdownIt from 'markdown-it'
 import latex from 'markdown-it-texmath'
-import prism from 'markdown-it-prism'
 import { diffWords } from 'diff'
-import spawn from '@npmcli/promise-spawn'
+import spawn from '@npmcli/promise-spawn' // 源码位于https://github.com/npm/promise-spawn/blob/main/index.js
 import { DownloaderHelper } from 'node-downloader-helper'
 
-const markdown = new MarkdownIt().use(latex).use(prism)
+const markdown = new MarkdownIt().use(latex)
 const configPath = app.getPath('userData')
 const tmpPath = app.getPath('temp')
 const dataPath = join(configPath, 'data')
@@ -17,11 +16,12 @@ const remote = 'https://phoenix.matrix53.top/api/v1/'
 // 获取题面、输入、输出的本地存储位置，以及临时程序、临时输出文件的本地存储位置
 function getProblemPath(problemID: string) {
   return {
-    input: join(dataPath, 'in_' + problemID),
-    answer: join(dataPath, 'ans_' + problemID),
     description: join(dataPath, 'des_' + problemID),
+    answer: join(dataPath, 'ans_' + problemID),
     exec: join(tmpPath, 'exec_' + problemID),
-    output: join(tmpPath, 'out_' + problemID)
+    input: join(dataPath, 'in_' + problemID),
+    output: join(tmpPath, 'out_' + problemID),
+    temp: join(tmpPath, 'temp_' + problemID)
   }
 }
 
@@ -65,10 +65,6 @@ export function handleUtils() {
     return download(url, savePath, option)
   })
 
-  ipcMain.handle('isProblemUpToDate', (event, problemID) => {
-    return true
-  })
-
   ipcMain.handle(
     'downloadProblem',
     (event, problemID, input, output, description, token) => {
@@ -96,54 +92,78 @@ export function handleUtils() {
     }
   )
 
+  ipcMain.handle('downloadTutorial', (event, tutorialID, detail, token) => {
+    const tutorial = getTutorialPath(tutorialID)
+    return download(remote + detail, dataPath, {
+      fileName: basename(tutorial.detail),
+      headers: { 'x-token': token }
+    })
+      .then((res) => {
+        return readFile(tutorial.detail, 'utf-8')
+      })
+      .then((res) => {
+        return markdown.render(res)
+      })
+  })
+
   ipcMain.handle(
     'judgeProblem',
-    async (
-      event,
-      srcFilePath,
-      problemID,
-      language
-    ): Promise<'CE' | 'WA' | 'AC' | 'REG' | 'SystemError'> => {
-      // set some paths
+    async (event, srcFilePath, problemID, language) => {
       const problem = getProblemPath(problemID)
+      // 设置程序的输入文件和输出文件
       const output = await open(problem.output, 'w')
       const input = await open(problem.input, 'r')
-      // compile and run
+      // 编译源文件，并运行程序
       let compiler,
         runner,
         stdio = [input, output, 'pipe']
       switch (language) {
-        case 'C':
-          compiler = await spawn('gcc', [srcFilePath, '-o', problem.exec], {})
+        case 'c':
+          compiler = await spawn('gcc', [srcFilePath, '-o', problem.exec], {
+            windowsHide: true
+          })
           if (compiler.code != 0) return 'CE'
-          runner = await spawn(problem.exec, [], { stdio })
+          runner = await spawn(problem.exec, [], { stdio, windowsHide: true })
           break
-        case 'C++':
-          compiler = await spawn('g++', [srcFilePath, '-o', problem.exec], {})
+        case 'cpp':
+          compiler = await spawn('g++', [srcFilePath, '-o', problem.exec], {
+            windowsHide: true
+          })
           if (compiler.code != 0) return 'CE'
-          runner = await spawn(problem.exec, [], { stdio })
+          runner = await spawn(problem.exec, [], { stdio, windowsHide: true })
           break
-        case 'Java':
-          compiler = await spawn('javac', [srcFilePath, '-d', tmpPath], {})
+        case 'java':
+          compiler = await spawn('javac', [srcFilePath, '-d', tmpPath], {
+            windowsHide: true
+          })
           if (compiler.code != 0) return 'CE'
           runner = await spawn(
             'java',
             ['-classpath', tmpPath, basename(srcFilePath, '.java')],
-            { stdio }
+            { stdio, windowsHide: true }
           )
           break
-        case 'Golang':
-          runner = await spawn('go', ['run', srcFilePath], { stdio })
+        case 'go':
+          runner = await spawn('go', ['run', srcFilePath], {
+            stdio,
+            windowsHide: true
+          })
           break
-        case 'JavaScript':
-          runner = await spawn('node', [srcFilePath], { stdio })
+        case 'javascript':
+          runner = await spawn('node', [srcFilePath], {
+            stdio,
+            windowsHide: true
+          })
           break
-        case 'Python':
-          runner = await spawn('python', [srcFilePath], { stdio })
+        case 'python':
+          runner = await spawn('python', [srcFilePath], {
+            stdio,
+            windowsHide: true
+          })
           break
       }
-      if (runner.code != 0) return 'REG'
-      // compare output and answer
+      if (runner.code !== 0) return 'REG'
+      // 比较正确答案和实际输出的答案
       close(input)
       close(output)
       const ansStr = await readFile(problem.answer, 'utf8')
@@ -158,17 +178,81 @@ export function handleUtils() {
     }
   )
 
-  ipcMain.handle('downloadTutorial', (event, tutorialID, detail, token) => {
-    const tutorial = getTutorialPath(tutorialID)
-    return download(remote + detail, dataPath, {
-      fileName: basename(tutorial.detail),
-      headers: { 'x-token': token }
-    })
-      .then((res) => {
-        return readFile(tutorial.detail, 'utf-8')
-      })
-      .then((res) => {
-        return markdown.render(res)
-      })
+  ipcMain.handle('runCode', async (event, code: string, language: string) => {
+    const problem = getProblemPath('pseudo')
+    // 将源代码输出到临时文件，并添加文件后缀
+    switch (language) {
+      case 'c':
+        problem.temp += '.c'
+        break
+      case 'cpp':
+        problem.temp += '.cpp'
+        break
+      case 'java':
+        problem.temp += '.java'
+        break
+      case 'go':
+        problem.temp += '.go'
+        break
+      case 'javascript':
+        problem.temp += '.js'
+        break
+      case 'python':
+        problem.temp += '.py'
+        break
+    }
+    await outputFile(problem.temp, code)
+    // 程序运行的输出文件，目前没有实现输入功能
+    const output = await open(problem.output, 'w')
+    // 编译临时文件，并运行程序
+    let compiler,
+      runner,
+      stdio = ['pipe', output, 'pipe']
+    switch (language) {
+      case 'c':
+        compiler = await spawn('gcc', [problem.temp, '-o', problem.exec], {
+          windowsHide: true
+        })
+        runner = await spawn(problem.exec, [], { stdio, windowsHide: true })
+        break
+      case 'cpp':
+        compiler = await spawn('g++', [problem.temp, '-o', problem.exec], {
+          windowsHide: true
+        })
+        runner = await spawn(problem.exec, [], { stdio, windowsHide: true })
+        break
+      case 'java':
+        compiler = await spawn('javac', [problem.temp, '-d', tmpPath], {
+          windowsHide: true
+        })
+        runner = await spawn(
+          'java',
+          ['-classpath', tmpPath, basename(problem.temp, '.java')],
+          { stdio, windowsHide: true }
+        )
+        break
+      case 'go':
+        runner = await spawn('go', ['run', problem.temp], {
+          stdio,
+          windowsHide: true
+        })
+        break
+      case 'javascript':
+        runner = await spawn('node', [problem.temp], {
+          stdio,
+          windowsHide: true
+        })
+        break
+      case 'python':
+        runner = await spawn('python', [problem.temp], {
+          stdio,
+          windowsHide: true
+        })
+        break
+    }
+    // 返回标准输出的结果
+    close(output)
+    const outStr = await readFile(problem.output, 'utf8')
+    return outStr
   })
 }
