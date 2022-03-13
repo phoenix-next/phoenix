@@ -3,7 +3,7 @@
     <n-descriptions label-placement="left" :column="1" separator="   ">
       <n-descriptions-item label="组织名称">
         {{ teamName }}
-        <n-button text @click="showUpdateModal = true">
+        <n-button text @click="teamUpdate?.open">
           <template #icon>
             <n-icon><pencil-outline /></n-icon>
           </template>
@@ -22,13 +22,9 @@
     </n-button>
   </n-space>
   <team-update
-    :show="showUpdateModal"
-    :id="props.teamId"
-    :name="teamName"
-    :profile="teamProfile"
-    @update:show="showUpdateModal = false"
+    ref="teamUpdate"
     @update:team-profile="handleUpdateTeamProfile"
-  ></team-update>
+  />
   <n-modal
     v-model:show="showQuitModal"
     preset="dialog"
@@ -88,9 +84,9 @@ const router = useRouter()
 
 const teamName = ref('')
 const teamProfile = ref('')
-const showUpdateModal = ref(false)
 const showQuitModal = ref(false)
 const showDeleteModal = ref(false)
+const teamUpdate = ref<InstanceType<typeof TeamUpdate> | null>(null)
 
 const reload = () => {
   getOrganization(props.teamId).then((res) => {

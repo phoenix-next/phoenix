@@ -7,14 +7,12 @@
     positive-text="确认"
     negative-text="取消"
     @positive-click="handlePositiveClick"
-    @update-show="$emit('update:show')"
   >
     <n-divider />
     <n-space>
       <n-select
         v-model:value="userIdentity"
         :options="identityOptions"
-        default-value="组员"
         style="width: 100px"
       >
       </n-select>
@@ -29,27 +27,15 @@
 </template>
 
 <script setup lang="ts">
-import { useMessage, NModal, NDivider, NSelect, NInput, NSpace } from 'naive-ui'
+import { NModal, NDivider, NSelect, NInput, NSpace } from 'naive-ui'
 import { ref } from 'vue'
 import { createInvitation } from '../../../api/social'
+import { useRoute } from 'vue-router'
 
-const props = defineProps({
-  show: {
-    type: Boolean,
-    default: null
-  },
-  teamId: {
-    type: Number,
-    default: 0
-  }
-})
-
-defineEmits(['update:show'])
-
-const message = useMessage()
-
-const userEmail = ref()
-const userIdentity = ref()
+const route = useRoute()
+const userEmail = ref('')
+const userIdentity = ref('组员')
+const show = ref(false)
 
 const identityOptions = [
   {
@@ -63,19 +49,23 @@ const identityOptions = [
 ]
 
 function handlePositiveClick() {
-  console.log(props.teamId)
   createInvitation(
     {
       email: userEmail.value,
-      isAdmin: userIdentity.value == '管理员' ? true : false
+      isAdmin: userIdentity.value === '管理员'
     },
-    props.teamId
+    route.params.id as string
   ).then((res) => {
     if (res.data.success) {
-      message.info('已发送邀请')
+      window.$message.info('已发送邀请')
     } else {
-      message.error('邀请发送失败')
+      window.$message.error('邀请发送失败')
     }
   })
 }
+function open() {
+  show.value = true
+}
+
+defineExpose({ open })
 </script>

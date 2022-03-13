@@ -7,7 +7,6 @@
     positive-text="确认"
     negative-text="取消"
     @positive-click="handlePositiveClick"
-    @update-show="$emit('update:show')"
   >
     <n-divider />
     <n-input
@@ -24,48 +23,45 @@
     </n-input>
   </n-modal>
 </template>
+
 <script setup lang="ts">
 import { NModal, NDivider, NInput } from 'naive-ui'
-import { onMounted, ref, watch } from 'vue'
-import { updateOrganization } from '../../../api/social'
-const props = defineProps<{
-  show: boolean
-  id: number
-  name: string
-  profile: string
-}>()
-const emits = defineEmits(['update:show', 'update:team-profile'])
+import { onMounted, ref } from 'vue'
+import { updateOrganization, getOrganization } from '../../../api/social'
+import { useRoute } from 'vue-router'
 
-watch(
-  () => props.name,
-  (newName: string, oldName: string) => {
-    newTeamName.value = newName
-  }
-)
+const emits = defineEmits(['update:team-profile'])
 
-watch(
-  () => props.profile,
-  (newProfile: string, oldProfile: string) => {
-    newTeamProfile.value = newProfile
-  }
-)
-
+const route = useRoute()
+const show = ref(false)
 const newTeamName = ref('')
 const newTeamProfile = ref('')
 
 function handlePositiveClick() {
   updateOrganization(
     { name: newTeamName.value, profile: newTeamProfile.value },
-    props.id
+    route.params.id as string
   ).then((res) => {
     if (res.data.success) {
-      emits('update:team-profile')
       window.$message.info('组织信息已更改')
+      emits('update:team-profile')
     } else {
       window.$message.warning('组织信息更改失败')
     }
   })
 }
+function open() {
+  show.value = true
+}
+
+onMounted(() => {
+  getOrganization(route.params.id as string).then((res) => {
+    newTeamName.value = res.data.name
+    newTeamProfile.value = res.data.profile
+  })
+})
+
+defineExpose({ open })
 </script>
 
 <style scoped></style>

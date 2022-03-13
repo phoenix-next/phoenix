@@ -3,12 +3,16 @@
     <div class="table-toolbar-left">
       <div>
         共有
-        <span class="table-tool-bar-number">{{ teamUsersNumber }}</span
-        >个成员，
-        <span class="table-tool-bar-number">{{ teamAdminsNumber }}</span
-        >个管理员
+        <span class="table-tool-bar-number">
+          {{ teamUsersNumber }}
+        </span>
+        个成员，
+        <span class="table-tool-bar-number">
+          {{ teamAdminsNumber }}
+        </span>
+        个管理员
       </div>
-      <n-tooltip trigger="hover" v-if="isAdmin">
+      <n-tooltip trigger="hover" v-if="teamInfo.isAdmin">
         <template #trigger>
           <n-icon size="18" class="cursor-pointer">
             <alert-circle />
@@ -29,8 +33,7 @@
             搜索
           </n-button>
         </n-input-group>
-
-        <n-button text @click="showAddModal = true">
+        <n-button text @click="teamInvite?.open">
           <template #icon>
             <n-icon size="25"> <add-circle-outline /> </n-icon>
           </template>
@@ -42,11 +45,6 @@
         </n-button>
       </n-space>
     </div>
-    <team-invite
-      :team-id="teamId"
-      v-model:show="showAddModal"
-      @update:show="showAddModal = false"
-    />
   </div>
   <div class="table-context">
     <n-data-table
@@ -55,12 +53,11 @@
       :data="tableData"
       :loading="isReloading"
       :pagination="pagination"
-      :style="{ height: '620px' }"
+      style="height: 620px"
     >
     </n-data-table>
-
-    <n-button @click="addUserInfoTable"> 测试添加 </n-button>
   </div>
+  <team-invite ref="teamInvite" />
 </template>
 
 <script setup lang="tsx">
@@ -77,36 +74,37 @@ import {
   NInputGroup,
   NInput
 } from 'naive-ui'
-import { onMounted, ref, reactive, h, computed, unref, watch } from 'vue'
+import { onMounted, ref, reactive, computed, unref } from 'vue'
 import {
   deleteOrganizationAdmin,
   deleteOrganizationMember,
   getOrganizationMember,
-  updateOrganizationAdmin
+  updateOrganizationAdmin,
+  getOrganization
 } from '../../api/social'
 import TeamInvite from './modal/TeamInvite.vue'
+import { useRoute } from 'vue-router'
 
-const props = defineProps<{ teamId: number; isAdmin: boolean }>()
-
-onMounted(reload)
-
-watch(() => props.teamId, reload)
+const route = useRoute()
 
 const teamUsersId = ref<Array<number>>([])
 const tableData = ref<Array<any>>([])
-const showAddModal = ref(false)
 const isReloading = ref(false)
 const searchUserInfo = ref()
-const currentUserId = parseInt(localStorage.getItem('userID') as string)
+const teamInvite = ref<InstanceType<typeof TeamInvite> | null>(null)
 const teamUsersNumber = computed(() => tableData.value.length)
 const teamAdminsNumber = computed(() => {
-  var count = 0
-  tableData.value.forEach((element: any) => {
-    if (element.identity == '管理员') count++
-  })
-  return count
+  return tableData.value.filter((item) => {
+    item.identity == '管理员'
+  }).length
 })
 
+const teamInfo = reactive({
+  isAdmin: false,
+  isValid: false,
+  name: '',
+  profile: ''
+})
 const nameColumn = reactive<DataTableBaseColumn>({
   title: '姓名',
   key: 'name',
@@ -116,7 +114,6 @@ const nameColumn = reactive<DataTableBaseColumn>({
   filter: 'default',
   filterOptionValue: null
 })
-
 const buttomColumn = reactive<DataTableBaseColumn>({
   title: '操作',
   key: 'actions',
@@ -127,7 +124,9 @@ const buttomColumn = reactive<DataTableBaseColumn>({
         <NButton
           size='small'
           disabled={
-            !props.isAdmin || teamUsersId.value[rowData.key] == currentUserId
+            !teamInfo.isAdmin ||
+            teamUsersId.value[rowData.key] ===
+              parseInt(localStorage.getItem('userID') as string)
           }
           onClick={() => {
             handleDeleteMember(rowData.key)
@@ -137,7 +136,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
         </NButton>
         <NButton
           size='small'
-          disabled={!props.isAdmin}
+          disabled={!teamInfo.isAdmin}
           type={rowData.identity === '管理员' ? 'primary' : 'tertiary'}
           onClick={() => {
             handleUpdateAdmin(rowData.key)
@@ -147,7 +146,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
         </NButton>
         <NButton
           size={'small'}
-          disabled={!props.isAdmin}
+          disabled={!teamInfo.isAdmin}
           type={rowData.identity === '组员' ? 'primary' : 'tertiary'}
           onClick={() => {
             handleDeleteAdmin(rowData.key)
@@ -159,7 +158,6 @@ const buttomColumn = reactive<DataTableBaseColumn>({
     )
   }
 })
-
 const columns = reactive<DataTableColumns>([
   nameColumn,
   {
@@ -173,7 +171,6 @@ const columns = reactive<DataTableColumns>([
   },
   buttomColumn
 ])
-
 const pagination = reactive({
   page: 1,
   itemCount: unref(tableData).length,
@@ -186,9 +183,11 @@ const pagination = reactive({
 function handleFilterSearch() {
   nameColumn.filterOptionValue = searchUserInfo.value
 }
-
 function handleDeleteMember(rowKey: number) {
-  deleteOrganizationMember(props.teamId, teamUsersId.value.at(rowKey) as number)
+  deleteOrganizationMember(
+    route.params.id as string,
+    teamUsersId.value.at(rowKey) as number
+  )
     .then((res) => {
       if (res.data.success) {
         window.$message.info('踢出成功')
@@ -198,12 +197,11 @@ function handleDeleteMember(rowKey: number) {
     })
     .finally(reload)
 }
-
 function handleUpdateAdmin(rowKey: number) {
   if (tableData.value.at(rowKey).identity == '管理员') return
   updateOrganizationAdmin(
     { id: teamUsersId.value.at(rowKey) || 0 },
-    props.teamId
+    route.params.id as string
   ).then((res) => {
     if (res.data.success) {
       tableData.value.at(rowKey).identity = '管理员'
@@ -212,12 +210,11 @@ function handleUpdateAdmin(rowKey: number) {
     }
   })
 }
-
 function handleDeleteAdmin(rowKey: number) {
   if (tableData.value.at(rowKey).identity == '组员') return
   deleteOrganizationAdmin(
     teamUsersId.value.at(rowKey) as number,
-    props.teamId
+    route.params.id as string
   ).then((res) => {
     if (res.data.success) {
       tableData.value.at(rowKey).identity = '组员'
@@ -226,11 +223,9 @@ function handleDeleteAdmin(rowKey: number) {
     }
   })
 }
-
 function reload() {
-  if (!props.teamId) return
   isReloading.value = true
-  getOrganizationMember(props.teamId).then((res) => {
+  getOrganizationMember(route.params.id as string).then((res) => {
     if (res.data.success) {
       teamUsersId.value = []
       tableData.value = res.data.Members.map((item: any, index: number) => {
@@ -249,16 +244,15 @@ function reload() {
   })
 }
 
-function addUserInfoTable() {
-  var currentCounter = tableData.value.length
-  tableData.value.push({
-    key: currentCounter,
-    name: currentCounter.toString(),
-    email: currentCounter.toString(),
-    identity: '组员'
+onMounted(() => {
+  getOrganization(route.params.id as string).then((res) => {
+    teamInfo.isAdmin = res.data.isAdmin
+    teamInfo.isValid = res.data.isValid
+    teamInfo.name = res.data.name
+    teamInfo.profile = res.data.profile
+    reload()
   })
-  pagination.itemCount += 1
-}
+})
 </script>
 
 <style scoped>
