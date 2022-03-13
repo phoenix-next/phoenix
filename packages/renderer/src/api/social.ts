@@ -4,50 +4,54 @@ export function createOrganization(data: { name: string; profile: string }) {
   return backend.post('organizations', data)
 }
 
-export function getOrganization(teamId: string) {
-  return backend.get(`organizations/${teamId}`)
+export function getOrganization(teamID: string) {
+  return backend.get(`organizations/${teamID}`)
 }
 
-export function updateOrganization(
-  data: { name: string; profile: string },
-  teamId: string
-) {
-  return backend.put(`organizations/${teamId}`, data)
+export function updateOrganization(data: {
+  name: string
+  profile: string
+  teamID: string
+}) {
+  return backend.put(`organizations/${data.teamID}`, data)
 }
 
-export function deleteOrganization(teamId: string) {
-  return backend.delete(`organizations/${teamId}`)
+export function deleteOrganization(teamID: string) {
+  return backend.delete(`organizations/${teamID}`)
 }
 
-export function createInvitation(
-  data: { email: string; isAdmin: boolean },
-  teamId: string
-) {
-  return backend.post(`organizations/${teamId}/invitations`, data)
+export function createInvitation(data: {
+  email: string
+  isAdmin: boolean
+  teamID: string
+}) {
+  return backend.post(`organizations/${data.teamID}/invitations`, data)
 }
 
-export function updateOrganizationMember(teamId: string) {
-  return backend.post(`organizations/${teamId}/users`)
+export function updateOrganizationMember(data: {
+  teamID: number
+  accept: boolean
+}) {
+  return backend.post(`organizations/${data.teamID}/users`, data)
 }
 
-export function deleteOrganizationMember(
-  teamId: string,
-  userId: number | string
-) {
-  return backend.delete(`organizations/${teamId}/users/${userId}`)
+export function deleteOrganizationMember(teamID: string, userId: number) {
+  return backend.delete(`organizations/${teamID}/users/${userId}`)
 }
 
-export function getOrganizationMember(teamId: string) {
-  return backend.get(`organizations/${teamId}/users`)
+export function getOrganizationMember(teamID: string) {
+  return backend.get(`organizations/${teamID}/users`)
 }
 
-export function updateOrganizationAdmin(data: { id: number }, teamId: string) {
-  return backend.post(`organizations/${teamId}/admins`, data)
+export function updateOrganizationAdmin(data: {
+  userID: number
+  teamID: string
+}) {
+  return backend.post(`organizations/${data.teamID}/admins`, {
+    id: data.userID
+  })
 }
 
-export function deleteOrganizationAdmin(
-  adminId: number | string,
-  teamId: string
-) {
-  return backend.delete(`organizations/${teamId}/admins/${adminId}`)
+export function deleteOrganizationAdmin(adminId: number, teamID: string) {
+  return backend.delete(`organizations/${teamID}/admins/${adminId}`)
 }

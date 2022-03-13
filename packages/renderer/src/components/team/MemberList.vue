@@ -167,24 +167,21 @@ function handleFilterSearch() {
   nameColumn.filterOptionValue = searchUserInfo.value
 }
 function handleDeleteMember(rowData: any) {
-  deleteOrganizationMember(route.params.id as string, rowData.id)
-    .then((res) => {
-      if (res.data.success) {
-        window.$message.info('踢出成功')
-      }
-    })
-    .finally(reload)
+  deleteOrganizationMember(route.params.id as string, rowData.id).finally(
+    reload
+  )
 }
 function handleUpdateAdmin(rowData: any) {
   if (rowData.isAdmin) return
-  updateOrganizationAdmin({ id: rowData.id }, route.params.id as string).then(
-    (res) => {
-      if (res.data.success) {
-        tableData.value[rowData.key].identity = '管理员'
-        tableData.value[rowData.key].isAdmin = true
-      }
+  updateOrganizationAdmin({
+    userID: rowData.id,
+    teamID: route.params.id as string
+  }).then((res) => {
+    if (res.data.success) {
+      tableData.value[rowData.key].identity = '管理员'
+      tableData.value[rowData.key].isAdmin = true
     }
-  )
+  })
 }
 function handleDeleteAdmin(rowData: any) {
   if (!rowData.isAdmin) return
