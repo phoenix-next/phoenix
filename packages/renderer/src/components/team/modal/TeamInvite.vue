@@ -8,7 +8,7 @@
     negative-text="取消"
     @positive-click="handlePositiveClick"
   >
-    <n-divider />
+    <n-divider style="margin: 15px auto" />
     <n-space>
       <n-select
         v-model:value="userIdentity"

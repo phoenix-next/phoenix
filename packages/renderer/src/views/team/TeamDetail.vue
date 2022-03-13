@@ -23,5 +23,6 @@ import TeamSetting from '../../components/team/TeamSetting.vue'
   height: 100%;
   width: 100%;
   padding: 20px 24px;
+  box-sizing: border-box;
 }
 </style>

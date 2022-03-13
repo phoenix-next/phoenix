@@ -28,3 +28,7 @@ export function getUserOrganization() {
 export function updateUserProfile(data: FormData) {
   return backend.put('users', data)
 }
+
+export function quitOrganization(data: { id: string }) {
+  return backend.delete(`users/organizations/${data.id}`)
+}

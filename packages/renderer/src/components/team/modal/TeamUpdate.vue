@@ -8,7 +8,7 @@
     negative-text="取消"
     @positive-click="handlePositiveClick"
   >
-    <n-divider />
+    <n-divider style="margin: 15px auto" />
     <n-input
       v-model:value="newTeamName"
       type="text"
@@ -19,6 +19,7 @@
       v-model:value="newTeamProfile"
       type="textarea"
       placeholder="请输入组织信息"
+      style="margin-top: 15px"
     >
     </n-input>
   </n-modal>

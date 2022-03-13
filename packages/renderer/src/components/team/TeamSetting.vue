@@ -12,8 +12,8 @@
       <n-descriptions-item label="组织信息">
         {{ teamProfile }}
       </n-descriptions-item>
-      <n-descriptions-item label="组织ID">
-        {{ props.teamId }}
+      <n-descriptions-item label="组织编号">
+        {{ route.params.id }}
       </n-descriptions-item>
     </n-descriptions>
     <n-button text @click="showQuitModal = true"> 退出组织 </n-button>
@@ -21,10 +21,7 @@
       解散组织
     </n-button>
   </n-space>
-  <team-update
-    ref="teamUpdate"
-    @update:team-profile="handleUpdateTeamProfile"
-  />
+  <team-update ref="teamUpdate" @update:team-profile="reload" />
   <n-modal
     v-model:show="showQuitModal"
     preset="dialog"
@@ -59,38 +56,26 @@ import {
   NModal
 } from 'naive-ui'
 import { onMounted, ref } from 'vue'
-import {
-  deleteOrganization,
-  deleteOrganizationMember,
-  getOrganization
-} from '../../api/social'
+import { deleteOrganization, getOrganization } from '../../api/social'
+import { quitOrganization } from '../../api/user'
 import { PencilOutline } from '@vicons/ionicons5'
 import TeamUpdate from './modal/TeamUpdate.vue'
-import { useRouter } from 'vue-router'
-const props = defineProps({
-  isAdmin: {
-    type: Boolean,
-    default: false
-  },
-  teamId: {
-    type: Number,
-    default: null
-  }
-})
-
-const emits = defineEmits(['update:team-setting'])
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 
+const isAdmin = ref(false)
 const teamName = ref('')
 const teamProfile = ref('')
 const showQuitModal = ref(false)
 const showDeleteModal = ref(false)
 const teamUpdate = ref<InstanceType<typeof TeamUpdate> | null>(null)
 
-const reload = () => {
-  getOrganization(props.teamId).then((res) => {
+function reload() {
+  getOrganization(route.params.id as string).then((res) => {
     if (res.data.success) {
+      isAdmin.value = res.data.isAdmin
       teamName.value = res.data.name
       teamProfile.value = res.data.profile
     } else {
@@ -98,15 +83,8 @@ const reload = () => {
     }
   })
 }
-
-function handleUpdateTeamProfile() {
-  reload()
-  emits('update:team-setting')
-}
-
 function handleQuitClick() {
-  const userId = localStorage.getItem('userID') as string
-  deleteOrganizationMember(props.teamId, parseInt(userId)).then((res) => {
+  quitOrganization({ id: route.params.id as string }).then((res) => {
     if (res.data.success) {
       router.push({ path: '/profile' })
     } else {
@@ -114,9 +92,8 @@ function handleQuitClick() {
     }
   })
 }
-
 function handleDeleteClick() {
-  deleteOrganization(props.teamId).then((res) => {
+  deleteOrganization(route.params.id as string).then((res) => {
     if (res.data.success) {
       router.push({ path: '/profile' })
     } else {
