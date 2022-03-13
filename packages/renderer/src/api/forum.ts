@@ -1,6 +1,6 @@
 import { backend } from '../utils/request'
 
-export function getPosts(data: { id: number; type: number; page: number }) {
+export function getAllPosts(data: { id: number; type: number; page: number }) {
   return backend.get('posts', {
     params: data
   })
@@ -27,6 +27,10 @@ export function createComments(data: {
   return backend.post(`posts/${data.id}/comments`, data)
 }
 
-export function getAllComments(data: { id: number }) {
-  return backend.get(`posts/${data.id}/comments`)
+export function getAllComments(id: number) {
+  return backend.get(`posts/${id}/comments`)
+}
+
+export function getPosts(id: number) {
+  return backend.get(`posts/${id}`)
 }

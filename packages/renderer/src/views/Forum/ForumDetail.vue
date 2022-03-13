@@ -42,10 +42,14 @@
       </n-icon>
     </n-button>
     <n-space justify="center">
-      <n-h1 class="title"> 这个帖子的标题大概这么长 </n-h1>
+      <n-h1 class="title"> {{ title }} </n-h1>
     </n-space>
     <n-space justify="end">
+      <n-button @click="handleDel" v-if="canDelPost()">删除</n-button>
       <n-button @click="handleReply">回复</n-button>
+    </n-space>
+    <n-space justify="center">
+      <n-h5 class="title"> {{ content }} </n-h5>
     </n-space>
     <n-divider />
     <n-card v-for="comment in comments" style="margin-top: 20px">
@@ -58,7 +62,12 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
-import { createComments, getAllComments } from '../../api/forum'
+import {
+  createComments,
+  deletePosts,
+  getAllComments,
+  getPosts
+} from '../../api/forum'
 import { onMounted, ref, watch } from 'vue'
 import {
   NCard,
@@ -89,8 +98,11 @@ const rules = {
   }
 }
 
+const title = ref('')
+const content = ref('')
+const creatorID = ref(0)
+const creatorName = ref('')
 const comments = ref<Array<any>>([])
-const total = ref(0)
 const needChange = ref(false)
 
 function clickReturn() {
@@ -100,6 +112,22 @@ function clickReturn() {
 function handleReply() {
   window.$message.success('create comment!')
   showModal.value = true
+}
+
+function handleDel() {
+  window.$message.success('delete')
+  deletePosts({ id: parseInt(route.params.id as string) }).then((res) => {
+    if (res.data.success) {
+      window.$message.success('删除成功')
+      router.back()
+    }
+  })
+}
+
+function canDelPost() {
+  if (creatorID.value == parseInt(localStorage.getItem('userID') as string))
+    return true
+  return false
 }
 
 function handleValidateClick(e: MouseEvent) {
@@ -123,18 +151,24 @@ function handleValidateClick(e: MouseEvent) {
 }
 
 onMounted(() => {
-  getAllComments({ id: parseInt(route.params.id as string) }).then((res) => {
-    console.log(res.data)
+  getAllComments(parseInt(route.params.id as string)).then((res) => {
     if (res.data.success) {
       comments.value = res.data.comments
       window.$message.success(res.data.message)
     }
   })
+  getPosts(parseInt(route.params.id as string)).then((res) => {
+    if (res.data.success) {
+      title.value = res.data.title
+      content.value = res.data.content
+      creatorID.value = res.data.creatorID
+      creatorName.value = res.data.creatorName
+    }
+  })
 })
 
 watch([needChange], () => {
-  getAllComments({ id: parseInt(route.params.id as string) }).then((res) => {
-    console.log(res.data)
+  getAllComments(parseInt(route.params.id as string)).then((res) => {
     if (res.data.success) {
       comments.value = res.data.comments
       window.$message.success(res.data.message)
