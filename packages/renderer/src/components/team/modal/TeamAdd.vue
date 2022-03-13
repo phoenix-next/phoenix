@@ -51,8 +51,6 @@ function handlePositiveClick() {
     if (res.data.success) {
       window.$message.info('组织创建成功')
       emits('update:team-created')
-    } else {
-      window.$message.error('组织创建失败')
     }
   })
 }

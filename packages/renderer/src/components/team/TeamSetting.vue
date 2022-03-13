@@ -78,8 +78,6 @@ function reload() {
       isAdmin.value = res.data.isAdmin
       teamName.value = res.data.name
       teamProfile.value = res.data.profile
-    } else {
-      window.$message.info('组织信息获取失败')
     }
   })
 }
@@ -87,8 +85,6 @@ function handleQuitClick() {
   quitOrganization({ id: route.params.id as string }).then((res) => {
     if (res.data.success) {
       router.push({ path: '/profile' })
-    } else {
-      window.$message.warning('退出组织失败')
     }
   })
 }
@@ -96,8 +92,6 @@ function handleDeleteClick() {
   deleteOrganization(route.params.id as string).then((res) => {
     if (res.data.success) {
       router.push({ path: '/profile' })
-    } else {
-      window.$message.warning('解散组织失败')
     }
   })
 }

@@ -110,8 +110,6 @@ function clickCreate() {
     if (res.data.success) {
       window.$message.success(res.data.message)
       router.back()
-    } else {
-      window.$message.warning(res.data.message)
     }
   })
 }

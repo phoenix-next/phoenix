@@ -121,8 +121,6 @@ function clickRegister() {
     if (res.data.success) {
       window.$message.success(res.data.message)
       emit('finishRegister')
-    } else {
-      window.$message.warning(res.data.message)
     }
   })
 }
@@ -135,8 +133,6 @@ function clickGetCaptcha() {
   getCaptcha({ email: data.email }).then((res) => {
     if (res.data.success) {
       window.$message.success(res.data.message)
-    } else {
-      window.$message.warning(res.data.message)
     }
   })
 }

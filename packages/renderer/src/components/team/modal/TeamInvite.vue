@@ -58,8 +58,6 @@ function handlePositiveClick() {
   ).then((res) => {
     if (res.data.success) {
       window.$message.info('已发送邀请')
-    } else {
-      window.$message.error('邀请发送失败')
     }
   })
 }

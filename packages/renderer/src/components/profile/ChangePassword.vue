@@ -74,8 +74,6 @@ function clickConfirm() {
       data.password = ''
       data.repeatPassword = ''
       open.value = false
-    } else {
-      window.$message.warning(res.data.message)
     }
   })
 }

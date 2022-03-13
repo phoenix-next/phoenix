@@ -46,8 +46,6 @@ function handlePositiveClick() {
     if (res.data.success) {
       window.$message.info('组织信息已更改')
       emits('update:team-profile')
-    } else {
-      window.$message.warning('组织信息更改失败')
     }
   })
 }

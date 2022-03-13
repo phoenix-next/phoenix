@@ -83,8 +83,6 @@ function clickLogin() {
       } else {
         router.push({ path: '/tutorial' })
       }
-    } else {
-      window.$message.warning(res.data.message)
     }
   })
 }

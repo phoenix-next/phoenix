@@ -11,6 +11,9 @@ backend.interceptors.request.use((config) => {
 
 backend.interceptors.response.use(
   (response) => {
+    if (!response.data.success) {
+      window.$message.warning(response.data.message)
+    }
     return response
   },
   (error) => {

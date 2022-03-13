@@ -4,7 +4,7 @@
       <div>
         共有
         <span class="table-tool-bar-number">
-          {{ teamUsersNumber }}
+          {{ tableData.length }}
         </span>
         个成员，
         <span class="table-tool-bar-number">
@@ -93,11 +93,8 @@ const isAdmin = ref(false)
 const searchUserInfo = ref('')
 const teamInvite = ref<InstanceType<typeof TeamInvite> | null>(null)
 
-const teamUsersNumber = computed(() => tableData.value.length)
 const teamAdminsNumber = computed(() => {
-  return tableData.value.filter((item) => {
-    item.identity === '管理员'
-  }).length
+  return tableData.value.filter((item) => item.isAdmin).length
 })
 
 const nameColumn = reactive<DataTableBaseColumn>({
@@ -179,8 +176,6 @@ function handleDeleteMember(rowData: any) {
     .then((res) => {
       if (res.data.success) {
         window.$message.info('踢出成功')
-      } else {
-        window.$message.warning('踢出失败')
       }
     })
     .finally(reload)
@@ -191,8 +186,6 @@ function handleUpdateAdmin(rowData: any) {
     (res) => {
       if (res.data.success) {
         tableData.value.at(rowData.key).identity = '管理员'
-      } else {
-        window.$message.warning(res.data.message)
       }
     }
   )
@@ -202,8 +195,6 @@ function handleDeleteAdmin(rowData: any) {
   deleteOrganizationAdmin(rowData.id, route.params.id as string).then((res) => {
     if (res.data.success) {
       tableData.value.at(rowData.key).identity = '组员'
-    } else {
-      window.$message.warning(res.data.message)
     }
   })
 }
@@ -221,8 +212,6 @@ function reload() {
           identity: item.isAdmin ? '管理员' : '组员'
         }
       })
-    } else {
-      window.$message.error('列表加载失败')
     }
     isReloading.value = false
   })
