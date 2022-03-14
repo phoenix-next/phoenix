@@ -32,7 +32,7 @@
       </n-gi>
     </n-grid>
   </n-card>
-  <n-card>
+  <n-card style="height: 662px">
     <n-data-table
       remote
       :columns="columns"
@@ -61,7 +61,8 @@ import {
   NInput,
   NH2,
   NText,
-  NIcon
+  NIcon,
+  NProgress
 } from 'naive-ui'
 import { ref, reactive, onMounted, computed } from 'vue'
 import { getProblemList } from '../../api/judge'
@@ -84,80 +85,84 @@ const columns = ref<Array<DataTableColumn>>([
     title: '状态',
     key: 'result',
     width: '53px',
-    render: (rowData) => {
-      return (
-        <div
-          onClick={handleClick(rowData.problemID as number)}
-          style={{
-            cursor: 'pointer',
-            display: 'flex',
-            justifyContent: 'center'
-          }}
-        >
-          {rowData.result === 0 ? (
-            <NIcon size='20' color='#626262'>
-              <RemoveSharp />
-            </NIcon>
-          ) : (rowData.result as number) > 0 ? (
-            <NIcon size='20' color='#0e7a0d'>
-              <CheckmarkDoneOutline />
-            </NIcon>
-          ) : (
-            <NIcon size='20' color='#FF3939'>
-              <Close />
-            </NIcon>
-          )}
-        </div>
-      )
-    }
+    render: (rowData) => (
+      <div
+        onClick={handleClick(rowData.problemID as number)}
+        style={{
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'center'
+        }}
+      >
+        {rowData.result === 0 ? (
+          <NIcon size='20' color='#626262'>
+            <RemoveSharp />
+          </NIcon>
+        ) : (rowData.result as number) > 0 ? (
+          <NIcon size='20' color='#0e7a0d'>
+            <CheckmarkDoneOutline />
+          </NIcon>
+        ) : (
+          <NIcon size='20' color='#FF3939'>
+            <Close />
+          </NIcon>
+        )}
+      </div>
+    )
   },
   {
     title: '题号',
     key: 'problemID',
+    width: '100px',
+    align: 'center',
     sorter: true,
     sortOrder: 'ascend',
-    render: (rowData) => {
-      return (
-        <div
-          onClick={handleClick(rowData.problemID as number)}
-          style={{ cursor: 'pointer' }}
-        >
-          P{rowData.problemID}
-        </div>
-      )
-    }
+    render: (rowData) => (
+      <div
+        onClick={handleClick(rowData.problemID as number)}
+        style={{ cursor: 'pointer' }}
+      >
+        P{rowData.problemID}
+      </div>
+    )
   },
   {
     title: '题目名称',
     key: 'problemName',
     sorter: true,
     sortOrder: false,
-    render: (rowData) => {
-      return (
-        <div
-          onClick={handleClick(rowData.problemID as number)}
-          style={{ cursor: 'pointer' }}
-        >
-          {rowData.problemName}
-        </div>
-      )
-    }
+    align: 'center',
+    render: (rowData) => (
+      <div
+        onClick={handleClick(rowData.problemID as number)}
+        style={{ cursor: 'pointer' }}
+      >
+        {rowData.problemName}
+      </div>
+    )
   },
   {
     title: '难度',
     key: 'difficulty',
+    align: 'center',
     sorter: true,
     sortOrder: false,
-    render: (rowData) => {
-      return (
-        <div
-          onClick={handleClick(rowData.problemID as number)}
-          style={{ cursor: 'pointer' }}
-        >
-          {rowData.difficulty}
-        </div>
-      )
-    }
+    render: (rowData) => (
+      <div
+        onClick={handleClick(rowData.problemID as number)}
+        style={{ cursor: 'pointer' }}
+      >
+        <NProgress
+          percentage={(rowData.difficulty as number) * 10}
+          showIndicator={false}
+          status={(function () {
+            if ((rowData.difficulty as number) > 8) return 'error'
+            else if ((rowData.difficulty as number) > 5) return 'warning'
+            else if ((rowData.difficulty as number) > 3) return 'success'
+          })()}
+        />
+      </div>
+    )
   }
 ])
 const keyWord = ref('')

@@ -32,7 +32,7 @@
       </n-gi>
     </n-grid>
   </n-card>
-  <n-card>
+  <n-card style="height: 662px">
     <n-data-table
       remote
       :columns="columns"
