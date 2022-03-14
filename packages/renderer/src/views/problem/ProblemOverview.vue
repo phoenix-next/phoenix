@@ -67,39 +67,39 @@ import { getProblemList } from '../../api/judge'
 const { isLogin } = useAuthStore()
 const router = useRouter()
 
-const data = ref<Array<{ id: string; difficulty: number; name: string }>>([
-  { id: 'Loading...', difficulty: 1, name: 'Loading...' }
+const data = ref<Array<any>>([
+  { problemID: 'Loading...', difficulty: 1, problemName: 'Loading...' }
 ])
 const loading = ref(true)
 const columns = ref<Array<DataTableColumn>>([
   {
     title: '题号',
-    key: 'id',
+    key: 'problemID',
     sorter: true,
     sortOrder: 'ascend',
     render: (rowData) => {
       return (
         <div
-          onClick={handleClick(rowData.id as string)}
+          onClick={handleClick(rowData.problemID as number)}
           style={{ cursor: 'pointer' }}
         >
-          {rowData.id}
+          P{rowData.problemID}
         </div>
       )
     }
   },
   {
     title: '题目名称',
-    key: 'name',
+    key: 'problemName',
     sorter: true,
     sortOrder: false,
     render: (rowData) => {
       return (
         <div
-          onClick={handleClick(rowData.id as string)}
+          onClick={handleClick(rowData.problemID as number)}
           style={{ cursor: 'pointer' }}
         >
-          {rowData.name}
+          {rowData.problemName}
         </div>
       )
     }
@@ -112,7 +112,7 @@ const columns = ref<Array<DataTableColumn>>([
     render: (rowData) => {
       return (
         <div
-          onClick={handleClick(rowData.id as string)}
+          onClick={handleClick(rowData.problemID as number)}
           style={{ cursor: 'pointer' }}
         >
           {rowData.difficulty}
@@ -139,7 +139,7 @@ const sortMethod = computed(() => {
 })
 
 function rowKey(rowData: any) {
-  return rowData.id
+  return rowData.problemID
 }
 function updateData() {
   loading.value = true
@@ -149,9 +149,7 @@ function updateData() {
     keyWord: keyWord.value
   })
     .then((res) => {
-      data.value = (res.data.problemList as Array<any>).map((item) => {
-        return { ...item, id: 'P' + item.id }
-      })
+      data.value = res.data.problemList
       pagination.itemCount = res.data.total
     })
     .finally(() => {
@@ -166,16 +164,16 @@ function handleSearch() {
     updateData()
   }
 }
-function handleClick(id: string) {
+function handleClick(id: number) {
   return () => {
-    router.push({ path: '/problem/' + id.substring(1) })
+    router.push({ path: '/problem/' + id })
   }
 }
 function handleSorterChange(sorter: any) {
   // 建立从列名到索引的映射
   const sorterMap: Record<string, number> = {
-    id: 0,
-    name: 1,
+    problemID: 0,
+    problemName: 1,
     difficulty: 2
   }
   // sorter不为空且不在加载中
