@@ -4,7 +4,9 @@ import { FitAddon } from 'xterm-addon-fit'
 export function createEditor(container: HTMLElement, language: string) {
   const div = document.createElement('div')
   div.style.height = Math.max(container.offsetHeight, 110) + 'px'
-  container.parentNode?.replaceChild(div, container)
+  const pre = container.parentElement as HTMLElement
+  pre.style.border = 'solid 1px #f0f0f0'
+  pre.replaceChild(div, container)
   return monaco.editor.create(div, {
     value: container.textContent as string,
     language,
@@ -60,7 +62,7 @@ export function addEditorAction(editor: monaco.editor.IStandaloneCodeEditor) {
     id: 'Clear program output',
     run: (instance) => {
       // 获取编辑器节点的父节点
-      const pre = instance.getDomNode()?.parentNode?.parentNode
+      const pre = instance.getDomNode()?.parentElement?.parentElement
       // 删除已经挂载的xterm
       if (pre?.children.length !== 1) {
         pre?.removeChild(pre.lastChild as ChildNode)
@@ -79,7 +81,7 @@ export function addEditorAction(editor: monaco.editor.IStandaloneCodeEditor) {
         )
         .then((res) => {
           // 获取编辑器节点的父节点
-          const pre = instance.getDomNode()?.parentNode?.parentNode
+          const pre = instance.getDomNode()?.parentElement?.parentElement
           // 将xterm挂载父节点下，无需重复挂载
           if (pre?.children.length === 1) {
             // 创建xterm的容器
@@ -92,7 +94,7 @@ export function addEditorAction(editor: monaco.editor.IStandaloneCodeEditor) {
               theme: {
                 background: '#f0f0f0',
                 foreground: '#000000',
-                cursor: '#888888'
+                cursor: '#cccccc'
               }
             })
             const fitAddon = new FitAddon()
