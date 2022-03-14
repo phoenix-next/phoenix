@@ -5,7 +5,8 @@ export function createEditor(container: HTMLElement, language: string) {
   const div = document.createElement('div')
   div.style.height = Math.max(container.offsetHeight, 110) + 'px'
   const pre = container.parentElement as HTMLElement
-  pre.style.border = 'solid 1px #f0f0f0'
+  pre.removeAttribute('class')
+  pre.style.borderLeft = 'solid 3px #f0f0f0'
   pre.replaceChild(div, container)
   return monaco.editor.create(div, {
     value: container.textContent as string,
