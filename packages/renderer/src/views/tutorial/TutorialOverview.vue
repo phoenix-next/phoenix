@@ -40,6 +40,7 @@
       :loading="loading"
       :pagination="pagination"
       :row-key="rowKey"
+      :single-line="false"
       @update:sorter="handleSorterChange"
       @update:page="handlePageChange"
     />

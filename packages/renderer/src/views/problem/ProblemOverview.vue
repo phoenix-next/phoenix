@@ -40,6 +40,7 @@
       :loading="loading"
       :pagination="pagination"
       :row-key="rowKey"
+      :single-line="false"
       @update:sorter="handleSorterChange"
       @update:page="handlePageChange"
     />
@@ -59,19 +60,57 @@ import {
   NButton,
   NInput,
   NH2,
-  NText
+  NText,
+  NIcon
 } from 'naive-ui'
 import { ref, reactive, onMounted, computed } from 'vue'
 import { getProblemList } from '../../api/judge'
+import { CheckmarkDoneOutline, Close, RemoveSharp } from '@vicons/ionicons5'
 
 const { isLogin } = useAuthStore()
 const router = useRouter()
 
 const data = ref<Array<any>>([
-  { problemID: 'Loading...', difficulty: 1, problemName: 'Loading...' }
+  {
+    result: 0,
+    problemID: 'Loading...',
+    difficulty: 1,
+    problemName: 'Loading...'
+  }
 ])
 const loading = ref(true)
 const columns = ref<Array<DataTableColumn>>([
+  {
+    title: '状态',
+    key: 'result',
+    width: '53px',
+    render: (rowData) => {
+      return (
+        <div
+          onClick={handleClick(rowData.problemID as number)}
+          style={{
+            cursor: 'pointer',
+            display: 'flex',
+            justifyContent: 'center'
+          }}
+        >
+          {rowData.result === 0 ? (
+            <NIcon size='20' color='#626262'>
+              <RemoveSharp />
+            </NIcon>
+          ) : (rowData.result as number) > 0 ? (
+            <NIcon size='20' color='#0e7a0d'>
+              <CheckmarkDoneOutline />
+            </NIcon>
+          ) : (
+            <NIcon size='20' color='#FF3939'>
+              <Close />
+            </NIcon>
+          )}
+        </div>
+      )
+    }
+  },
   {
     title: '题号',
     key: 'problemID',
@@ -133,9 +172,7 @@ const sortMethod = computed(() => {
     return item.sortOrder !== false
   })
   // 该数字为后端API的要求
-  return (columns.value[index] as any).sortOrder === 'ascend'
-    ? index + 1
-    : -index - 1
+  return (columns.value[index] as any).sortOrder === 'ascend' ? index : -index
 })
 
 function rowKey(rowData: any) {
@@ -172,9 +209,9 @@ function handleClick(id: number) {
 function handleSorterChange(sorter: any) {
   // 建立从列名到索引的映射
   const sorterMap: Record<string, number> = {
-    problemID: 0,
-    problemName: 1,
-    difficulty: 2
+    problemID: 1,
+    problemName: 2,
+    difficulty: 3
   }
   // sorter不为空且不在加载中
   if (sorter && !loading.value) {
