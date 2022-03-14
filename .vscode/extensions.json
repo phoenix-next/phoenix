@@ -1,12 +1,10 @@
 {
-	"recommendations": [
-		"johnsoncodehk.volar",
-		"johnsoncodehk.vscode-typescript-vue-plugin",
-		"esbenp.prettier-vscode",
-		"gruntfuggly.todo-tree",
-		"sdras.vue-vscode-snippets"
-	],
-	"unwantedRecommendations": [
-		"octref.vetur"
-	]
+  "recommendations": [
+    "johnsoncodehk.volar",
+    "johnsoncodehk.vscode-typescript-vue-plugin",
+    "esbenp.prettier-vscode",
+    "gruntfuggly.todo-tree",
+    "sdras.vue-vscode-snippets"
+  ],
+  "unwantedRecommendations": ["octref.vetur"]
 }

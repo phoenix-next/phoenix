@@ -39,15 +39,15 @@
   </n-modal>
   <n-card>
     <n-grid>
-      <n-gi :span="5">
+      <n-gi :span="4" :offset="1">
         <n-h2>
-          <n-text type="primary"> 最近讨论 </n-text>
+          <n-text type="primary"> 论坛 </n-text>
         </n-h2>
       </n-gi>
       <n-gi :span="14" :offset="2">
         <n-input-group>
           <n-button type="primary" class="label">查找帖子</n-button>
-          <n-input :style="{ width: '50%' }" />
+          <n-input :style="{ width: '50%' }" placeholder="请输入关键字" />
           <n-button type="primary" ghost>搜索</n-button>
         </n-input-group>
       </n-gi>
@@ -63,11 +63,13 @@
         </n-button>
       </n-gi>
     </n-grid>
+  </n-card>
+  <n-card>
     <n-grid>
       <n-gi :span="16">
         <n-grid :x-gap="12" :y-gap="8" :cols="1">
           <n-gi v-if="posts.length === 0">
-            <n-empty description="是一个飞机">
+            <n-empty description="此处空空如也" style="margin-top: 180px">
               <template #icon>
                 <n-icon>
                   <airplane />
@@ -90,13 +92,14 @@
                 </n-layout-sider>
                 <n-layout>
                   <n-layout-content>
-                    <n-text @click="handleClick">
+                    <n-text @click="handleClick(post.id)">
                       {{ post.title }}
                     </n-text>
                     <n-button
                       @click="handleDelete(post.id)"
                       size="small"
                       style="position: absolute; right: 0"
+                      v-if="canDel(post.creatorID)"
                     >
                       删除
                     </n-button>
@@ -110,12 +113,14 @@
             </n-card>
           </n-gi>
           <n-gi v-if="posts.length !== 0">
-            <n-pagination
-              v-model:page="page"
-              :page-size="5"
-              :item-count="total"
-              show-quick-jumper
-            />
+            <n-space justify="end">
+              <n-pagination
+                v-model:page="page"
+                :page-size="5"
+                :item-count="total"
+                show-quick-jumper
+              />
+            </n-space>
           </n-gi>
         </n-grid>
       </n-gi>
@@ -210,7 +215,8 @@ import { Airplane } from '@vicons/ionicons5'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
-import { createPosts, deletePosts, getPosts } from '../../api/forum'
+import { createPosts, deletePosts, getAllPosts } from '../../api/forum'
+import { getOrganization } from '../../api/social'
 
 const router = useRouter()
 
@@ -241,14 +247,21 @@ const needChange = ref(false)
 const type = ref<any>(0)
 const page = ref(1)
 const total = ref(0)
+const isAdmin = ref(false)
 
-function handleClick() {
-  router.push('/forum/1')
+function handleClick(id: number) {
+  router.push(`/forum/${id}`)
 }
 
 function handleSwitch(number: any) {
   type.value = number
   page.value = 1
+}
+
+function canDel(id: number) {
+  if (isAdmin.value) return true
+  if (id === parseInt(localStorage.getItem('userID') as string)) return false
+  return false
 }
 
 function handleValidateClick(e: MouseEvent) {
@@ -261,7 +274,7 @@ function handleValidateClick(e: MouseEvent) {
         title: formValue.value.title,
         type: type.value
       }).then((res) => {
-        window.$message.success('发帖成功')
+        if (res.data.success) window.$message.success('发帖成功')
         formValue.value.content = ''
         formValue.value.title = ''
         showModal.value = false
@@ -296,13 +309,16 @@ onMounted(() => {
 watch(
   [needChange, organization, type, page],
   ([needChange, organization, type, page]) => {
-    getPosts({
+    getAllPosts({
       id: organization,
       type: type,
       page: page
     }).then((res) => {
       posts.value = res.data.posts
       total.value = res.data.total
+    })
+    getOrganization(organization).then((res) => {
+      isAdmin.value = res.data.isAdmin
     })
   }
 )
