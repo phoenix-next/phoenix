@@ -51,9 +51,9 @@ onMounted(() => {
     .then(() => {
       const detail = document.getElementById('detail')
       detail?.querySelectorAll('code').forEach((item) => {
-        if (item.classList.length > 0) {
+        if (item.className.includes('editor')) {
           ;(item.parentElement as HTMLElement).style.width = '100%'
-          const editor = createEditor(item, item.className.substring(9))
+          const editor = createEditor(item, item.className.substring(16))
           addEditorAction(editor)
         }
       })
