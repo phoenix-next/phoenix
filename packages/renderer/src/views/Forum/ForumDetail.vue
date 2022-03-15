@@ -195,16 +195,13 @@ onMounted(() => {
     if (res.data.success) {
       comments.value = []
       res.data.comments.forEach((item: any) => {
-        console.log((item.content as string).replace('\n', '\n\n'))
-        window.utilsBridge
-          .markdownToHTML((item.content as any).replaceAll('\n', '\n\n'))
-          .then((res) => {
-            comments.value.push({
-              ...item,
-              content: res,
-              origin: item.content
-            })
+        window.utilsBridge.markdownToHTML(item.content).then((res) => {
+          comments.value.push({
+            ...item,
+            content: res,
+            origin: item.content
           })
+        })
       })
       window.$message.success(res.data.message)
     }
@@ -224,16 +221,13 @@ watch([needChange], () => {
     if (res.data.success) {
       comments.value = []
       res.data.comments.forEach((item: any) => {
-        console.log((item.content as string).replace('\n', '\n\n'))
-        window.utilsBridge
-          .markdownToHTML((item.content as any).replaceAll('\n', '\n\n'))
-          .then((res) => {
-            comments.value.push({
-              ...item,
-              content: res,
-              origin: item.content
-            })
+        window.utilsBridge.markdownToHTML(item.content).then((res) => {
+          comments.value.push({
+            ...item,
+            content: res,
+            origin: item.content
           })
+        })
       })
       window.$message.success(res.data.message)
     }
