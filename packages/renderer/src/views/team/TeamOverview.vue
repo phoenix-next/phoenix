@@ -4,7 +4,7 @@
       <n-tab-pane name="myTeam" tab="我的组织">
         <team-list />
       </n-tab-pane>
-      <n-tab-pane name="invitation" tab="组织邀请">
+      <n-tab-pane name="invitation" :tab="organizationInvitation">
         <team-invitation />
       </n-tab-pane>
     </n-tabs>
@@ -12,9 +12,26 @@
 </template>
 
 <script setup lang="ts">
-import { NTabs, NTabPane } from 'naive-ui'
+import { NTabs, NTabPane, NBadge } from 'naive-ui'
 import TeamList from '../../components/team/TeamList.vue'
 import TeamInvitation from '../../components/team/TeamInvitation.vue'
+import { h, onMounted, ref } from 'vue'
+import { getUserInvitation } from '../../api/user'
+
+const invitationNum = ref(0)
+const organizationInvitation = () => {
+  return h(
+    NBadge,
+    { value: invitationNum.value, color: '#18a058' },
+    { default: () => '组织邀请' }
+  )
+}
+
+onMounted(() =>
+  getUserInvitation().then((res) => {
+    invitationNum.value = res.data.organization.length
+  })
+)
 </script>
 
 <style scoped>

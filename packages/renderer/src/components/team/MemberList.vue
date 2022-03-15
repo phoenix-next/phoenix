@@ -110,7 +110,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
       <NButtonGroup>
         <NButton
           size='small'
-          disabled={!isAdmin || rowData.id === userID}
+          disabled={!isAdmin.value || rowData.id === userID}
           onClick={() => {
             handleDeleteMember(rowData)
           }}
@@ -119,7 +119,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
         </NButton>
         <NButton
           size='small'
-          disabled={!isAdmin}
+          disabled={!isAdmin.value as boolean}
           type={rowData.isAdmin ? 'primary' : 'tertiary'}
           onClick={() => {
             handleUpdateAdmin(rowData)
@@ -129,7 +129,7 @@ const buttomColumn = reactive<DataTableBaseColumn>({
         </NButton>
         <NButton
           size={'small'}
-          disabled={!isAdmin}
+          disabled={!isAdmin.value as boolean}
           type={rowData.isAdmin ? 'tertiary' : 'primary'}
           onClick={() => {
             handleDeleteAdmin(rowData)

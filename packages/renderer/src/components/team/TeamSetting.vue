@@ -91,7 +91,7 @@ function handleQuitClick() {
 function handleDeleteClick() {
   deleteOrganization(route.params.id as string).then((res) => {
     if (res.data.success) {
-      router.push({ path: '/profile' })
+      router.push({ path: '/team' })
     }
   })
 }
