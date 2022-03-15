@@ -6,7 +6,18 @@
       </n-icon>
     </n-button>
     <n-space justify="center">
-      <n-h1 class="title">{{ problem.name }}</n-h1>
+      <n-h1 class="title">
+        {{ problem.name }}
+      </n-h1>
+      <n-button
+        quaternary
+        round
+        :focusable="false"
+        style="position: absolute; right: 20px"
+        :type="type"
+      >
+        提交记录
+      </n-button>
     </n-space>
     <n-space justify="end">
       <n-select
@@ -22,7 +33,7 @@
         :file-list="program"
         :show-file-list="false"
       >
-        <n-button>提交</n-button>
+        <n-button :focusable="false">提交</n-button>
       </n-upload>
     </n-space>
     <n-divider />
@@ -31,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive } from 'vue'
+import { onMounted, ref, reactive, computed } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import {
   UploadFileInfo,
@@ -45,7 +56,7 @@ import {
   NDivider
 } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
-import { getProblem } from '../../api/judge'
+import { getProblem, uploadRecord } from '../../api/judge'
 import { addEditorAction, createEditor } from '../../utils/code'
 
 const router = useRouter()
@@ -53,11 +64,17 @@ const route = useRoute()
 
 const problem = reactive({
   description: '<h2>题目描述</h2><h2>题目样例</h2><h2>数据范围</h2>',
-  name: '题目名称'
+  name: '题目名称',
+  result: 0
 })
 const language = ref('c')
 const program = ref<Array<UploadFileInfo>>([])
 const pending = ref(true)
+const type = computed(() => {
+  if (problem.result === 0) return 'default'
+  else if (problem.result === 1) return 'success'
+  else return 'error'
+})
 
 function clickReturn() {
   router.back()
@@ -66,16 +83,24 @@ function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
   if (!pending.value) {
     program.value = data.fileList
     pending.value = true
+    const file = data.fileList[0].file
     const url = data.fileList[0].file?.path ?? ''
     if (program.value.length > 0) {
       window.utilsBridge
         .judgeProblem(url, route.params.id as string, language.value)
         .then((res) => {
-          if (res === 'AC') {
-            window.$message.success('AC')
-          } else {
-            window.$message.warning(res)
-          }
+          if (res === 'AC') window.$message.success('AC')
+          else window.$message.error(res)
+          return res === 'AC' ? 1 : -1
+        })
+        .then((res) => {
+          const result = res > 0 ? '0' : '1'
+          const formData = new FormData()
+          formData.append('id', route.params.id as string)
+          formData.append('result', result)
+          formData.append('code', file as File)
+          uploadRecord(formData)
+          if (problem.result <= 0) problem.result = res
           program.value = []
           pending.value = false
         })
@@ -87,6 +112,7 @@ onMounted(() => {
   getProblem({ problemID: Number(route.params.id) })
     .then((res) => {
       problem.name = res.data.name
+      problem.result = res.data.result
       return window.utilsBridge.downloadProblem(
         route.params.id as string,
         res.data.input,
@@ -102,9 +128,9 @@ onMounted(() => {
     .then(() => {
       const detail = document.getElementById('detail')
       detail?.querySelectorAll('code').forEach((item) => {
-        if (item.classList.length > 0) {
+        if (item.className.includes('editor')) {
           ;(item.parentElement as HTMLElement).style.width = '100%'
-          const editor = createEditor(item, item.className.substring(9))
+          const editor = createEditor(item, item.className.substring(16))
           addEditorAction(editor)
         }
       })

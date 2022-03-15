@@ -32,7 +32,7 @@
       </n-gi>
     </n-grid>
   </n-card>
-  <n-card>
+  <n-card style="height: 662px">
     <n-data-table
       remote
       :columns="columns"
@@ -40,6 +40,7 @@
       :loading="loading"
       :pagination="pagination"
       :row-key="rowKey"
+      :single-line="false"
       @update:sorter="handleSorterChange"
       @update:page="handlePageChange"
     />

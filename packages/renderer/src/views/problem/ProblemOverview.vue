@@ -32,7 +32,7 @@
       </n-gi>
     </n-grid>
   </n-card>
-  <n-card>
+  <n-card style="height: 662px">
     <n-data-table
       remote
       :columns="columns"
@@ -40,6 +40,7 @@
       :loading="loading"
       :pagination="pagination"
       :row-key="rowKey"
+      :single-line="false"
       @update:sorter="handleSorterChange"
       @update:page="handlePageChange"
     />
@@ -59,66 +60,109 @@ import {
   NButton,
   NInput,
   NH2,
-  NText
+  NText,
+  NIcon,
+  NProgress
 } from 'naive-ui'
 import { ref, reactive, onMounted, computed } from 'vue'
 import { getProblemList } from '../../api/judge'
+import { CheckmarkDoneOutline, Close, RemoveSharp } from '@vicons/ionicons5'
 
 const { isLogin } = useAuthStore()
 const router = useRouter()
 
-const data = ref<Array<{ id: string; difficulty: number; name: string }>>([
-  { id: 'Loading...', difficulty: 1, name: 'Loading...' }
+const data = ref<Array<any>>([
+  {
+    result: 0,
+    problemID: 'Loading...',
+    difficulty: 1,
+    problemName: 'Loading...'
+  }
 ])
 const loading = ref(true)
 const columns = ref<Array<DataTableColumn>>([
   {
+    title: '状态',
+    key: 'result',
+    width: '53px',
+    render: (rowData) => (
+      <div
+        onClick={handleClick(rowData.problemID as number)}
+        style={{
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'center'
+        }}
+      >
+        {rowData.result === 0 ? (
+          <NIcon size='20' color='#626262'>
+            <RemoveSharp />
+          </NIcon>
+        ) : (rowData.result as number) > 0 ? (
+          <NIcon size='20' color='#0e7a0d'>
+            <CheckmarkDoneOutline />
+          </NIcon>
+        ) : (
+          <NIcon size='20' color='#FF3939'>
+            <Close />
+          </NIcon>
+        )}
+      </div>
+    )
+  },
+  {
     title: '题号',
-    key: 'id',
+    key: 'problemID',
+    width: '100px',
+    align: 'center',
     sorter: true,
     sortOrder: 'ascend',
-    render: (rowData) => {
-      return (
-        <div
-          onClick={handleClick(rowData.id as string)}
-          style={{ cursor: 'pointer' }}
-        >
-          {rowData.id}
-        </div>
-      )
-    }
+    render: (rowData) => (
+      <div
+        onClick={handleClick(rowData.problemID as number)}
+        style={{ cursor: 'pointer' }}
+      >
+        P{rowData.problemID}
+      </div>
+    )
   },
   {
     title: '题目名称',
-    key: 'name',
+    key: 'problemName',
     sorter: true,
     sortOrder: false,
-    render: (rowData) => {
-      return (
-        <div
-          onClick={handleClick(rowData.id as string)}
-          style={{ cursor: 'pointer' }}
-        >
-          {rowData.name}
-        </div>
-      )
-    }
+    align: 'center',
+    render: (rowData) => (
+      <div
+        onClick={handleClick(rowData.problemID as number)}
+        style={{ cursor: 'pointer' }}
+      >
+        {rowData.problemName}
+      </div>
+    )
   },
   {
     title: '难度',
     key: 'difficulty',
+    align: 'center',
     sorter: true,
     sortOrder: false,
-    render: (rowData) => {
-      return (
-        <div
-          onClick={handleClick(rowData.id as string)}
-          style={{ cursor: 'pointer' }}
-        >
-          {rowData.difficulty}
-        </div>
-      )
-    }
+    render: (rowData) => (
+      <div
+        onClick={handleClick(rowData.problemID as number)}
+        style={{ cursor: 'pointer' }}
+      >
+        <NProgress
+          percentage={(rowData.difficulty as number) * 10}
+          showIndicator={false}
+          status={(function () {
+            if ((rowData.difficulty as number) > 8) return 'error'
+            else if ((rowData.difficulty as number) > 5) return 'warning'
+            else if ((rowData.difficulty as number) > 3) return 'success'
+          })()}
+        />
+      </div>
+    )
   }
 ])
 const keyWord = ref('')
@@ -133,13 +177,11 @@ const sortMethod = computed(() => {
     return item.sortOrder !== false
   })
   // 该数字为后端API的要求
-  return (columns.value[index] as any).sortOrder === 'ascend'
-    ? index + 1
-    : -index - 1
+  return (columns.value[index] as any).sortOrder === 'ascend' ? index : -index
 })
 
 function rowKey(rowData: any) {
-  return rowData.id
+  return rowData.problemID
 }
 function updateData() {
   loading.value = true
@@ -149,9 +191,7 @@ function updateData() {
     keyWord: keyWord.value
   })
     .then((res) => {
-      data.value = (res.data.problemList as Array<any>).map((item) => {
-        return { ...item, id: 'P' + item.id }
-      })
+      data.value = res.data.problemList
       pagination.itemCount = res.data.total
     })
     .finally(() => {
@@ -166,17 +206,17 @@ function handleSearch() {
     updateData()
   }
 }
-function handleClick(id: string) {
+function handleClick(id: number) {
   return () => {
-    router.push({ path: '/problem/' + id.substring(1) })
+    router.push({ path: '/problem/' + id })
   }
 }
 function handleSorterChange(sorter: any) {
   // 建立从列名到索引的映射
   const sorterMap: Record<string, number> = {
-    id: 0,
-    name: 1,
-    difficulty: 2
+    problemID: 1,
+    problemName: 2,
+    difficulty: 3
   }
   // sorter不为空且不在加载中
   if (sorter && !loading.value) {

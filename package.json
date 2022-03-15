@@ -24,14 +24,14 @@
     "electron": "^17.1.2",
     "electron-builder": "^22.14.13",
     "naive-ui": "^2.26.4",
-    "pinia": "^2.0.11",
+    "pinia": "^2.0.12",
     "typescript": "^4.6.2",
     "vite": "^2.8.6",
     "vite-plugin-chunk-split": "^0.0.1",
     "vite-plugin-resolve": "^1.8.0",
     "vue": "^3.2.31",
     "vue-router": "^4.0.14",
-    "vue-tsc": "^0.32.1",
+    "vue-tsc": "^0.33.1",
     "xterm": "^4.18.0",
     "xterm-addon-fit": "^0.5.0"
   },
@@ -43,8 +43,9 @@
     "@npmcli/promise-spawn": "^2.0.1",
     "diff": "^5.0.0",
     "fs-extra": "^10.0.1",
-    "katex": "^0.15.2",
+    "katex": "^0.15.3",
     "markdown-it": "^12.3.2",
+    "markdown-it-prism": "^2.2.3",
     "markdown-it-texmath": "^0.9.7",
     "node-downloader-helper": "^2.0.1"
   }

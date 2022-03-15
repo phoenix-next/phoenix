@@ -8,7 +8,7 @@
         <n-menu collapsed :options="bottomMenuOptions" class="bottom-menu" />
       </n-layout-footer>
     </n-layout-sider>
-    <n-layout-content>
+    <n-layout-content class="content">
       <router-view />
     </n-layout-content>
   </n-layout>
@@ -54,5 +54,17 @@ const bottomMenuOptions = createMenuOptions([
 <style scoped>
 .bottom-menu {
   margin-bottom: 0.5vh;
+}
+.content:deep(.n-layout-scroll-container)::-webkit-scrollbar {
+  width: 9px;
+  background-color: #eee;
+}
+.content:deep(.n-layout-scroll-container)::-webkit-scrollbar-thumb {
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background-color: #ccc;
+}
+.content:deep(.n-layout-scroll-container)::-webkit-scrollbar-track {
+  border-radius: 20px;
 }
 </style>

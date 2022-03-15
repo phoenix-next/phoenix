@@ -3,11 +3,12 @@ import { open, close, readFile, ensureDir, outputFile } from 'fs-extra'
 import { ipcMain, app } from 'electron'
 import MarkdownIt from 'markdown-it'
 import latex from 'markdown-it-texmath'
+import prism from 'markdown-it-prism'
 import { diffWords } from 'diff'
 import spawn from '@npmcli/promise-spawn' // 源码位于https://github.com/npm/promise-spawn/blob/main/index.js
 import { DownloaderHelper } from 'node-downloader-helper'
 
-const markdown = new MarkdownIt().use(latex)
+const markdown = new MarkdownIt().use(latex).use(prism)
 const configPath = app.getPath('userData')
 const tmpPath = app.getPath('temp')
 const dataPath = join(configPath, 'data')

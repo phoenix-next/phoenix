@@ -15,14 +15,7 @@ export function createProblem(data: FormData) {
   return backend.post('problems', data)
 }
 
-export function getProblem(data: { problemID: number }): Promise<
-  AxiosResponse<{
-    name: string
-    input: string
-    output: string
-    description: string
-  }>
-> {
+export function getProblem(data: { problemID: number }) {
   return backend.get(`problems/${data.problemID}`)
 }
 
@@ -36,4 +29,8 @@ export function deleteProblem(data: { problemID: number }) {
 
 export function getProblemVersion(data: { problemID: number }) {
   return backend.get(`problems/${data.problemID}/version`)
+}
+
+export function uploadRecord(data: FormData) {
+  return backend.post(`problems/${data.get('id')}/records`, data)
 }
