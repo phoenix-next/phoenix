@@ -8,7 +8,13 @@ import { diffWords } from 'diff'
 import spawn from '@npmcli/promise-spawn' // 源码位于https://github.com/npm/promise-spawn/blob/main/index.js
 import { DownloaderHelper } from 'node-downloader-helper'
 
-const markdown = new MarkdownIt().use(latex).use(prism)
+const markdown = new MarkdownIt()
+  .use(latex)
+  .use(prism, { defaultLanguage: 'markup' })
+  .use(require('markdown-it-sub'))
+  .use(require('markdown-it-sup'))
+  .use(require('markdown-it-ins'))
+  .use(require('markdown-it-mark'))
 const configPath = app.getPath('userData')
 const tmpPath = app.getPath('temp')
 const dataPath = join(configPath, 'data')
