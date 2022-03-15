@@ -9,7 +9,7 @@
     新建组织
   </n-button>
 
-  <n-scrollbar style="max-height: 600px">
+  <n-scrollbar style="max-height: 620px">
     <div v-for="(item, index) in data">
       <n-card>
         <n-thing>
@@ -21,9 +21,9 @@
               secondary
               round
               :focusable="false"
-              v-if="item.isAdmin"
+              style="pointer-events: none"
             >
-              管理员
+              {{ item.isAdmin ? '管理员' : '组员' }}
             </n-button>
           </template>
           <template #header-extra>
@@ -42,11 +42,12 @@
       <n-divider v-if="index != teamsNum - 1"></n-divider>
     </div>
   </n-scrollbar>
-  <team-add ref="teamAdd" />
+  <n-empty description="还没有加入组织哦" v-if="data?.length == 0"> </n-empty>
+  <team-add ref="teamAdd" @update:team-created="reload" />
 </template>
 
 <script setup lang="tsx">
-import { NButton, NThing, NScrollbar, NCard, NDivider } from 'naive-ui'
+import { NButton, NThing, NScrollbar, NCard, NDivider, NEmpty } from 'naive-ui'
 import { ref, onMounted } from 'vue'
 import TeamAdd from './modal/TeamAdd.vue'
 import { getUserOrganization } from '../../api/user'
@@ -67,13 +68,15 @@ function handleClick(id: number) {
   router.push({ path: '/team/' + id })
 }
 
-onMounted(() => {
+function reload() {
   getUserOrganization().then((res) => {
     data.value = res.data.organization
     teamsNum.value = res.data.organization.length
     loading.value = false
   })
-})
+}
+
+onMounted(reload)
 </script>
 
 <style scoped></style>
