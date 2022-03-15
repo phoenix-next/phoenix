@@ -50,7 +50,10 @@
     </n-space>
     <n-divider />
     <n-card v-for="comment in comments" style="margin-top: 20px">
-      Replyed by: {{ comment.creatorName }} <br />
+      <n-space>
+        Replyed by: {{ comment.creatorName }}
+        <n-button>删除</n-button>
+      </n-space>
       <div v-html="comment.content"></div>
       <mavon-editor
         v-model="comment.origin"
@@ -66,13 +69,18 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowBackCircleOutline, Push } from '@vicons/ionicons5'
+import {
+  ArrowBackCircleOutline,
+  Push,
+  ThermometerOutline
+} from '@vicons/ionicons5'
 import { onMounted, ref, watch } from 'vue'
 import {
   createComments,
   deletePosts,
   getAllComments,
-  getPosts
+  getPosts,
+  updateComments
 } from '../../api/forum'
 import {
   NCard,
@@ -84,7 +92,10 @@ import {
   FormInst,
   NModal,
   NFormItem,
-  NForm
+  NForm,
+  messageDark,
+  idID,
+  dataTableDark
 } from 'naive-ui'
 import { isTemplateNode } from '@vue/compiler-core'
 
@@ -165,6 +176,18 @@ function handleDel() {
   })
 }
 
+function handleUpdateComment(id: number, content: string) {
+  window.$message.success('update comment')
+  updateComments({
+    id: id,
+    content: content
+  }).then((res) => {
+    if (res.data.success) {
+      needChange.value = !needChange.value
+    }
+  })
+}
+
 function canDelPost() {
   if (isAdmin.value) return true
   if (creatorID.value == parseInt(localStorage.getItem('userID') as string))
@@ -226,12 +249,16 @@ watch([needChange], () => {
     if (res.data.success) {
       comments.value = []
       res.data.comments.forEach((item) => {
-        window.utilsBridge.markdownToHTML(item.content).then((res) => {
-          comments.value.push({
-            ...item,
-            content: res
+        console.log((item.content as string).replace('\n', '\n\n'))
+        window.utilsBridge
+          .markdownToHTML((item.content as any).replaceAll('\n', '\n\n'))
+          .then((res) => {
+            comments.value.push({
+              ...item,
+              content: res,
+              origin: item.content
+            })
           })
-        })
       })
       window.$message.success(res.data.message)
     }
