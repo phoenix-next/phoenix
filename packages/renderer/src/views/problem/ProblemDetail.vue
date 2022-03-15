@@ -6,7 +6,18 @@
       </n-icon>
     </n-button>
     <n-space justify="center">
-      <n-h1 class="title">{{ problem.name }}</n-h1>
+      <n-h1 class="title">
+        {{ problem.name }}
+      </n-h1>
+      <n-button
+        quaternary
+        round
+        :focusable="false"
+        style="position: absolute; right: 20px"
+        :type="type"
+      >
+        提交记录
+      </n-button>
     </n-space>
     <n-space justify="end">
       <n-select
@@ -31,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive } from 'vue'
+import { onMounted, ref, reactive, computed } from 'vue'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import {
   UploadFileInfo,
@@ -53,11 +64,17 @@ const route = useRoute()
 
 const problem = reactive({
   description: '<h2>题目描述</h2><h2>题目样例</h2><h2>数据范围</h2>',
-  name: '题目名称'
+  name: '题目名称',
+  result: 0
 })
 const language = ref('c')
 const program = ref<Array<UploadFileInfo>>([])
 const pending = ref(true)
+const type = computed(() => {
+  if (problem.result === 0) return 'default'
+  else if (problem.result === 1) return 'success'
+  else return 'error'
+})
 
 function clickReturn() {
   router.back()
@@ -87,6 +104,7 @@ onMounted(() => {
   getProblem({ problemID: Number(route.params.id) })
     .then((res) => {
       problem.name = res.data.name
+      problem.result = res.data.result
       return window.utilsBridge.downloadProblem(
         route.params.id as string,
         res.data.input,
