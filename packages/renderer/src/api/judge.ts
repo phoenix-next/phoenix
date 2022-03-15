@@ -30,3 +30,7 @@ export function deleteProblem(data: { problemID: number }) {
 export function getProblemVersion(data: { problemID: number }) {
   return backend.get(`problems/${data.problemID}/version`)
 }
+
+export function uploadRecord(data: FormData) {
+  return backend.post(`problems/${data.get('id')}/records`, data)
+}

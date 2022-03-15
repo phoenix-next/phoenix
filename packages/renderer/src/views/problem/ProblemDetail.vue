@@ -33,7 +33,7 @@
         :file-list="program"
         :show-file-list="false"
       >
-        <n-button>提交</n-button>
+        <n-button :focusable="false">提交</n-button>
       </n-upload>
     </n-space>
     <n-divider />
@@ -56,7 +56,7 @@ import {
   NDivider
 } from 'naive-ui'
 import { useRouter, useRoute } from 'vue-router'
-import { getProblem } from '../../api/judge'
+import { getProblem, uploadRecord } from '../../api/judge'
 import { addEditorAction, createEditor } from '../../utils/code'
 
 const router = useRouter()
@@ -83,16 +83,24 @@ function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
   if (!pending.value) {
     program.value = data.fileList
     pending.value = true
+    const file = data.fileList[0].file
     const url = data.fileList[0].file?.path ?? ''
     if (program.value.length > 0) {
       window.utilsBridge
         .judgeProblem(url, route.params.id as string, language.value)
         .then((res) => {
-          if (res === 'AC') {
-            window.$message.success('AC')
-          } else {
-            window.$message.warning(res)
-          }
+          if (res === 'AC') window.$message.success('AC')
+          else window.$message.error(res)
+          return res === 'AC' ? 1 : -1
+        })
+        .then((res) => {
+          const result = res > 0 ? '0' : '1'
+          const formData = new FormData()
+          formData.append('id', route.params.id as string)
+          formData.append('result', result)
+          formData.append('code', file as File)
+          uploadRecord(formData)
+          if (problem.result <= 0) problem.result = res
           program.value = []
           pending.value = false
         })
