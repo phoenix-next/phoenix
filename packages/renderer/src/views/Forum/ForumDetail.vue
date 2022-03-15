@@ -1,5 +1,4 @@
 <template>
-  <!-- TODO: forum page -->
   <n-modal v-model:show="showModal">
     <n-card
       style="width: 900px"
@@ -66,7 +65,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowBackCircleOutline, Push } from '@vicons/ionicons5'
+import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { onMounted, ref, watch } from 'vue'
 import {
   createComments,
@@ -86,7 +85,6 @@ import {
   NFormItem,
   NForm
 } from 'naive-ui'
-import { isTemplateNode } from '@vue/compiler-core'
 
 const router = useRouter()
 const route = useRoute()
@@ -174,7 +172,7 @@ function canDelPost() {
 
 function handleValidateClick(e: MouseEvent) {
   e.preventDefault()
-  formRef.value?.validate((errors) => {
+  formRef.value?.validate((errors: any) => {
     if (!errors) {
       createComments({
         content: formValue.value.content,
@@ -196,7 +194,7 @@ onMounted(() => {
   getAllComments(parseInt(route.params.id as string)).then(async (res) => {
     if (res.data.success) {
       comments.value = []
-      res.data.comments.forEach((item) => {
+      res.data.comments.forEach((item: any) => {
         console.log((item.content as string).replace('\n', '\n\n'))
         window.utilsBridge
           .markdownToHTML((item.content as any).replaceAll('\n', '\n\n'))
@@ -225,13 +223,17 @@ watch([needChange], () => {
   getAllComments(parseInt(route.params.id as string)).then((res) => {
     if (res.data.success) {
       comments.value = []
-      res.data.comments.forEach((item) => {
-        window.utilsBridge.markdownToHTML(item.content).then((res) => {
-          comments.value.push({
-            ...item,
-            content: res
+      res.data.comments.forEach((item: any) => {
+        console.log((item.content as string).replace('\n', '\n\n'))
+        window.utilsBridge
+          .markdownToHTML((item.content as any).replaceAll('\n', '\n\n'))
+          .then((res) => {
+            comments.value.push({
+              ...item,
+              content: res,
+              origin: item.content
+            })
           })
-        })
       })
       window.$message.success(res.data.message)
     }

@@ -212,7 +212,7 @@ import {
   NEmpty
 } from 'naive-ui'
 import { Airplane } from '@vicons/ionicons5'
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
 import { createPosts, deletePosts, getAllPosts } from '../../api/forum'
