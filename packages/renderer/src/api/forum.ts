@@ -22,7 +22,12 @@ export function updatePosts(data: {
   return backend.put(`posts/${data.id}`, data)
 }
 
-export function getAllPosts(data: { id: number; type: number; page: number }) {
+export function getAllPosts(data: {
+  id: number
+  type: number
+  page: number
+  keyWord: string
+}) {
   return backend.get('posts', {
     params: data
   })

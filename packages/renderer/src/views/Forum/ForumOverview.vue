@@ -47,8 +47,15 @@
       <n-gi :span="14" :offset="2">
         <n-input-group>
           <n-button type="primary" class="label">查找帖子</n-button>
-          <n-input :style="{ width: '50%' }" placeholder="请输入关键字" />
-          <n-button type="primary" ghost>搜索</n-button>
+          <n-input
+            :style="{ width: '50%' }"
+            v-model:value="keyWord"
+            placeholder="请输入关键字"
+            @keypress.enter="needChange = !needChange"
+          />
+          <n-button type="primary" ghost @click="needChange = !needChange">
+            搜索
+          </n-button>
         </n-input-group>
       </n-gi>
       <n-gi :span="2" :offset="1">
@@ -253,10 +260,7 @@ const type = ref<any>(0)
 const page = ref(1)
 const total = ref(0)
 const isAdmin = ref(false)
-
-function handleClick(id: number) {
-  router.push(`/forum/${id}`)
-}
+const keyWord = ref('')
 
 function handleSwitch(number: any) {
   type.value = number
@@ -317,7 +321,8 @@ watch(
     getAllPosts({
       id: organization,
       type: type,
-      page: page
+      page: page,
+      keyWord: keyWord.value
     }).then((res) => {
       posts.value = res.data.posts
       posts.value = []
