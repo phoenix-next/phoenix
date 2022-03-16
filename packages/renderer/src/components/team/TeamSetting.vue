@@ -9,9 +9,9 @@
           <n-form-item label="组织名称" path="name">
             <n-input placeholder="请输入组织名称" v-model:value="data.name" />
           </n-form-item>
-          <!-- <n-form-item label="组织ID" path="id">
+          <n-form-item label="组织ID" path="id">
             {{ route.params.id }}
-          </n-form-item> -->
+          </n-form-item>
         </n-grid-item>
         <n-grid-item span="12">
           <div class="avatar-container">
