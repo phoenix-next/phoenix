@@ -74,7 +74,7 @@ const router = useRouter()
 const data = ref<Array<any>>([
   {
     result: 0,
-    problemID: 'Loading...',
+    problemID: 'ID',
     difficulty: 1,
     problemName: 'Loading...'
   }

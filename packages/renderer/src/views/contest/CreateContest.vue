@@ -87,7 +87,7 @@ import {
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
-import { getOrgProblems, CreateContest } from '../../api/contest'
+import { getOrgProblems, createContest } from '../../api/contest'
 
 const router = useRouter()
 const current = ref(1)
@@ -129,13 +129,12 @@ function handleNext() {
       window.$message.warning('一场比赛应具有2到10道题目')
       return
     }
-    CreateContest({
+    createContest({
       ...data,
       problemIDs: problemList.value,
       endTime: new Date(data.endTime).toISOString(),
       startTime: new Date(data.startTime).toISOString()
     } as any).then((res) => {
-      window.$message.success('创建比赛成功')
       current.value += 2
       router.back()
     })

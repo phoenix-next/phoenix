@@ -2,7 +2,7 @@
   <n-modal v-model:show="showModal">
     <n-card
       style="width: 900px"
-      title="回复讨论"
+      :title="ModalTitle"
       :bordered="false"
       size="huge"
       role="dialog"
@@ -49,19 +49,28 @@
     </n-space>
     <n-divider />
     <n-card v-for="comment in comments" style="margin-top: 20px">
-      <n-space>
-        Replyed by: {{ comment.creatorName }}
-        <n-button>删除</n-button>
+      <n-space justify="space-between">
+        <n-space>
+          <n-space align="center">
+            <n-avatar
+              round
+              :src="comment.creatorAvatar"
+              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
+            {{ comment.creatorName }}
+          </n-space>
+        </n-space>
+        <n-space>
+          <n-button @click="handleUpdateComment(comment.id, comment.origin)">
+            编辑
+          </n-button>
+          <n-button @click="handleDeleteComment(comment.id)"> 删除 </n-button>
+        </n-space>
       </n-space>
+      <n-divider title-placement="right">
+        最后一次编辑：{{ comment.updatedAt }}
+      </n-divider>
       <div v-html="comment.content"></div>
-      <mavon-editor
-        v-model="comment.origin"
-        :boxShadow="false"
-        :subfield="false"
-        defaultOpen="preview"
-        :editable="false"
-        :toolbarsFlag="false"
-      />
     </n-card>
   </n-card>
 </template>
@@ -72,6 +81,7 @@ import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { onMounted, ref, watch } from 'vue'
 import {
   createComments,
+  deleteComment,
   deletePosts,
   getAllComments,
   getPosts,
@@ -88,9 +98,9 @@ import {
   NModal,
   NFormItem,
   NForm,
-  messageDark,
-  idID,
-  dataTableDark
+  NText,
+  NAvatar,
+  NTag
 } from 'naive-ui'
 
 const router = useRouter()
@@ -114,6 +124,8 @@ const content = ref('')
 const creatorID = ref(0)
 const creatorName = ref('')
 const comments = ref<Array<any>>([])
+const commentID = ref(-1)
+const ModalTitle = ref('')
 const needChange = ref(false)
 const toolbars = {
   bold: true, // 粗体
@@ -156,26 +168,29 @@ function clickReturn() {
 }
 
 function handleReply() {
-  window.$message.success('create comment!')
+  ModalTitle.value = '回复帖子'
+  formValue.value.content = ''
+  commentID.value = -1
   showModal.value = true
 }
 
 function handleDel() {
-  window.$message.success('delete')
   deletePosts({ id: parseInt(route.params.id as string) }).then((res) => {
     if (res.data.success) {
-      window.$message.success('删除成功')
       router.back()
     }
   })
 }
 
 function handleUpdateComment(id: number, content: string) {
-  window.$message.success('update comment')
-  updateComments({
-    id: id,
-    content: content
-  }).then((res) => {
+  ModalTitle.value = '编辑回答'
+  formValue.value.content = content
+  commentID.value = id
+  showModal.value = true
+}
+
+function handleDeleteComment(id: number) {
+  deleteComment(id).then((res) => {
     if (res.data.success) {
       needChange.value = !needChange.value
     }
@@ -193,16 +208,26 @@ function handleValidateClick(e: MouseEvent) {
   e.preventDefault()
   formRef.value?.validate((errors: any) => {
     if (!errors) {
-      createComments({
-        content: formValue.value.content,
-        id: parseInt(route.params.id as string),
-        toID: 0
-      }).then((res) => {
-        window.$message.success('回复成功')
-        formValue.value.content = ''
-        showModal.value = false
-        needChange.value = !needChange.value
-      })
+      if (commentID.value === -1) {
+        createComments({
+          content: formValue.value.content,
+          id: parseInt(route.params.id as string),
+          toID: 0
+        }).then((res) => {
+          formValue.value.content = ''
+          showModal.value = false
+          needChange.value = !needChange.value
+        })
+      } else {
+        updateComments({
+          id: commentID.value,
+          content: formValue.value.content
+        }).then((res) => {
+          formValue.value.content = ''
+          showModal.value = false
+          needChange.value = !needChange.value
+        })
+      }
     } else {
       window.$message.error('回复的内容不能为空')
     }
@@ -222,7 +247,6 @@ onMounted(() => {
           })
         })
       })
-      window.$message.success(res.data.message)
     }
   })
   getPosts(parseInt(route.params.id as string)).then((res) => {
@@ -248,7 +272,6 @@ watch([needChange], () => {
           })
         })
       })
-      window.$message.success(res.data.message)
     }
   })
 })
