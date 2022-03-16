@@ -48,29 +48,30 @@
       <n-h5 class="title"> {{ content }} </n-h5>
     </n-space>
     <n-divider />
-    <n-card v-for="comment in comments" style="margin-top: 20px">
-      <n-space justify="space-between">
-        <n-space>
-          <n-space align="center">
-            <n-avatar
-              round
-              :src="comment.creatorAvatar"
-              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-            />
-            {{ comment.creatorName }}
+    <n-card v-for="comment in comments" style="margin-top: 20px" hoverable>
+      <n-thing content-indented>
+        <template #avatar>
+          <n-avatar
+            round
+            size="large"
+            :src="comment.creatorAvatar"
+            fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          />
+        </template>
+        <template #header> {{ comment.creatorName }} </template>
+        <template #header-extra>
+          <n-space>
+            <n-button @click="handleUpdateComment(comment.id, comment.origin)">
+              编辑
+            </n-button>
+            <n-button @click="handleDeleteComment(comment.id)"> 删除 </n-button>
           </n-space>
-        </n-space>
-        <n-space>
-          <n-button @click="handleUpdateComment(comment.id, comment.origin)">
-            编辑
-          </n-button>
-          <n-button @click="handleDeleteComment(comment.id)"> 删除 </n-button>
-        </n-space>
-      </n-space>
-      <n-divider title-placement="right">
-        最后一次编辑：{{ comment.updatedAt }}
-      </n-divider>
-      <div v-html="comment.content"></div>
+        </template>
+        <template #description>
+          最后一次编辑于：{{ comment.updatedAt }}
+        </template>
+        <div v-html="comment.content"></div>
+      </n-thing>
     </n-card>
   </n-card>
 </template>
@@ -98,9 +99,8 @@ import {
   NModal,
   NFormItem,
   NForm,
-  NText,
   NAvatar,
-  NTag
+  NThing
 } from 'naive-ui'
 
 const router = useRouter()
