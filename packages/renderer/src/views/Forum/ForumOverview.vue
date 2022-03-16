@@ -220,7 +220,6 @@ import {
   NFormItem,
   NPagination,
   NEmpty,
-  NDivider,
   NTag
 } from 'naive-ui'
 import { Airplane } from '@vicons/ionicons5'
@@ -263,14 +262,9 @@ const isAdmin = ref(false)
 const keyWord = ref('')
 
 function handleSwitch(number: any) {
+  keyWord.value = ''
   type.value = number
   page.value = 1
-}
-
-function canDel(id: number) {
-  if (isAdmin.value) return true
-  if (id === parseInt(localStorage.getItem('userID') as string)) return false
-  return false
 }
 
 function handleValidateClick(e: MouseEvent) {
