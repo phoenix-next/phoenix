@@ -82,34 +82,40 @@
           </n-gi>
           <n-gi v-for="post in posts">
             <n-card>
-              <n-layout has-sider>
-                <n-layout-sider bordered :width="80">
-                  <n-avatar
-                    round
-                    :size="60"
-                    src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-                  />
-                </n-layout-sider>
-                <n-layout>
-                  <n-layout-content>
-                    <n-text @click="handleClick(post.id)">
-                      {{ post.title }}
-                    </n-text>
-                    <n-button
-                      @click="handleDelete(post.id)"
-                      size="small"
-                      style="position: absolute; right: 0"
-                      v-if="canDel(post.creatorID)"
+              <n-space align="center" :wrap="false">
+                <n-avatar
+                  round
+                  :size="48"
+                  :src="
+                    'https://phoenix.matrix53.top/api/v1/' + post.creatorAvatar
+                  "
+                />
+                <n-space align="start" vertical size="small" :wrap="false">
+                  <n-space align="center" :wrap="false">
+                    <n-space
+                      style="
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                      "
                     >
-                      删除
-                    </n-button>
-                    <br />
-                    <n-text> {{ post.creatorName }} </n-text>
-                    <br />
-                    <n-text> Last Mentioned in: {{ post.updatedAt }} </n-text>
-                  </n-layout-content>
-                </n-layout>
-              </n-layout>
+                      <router-link
+                        :to="'/forum/' + post.id"
+                        #="{ navigate, href }"
+                      >
+                        <n-a :href="href" @click="navigate">
+                          {{ post.title }}
+                        </n-a>
+                      </router-link>
+                    </n-space>
+
+                    <n-tag type="info"> @ {{ post.updatedAt }} </n-tag>
+                  </n-space>
+                  <n-text type="strong">
+                    Created by: {{ post.creatorName }}
+                  </n-text>
+                </n-space>
+              </n-space>
             </n-card>
           </n-gi>
           <n-gi v-if="posts.length !== 0">
@@ -192,15 +198,12 @@
 import {
   NCard,
   NGrid,
-  NLayout,
   NText,
-  NLayoutContent,
   NButton,
   NInput,
   NInputGroup,
   NH2,
   NAvatar,
-  NLayoutSider,
   NGi,
   NSpace,
   NSelect,
@@ -209,7 +212,9 @@ import {
   NForm,
   NFormItem,
   NPagination,
-  NEmpty
+  NEmpty,
+  NDivider,
+  NTag
 } from 'naive-ui'
 import { Airplane } from '@vicons/ionicons5'
 import { onMounted, ref, watch } from 'vue'
@@ -315,6 +320,16 @@ watch(
       page: page
     }).then((res) => {
       posts.value = res.data.posts
+      posts.value = []
+      res.data.posts.forEach((post: any) => {
+        posts.value.push({
+          ...post,
+          title:
+            post.title.length > 15
+              ? post.title.slice(0, 13) + '...'
+              : post.title
+        })
+      })
       total.value = res.data.total
     })
     getOrganization(organization).then((res) => {
