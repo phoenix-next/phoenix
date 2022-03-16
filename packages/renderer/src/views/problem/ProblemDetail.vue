@@ -14,7 +14,7 @@
         round
         :focusable="false"
         style="position: absolute; right: 20px"
-        :type="type"
+        type="success"
         @click="record?.open"
       >
         提交记录
@@ -44,8 +44,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive, computed } from 'vue'
-import { ArrowBackCircleOutline, Language } from '@vicons/ionicons5'
+import { onMounted, ref, reactive } from 'vue'
+import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import {
   UploadFileInfo,
   NCard,
@@ -74,11 +74,6 @@ const language = ref('c')
 const program = ref<Array<UploadFileInfo>>([])
 const record = ref<InstanceType<typeof ProblemRecord> | null>(null)
 const pending = ref(true)
-const type = computed(() => {
-  if (problem.result === 0) return 'default'
-  else if (problem.result === 1) return 'success'
-  else return 'error'
-})
 
 function clickReturn() {
   router.back()
