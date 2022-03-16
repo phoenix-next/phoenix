@@ -136,8 +136,8 @@ const toolbars = {
   underline: true, // 下划线
   strikethrough: true, // 中划线
   mark: true, // 标记
-  superscript: true, // 上角标
-  subscript: true, // 下角标
+  superscript: false, // 上角标
+  subscript: false, // 下角标
   quote: true, // 引用
   ol: true, // 有序列表
   ul: true, // 无序列表
@@ -150,8 +150,8 @@ const toolbars = {
   htmlcode: false, // 展示html源码
   help: false, // 帮助
   /* 1.3.5 */
-  undo: true, // 上一步
-  redo: true, // 下一步
+  undo: false, // 上一步
+  redo: false, // 下一步
   trash: false, // 清空
   save: false, // 保存（触发events中的save事件）
   /* 1.4.2 */
