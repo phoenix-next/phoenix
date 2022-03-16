@@ -30,15 +30,24 @@ import { getUserInvitation } from '../../api/user'
 import { updateOrganizationMember } from '../../api/social'
 import { useRouter } from 'vue-router'
 
+const emit = defineEmits(['reduce'])
+
 const router = useRouter()
 
 const data = ref<Array<{ isAdmin: boolean; orgID: number; orgName: string }>>()
+
 function handleAccept(teamID: number) {
-  updateOrganizationMember({ teamID, accept: true }).then(reload)
-  router.push({ path: '/team' })
+  updateOrganizationMember({ teamID, accept: true }).then(() => {
+    reload()
+    emit('reduce')
+  })
+  router.push({ path: '/team/' + teamID })
 }
 function handleReject(teamID: number) {
-  updateOrganizationMember({ teamID, accept: false }).then(reload)
+  updateOrganizationMember({ teamID, accept: false }).then(() => {
+    reload()
+    emit('reduce')
+  })
 }
 function reload() {
   getUserInvitation().then((res) => {
