@@ -16,13 +16,7 @@
           <template #avatar>{{ 'O' + item.orgID }}</template>
           <template #header>
             {{ item.orgName }}
-            <n-button
-              size="tiny"
-              secondary
-              round
-              :focusable="false"
-              style="pointer-events: none"
-            >
+            <n-button size="tiny" secondary round style="pointer-events: none">
               {{ item.isAdmin ? '管理员' : '组员' }}
             </n-button>
           </template>
@@ -42,7 +36,11 @@
       <n-divider v-if="index != teamsNum - 1"></n-divider>
     </div>
   </n-scrollbar>
-  <n-empty description="还没有加入组织哦" v-if="data?.length == 0"> </n-empty>
+  <n-empty
+    description="还没有加入组织哦"
+    v-if="data === undefined || data?.length == 0"
+  >
+  </n-empty>
   <team-add ref="teamAdd" @update:team-created="reload" />
 </template>
 

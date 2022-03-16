@@ -1,27 +1,61 @@
 <template>
-  <n-space vertical size="large">
-    <n-descriptions label-placement="left" :column="1" separator="   ">
-      <n-descriptions-item label="组织名称">
-        {{ teamName }}
-        <n-button text @click="teamUpdate?.open">
-          <template #icon>
-            <n-icon><pencil-outline /></n-icon>
-          </template>
-        </n-button>
-      </n-descriptions-item>
-      <n-descriptions-item label="组织信息">
-        {{ teamProfile }}
-      </n-descriptions-item>
-      <n-descriptions-item label="组织编号">
-        {{ route.params.id }}
-      </n-descriptions-item>
-    </n-descriptions>
-    <n-button text @click="showQuitModal = true"> 退出组织 </n-button>
-    <n-button text v-if="isAdmin" @click="showDeleteModal = true">
-      解散组织
-    </n-button>
-  </n-space>
-  <team-update ref="teamUpdate" @update:team-profile="reload" />
+  <div class="container">
+    <n-form style="width: 50%" :model="data">
+      <n-grid>
+        <n-grid-item span="24">
+          <n-h1 type="default">组织资料</n-h1>
+        </n-grid-item>
+        <n-grid-item span="12">
+          <n-form-item label="组织名称" path="name">
+            <n-input placeholder="请输入组织名称" v-model:value="data.name" />
+          </n-form-item>
+        </n-grid-item>
+        <n-grid-item span="12">
+          <div class="avatar-container">
+            <n-avatar
+              round
+              :size="100"
+              :src="data.avatar"
+              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+              style="margin-top: 10px"
+            />
+            <upload-button
+              style="width: 40%; margin-top: 10px"
+              :show-file-list="false"
+              ref="upload"
+              @change="clickUploadAvatar"
+            >
+              上传组织头像
+            </upload-button>
+          </div>
+        </n-grid-item>
+        <n-grid-item span="24">
+          <n-form-item label="组织简介" path="profile">
+            <n-input
+              type="textarea"
+              placeholder="请输入组织简介"
+              v-model:value="data.profile"
+            />
+          </n-form-item>
+        </n-grid-item>
+      </n-grid>
+    </n-form>
+    <n-space
+      style="margin-top: 15px; width: 40%"
+      justify="space-between"
+      :wrap="false"
+    >
+      <n-button type="default" round @click="clickConfilmUpdate">
+        确认修改
+      </n-button>
+      <n-button type="default" round @click="showQuitModal = true">
+        退出组织
+      </n-button>
+      <n-button type="default" round @click="showDeleteModal = true">
+        解散组织
+      </n-button>
+    </n-space>
+  </div>
   <n-modal
     v-model:show="showQuitModal"
     preset="dialog"
@@ -48,39 +82,61 @@
 
 <script setup lang="ts">
 import {
-  NDescriptions,
-  NDescriptionsItem,
   NButton,
   NSpace,
-  NIcon,
-  NModal
+  NModal,
+  NForm,
+  NGrid,
+  NGridItem,
+  NFormItem,
+  NAvatar,
+  NH1,
+  NInput
 } from 'naive-ui'
-import { onMounted, ref } from 'vue'
-import { deleteOrganization, getOrganization } from '../../api/social'
+import { onMounted, ref, reactive } from 'vue'
+import {
+  deleteOrganization,
+  getOrganization,
+  updateOrganization
+} from '../../api/social'
 import { quitOrganization } from '../../api/user'
-import { PencilOutline } from '@vicons/ionicons5'
-import TeamUpdate from './modal/TeamUpdate.vue'
 import { useRouter, useRoute } from 'vue-router'
-
+import UploadButton from '../../components/problem/UploadButton.vue'
+import { dateArray } from 'naive-ui/lib/date-picker/src/utils'
 const router = useRouter()
 const route = useRoute()
-
 const isAdmin = ref(false)
-const teamName = ref('')
-const teamProfile = ref('')
 const showQuitModal = ref(false)
 const showDeleteModal = ref(false)
-const teamUpdate = ref<InstanceType<typeof TeamUpdate> | null>(null)
-
+const upload = ref<InstanceType<typeof UploadButton> | null>(null)
+const data = reactive({
+  avatar: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg',
+  name: 'Loading...',
+  profile: 'Loading...',
+  teamID: 'Loading...'
+})
+function clickUploadAvatar() {
+  const formData = new FormData()
+  formData.append('avatar', upload.value?.file as File)
+  updateOrganization(formData, route.params.id as string)
+}
 function reload() {
   getOrganization(route.params.id as string).then((res) => {
     if (res.data.success) {
+      data.avatar = res.data.avatar
+      data.name = res.data.name
+      data.profile = res.data.profile
       isAdmin.value = res.data.isAdmin
-      teamName.value = res.data.name
-      teamProfile.value = res.data.profile
     }
   })
 }
+function clickConfilmUpdate() {
+  const formData = new FormData()
+  formData.append('name', data.name)
+  formData.append('profile', data.profile)
+  updateOrganization(formData, route.params.id as string)
+}
+
 function handleQuitClick() {
   quitOrganization({ id: route.params.id as string }).then((res) => {
     if (res.data.success) {
@@ -95,8 +151,22 @@ function handleDeleteClick() {
     }
   })
 }
-
 onMounted(reload)
 </script>
-
-<style scoped></style>
+<style scoped>
+.container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding-top: 100px;
+}
+.avatar-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+</style>

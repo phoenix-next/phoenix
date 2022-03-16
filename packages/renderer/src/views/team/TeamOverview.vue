@@ -29,7 +29,11 @@ const organizationInvitation = () => {
 
 onMounted(() =>
   getUserInvitation().then((res) => {
-    invitationNum.value = res.data.organization.length
+    if (res.data.organization === undefined) {
+      invitationNum.value = 0
+    } else {
+      invitationNum.value = res.data.organization.length
+    }
   })
 )
 </script>

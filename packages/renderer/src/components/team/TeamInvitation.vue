@@ -19,7 +19,11 @@
         </n-alert>
       </template>
     </n-scrollbar>
-    <n-empty description="还没有邀请哦" v-if="data?.length == 0"> </n-empty>
+    <n-empty
+      description="还没有邀请哦"
+      v-if="data === undefined || data.length == 0"
+    >
+    </n-empty>
   </div>
 </template>
 

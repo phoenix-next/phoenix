@@ -8,12 +8,8 @@ export function getOrganization(teamID: string) {
   return backend.get(`organizations/${teamID}`)
 }
 
-export function updateOrganization(data: {
-  name: string
-  profile: string
-  teamID: string
-}) {
-  return backend.put(`organizations/${data.teamID}`, data)
+export function updateOrganization(data: FormData, teamID: string) {
+  return backend.put(`organizations/${teamID}`, data)
 }
 
 export function deleteOrganization(teamID: string) {
