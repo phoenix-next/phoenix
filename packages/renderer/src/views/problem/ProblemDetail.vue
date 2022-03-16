@@ -15,6 +15,7 @@
         :focusable="false"
         style="position: absolute; right: 20px"
         :type="type"
+        @click="record?.open"
       >
         提交记录
       </n-button>
@@ -39,11 +40,12 @@
     <n-divider />
     <div v-html="problem.description" id="detail"></div>
   </n-card>
+  <problem-record ref="record" />
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref, reactive, computed } from 'vue'
-import { ArrowBackCircleOutline } from '@vicons/ionicons5'
+import { ArrowBackCircleOutline, Language } from '@vicons/ionicons5'
 import {
   UploadFileInfo,
   NCard,
@@ -58,6 +60,7 @@ import {
 import { useRouter, useRoute } from 'vue-router'
 import { getProblem, uploadRecord } from '../../api/judge'
 import { addEditorAction, createEditor } from '../../utils/code'
+import ProblemRecord from '../../components/problem/ProblemRecord.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -65,10 +68,11 @@ const route = useRoute()
 const problem = reactive({
   description: '<h2>题目描述</h2><h2>题目样例</h2><h2>数据范围</h2>',
   name: '题目名称',
-  result: 0
+  result: 0 // 1 通过，-1 不通过，0 未做此题
 })
 const language = ref('c')
 const program = ref<Array<UploadFileInfo>>([])
+const record = ref<InstanceType<typeof ProblemRecord> | null>(null)
 const pending = ref(true)
 const type = computed(() => {
   if (problem.result === 0) return 'default'
@@ -85,17 +89,19 @@ function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
     pending.value = true
     const file = data.fileList[0].file
     const url = data.fileList[0].file?.path ?? ''
+    const tmpLanguage = language.value
     if (program.value.length > 0) {
       window.utilsBridge
-        .judgeProblem(url, route.params.id as string, language.value)
+        .judgeProblem(url, route.params.id as string, tmpLanguage)
         .then((res) => {
           if (res === 'AC') window.$message.success('AC')
           else window.$message.error(res)
-          return res === 'AC' ? 1 : -1
+          return res === 'AC' ? 1 : -1 // 1 通过，-1 不通过
         })
         .then((res) => {
-          const result = res > 0 ? '0' : '1'
+          const result = res > 0 ? '0' : '1' // 0 AC，1 WA，2 TLE，3 RE
           const formData = new FormData()
+          formData.append('language', tmpLanguage)
           formData.append('id', route.params.id as string)
           formData.append('result', result)
           formData.append('code', file as File)
