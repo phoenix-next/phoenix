@@ -67,8 +67,8 @@ import { getContestList } from '../../api/contest'
 const { isLogin } = useAuthStore()
 const router = useRouter()
 
-const data = ref<Array<{ id: string; profile: number; name: string }>>([
-  { id: 'Loading...', profile: 1, name: 'Loading...' }
+const data = ref<Array<{ id: string; profile: string; name: string }>>([
+  { id: 'Loading...', profile: 'Loading...', name: 'Loading...' }
 ])
 const loading = ref(true)
 const columns = ref<Array<any>>([

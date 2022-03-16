@@ -8,7 +8,7 @@ export function getContestList(data: {
   return backend.get('contests', { params: data })
 }
 
-export function CreateContest(data: {
+export function createContest(data: {
   name: string
   orgID: number
   profile: string

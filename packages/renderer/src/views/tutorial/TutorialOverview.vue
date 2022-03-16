@@ -47,7 +47,7 @@
   </n-card>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 import { useAuthStore } from '../../stores/auth'
 import { useRouter } from 'vue-router'
 import {
@@ -77,46 +77,40 @@ const columns = ref<any>([
     key: 'id',
     sorter: true,
     sortOrder: 'ascend',
-    render: (rowData: any) => {
-      return h(
-        'div',
-        {
-          onClick: handleClick(rowData.id as string),
-          style: { cursor: 'pointer' }
-        },
-        rowData.id as string
-      )
-    }
+    render: (rowData: any) => (
+      <div
+        onClick={handleClick(rowData.id as string)}
+        style={{ cursor: 'pointer' }}
+      >
+        {rowData.id}
+      </div>
+    )
   },
   {
     title: '教程名称',
     key: 'name',
     sorter: true,
     sortOrder: false,
-    render: (rowData: any) => {
-      return h(
-        'div',
-        {
-          onClick: handleClick(rowData.id as string),
-          style: { cursor: 'pointer' }
-        },
-        rowData.name as string
-      )
-    }
+    render: (rowData: any) => (
+      <div
+        onClick={handleClick(rowData.id as string)}
+        style={{ cursor: 'pointer' }}
+      >
+        {rowData.name}
+      </div>
+    )
   },
   {
     title: '创建者',
     key: 'creatorName',
-    render: (rowData: any) => {
-      return h(
-        'div',
-        {
-          onClick: handleClick(rowData.id as string),
-          style: { cursor: 'pointer' }
-        },
-        rowData.creatorName as string
-      )
-    }
+    render: (rowData: any) => (
+      <div
+        onClick={handleClick(rowData.id as string)}
+        style={{ cursor: 'pointer' }}
+      >
+        {rowData.creatorName}
+      </div>
+    )
   }
 ])
 const keyWord = ref('')

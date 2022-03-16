@@ -10,7 +10,7 @@ import { DownloaderHelper } from 'node-downloader-helper'
 
 const markdown = new MarkdownIt()
   .use(latex)
-  .use(prism, { defaultLanguage: 'markup' })
+  .use(prism, { defaultLanguageForUnspecified: 'markup' })
   .use(require('markdown-it-sub'))
   .use(require('markdown-it-sup'))
   .use(require('markdown-it-ins'))
