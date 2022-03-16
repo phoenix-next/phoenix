@@ -34,3 +34,7 @@ export function getProblemVersion(data: { problemID: number }) {
 export function uploadRecord(data: FormData) {
   return backend.post(`problems/${data.get('id')}/records`, data)
 }
+
+export function getRecord(data: { problemID: string }) {
+  return backend.get(`problems/${data.problemID}/records`)
+}
