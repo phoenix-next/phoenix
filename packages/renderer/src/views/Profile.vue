@@ -91,17 +91,17 @@ const data = reactive({
 function clickUpload() {
   const formData = new FormData()
   formData.append('avatar', upload.value?.file as File)
-  updateUserProfile(formData).then((res) => {
-    window.$message.success('更新头像成功')
+  updateUserProfile(formData).then(() => {
     upload.value?.clearFile()
+    updateData()
   })
 }
 function clickRevise() {
   const formData = new FormData()
   formData.append('name', data.name)
   formData.append('profile', data.profile)
-  updateUserProfile(formData).then((res) => {
-    window.$message.success('更新个人资料成功')
+  updateUserProfile(formData).then(() => {
+    updateData()
   })
 }
 function clickChangePassword() {
@@ -114,8 +114,7 @@ function clickLogout() {
   window.$message.success('退出账号成功')
   router.push({ name: 'login' })
 }
-
-onMounted(() => {
+function updateData() {
   getProfile({ id: localStorage.getItem('userID') as string }).then((res) => {
     data.name = res.data.name
     data.avatar = res.data.avatar
@@ -124,7 +123,9 @@ onMounted(() => {
     data.email = res.data.email
     data.profile = res.data.profile
   })
-})
+}
+
+onMounted(updateData)
 </script>
 
 <style scoped>
