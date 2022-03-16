@@ -50,7 +50,16 @@
     <n-divider />
     <n-card v-for="comment in comments" style="margin-top: 20px">
       <n-space justify="space-between">
-        <n-text>Replyed by: {{ comment.creatorName }}</n-text>
+        <n-space>
+          <n-space align="center">
+            <n-avatar
+              round
+              :src="comment.creatorAvatar"
+              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+            />
+            {{ comment.creatorName }}
+          </n-space>
+        </n-space>
         <n-space>
           <n-button @click="handleUpdateComment(comment.id, comment.origin)">
             编辑
@@ -58,15 +67,10 @@
           <n-button @click="handleDeleteComment(comment.id)"> 删除 </n-button>
         </n-space>
       </n-space>
+      <n-divider title-placement="right">
+        最后一次编辑：{{ comment.updatedAt }}
+      </n-divider>
       <div v-html="comment.content"></div>
-      <!-- <mavon-editor
-        v-model="comment.origin"
-        :boxShadow="false"
-        :subfield="false"
-        defaultOpen="preview"
-        :editable="false"
-        :toolbarsFlag="false"
-      /> -->
     </n-card>
   </n-card>
 </template>
@@ -95,9 +99,8 @@ import {
   NFormItem,
   NForm,
   NText,
-  NGrid,
-  NGi,
-  dataTableDark
+  NAvatar,
+  NTag
 } from 'naive-ui'
 
 const router = useRouter()
