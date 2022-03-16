@@ -9,6 +9,9 @@
           <n-form-item label="组织名称" path="name">
             <n-input placeholder="请输入组织名称" v-model:value="data.name" />
           </n-form-item>
+          <!-- <n-form-item label="组织ID" path="id">
+            {{ route.params.id }}
+          </n-form-item> -->
         </n-grid-item>
         <n-grid-item span="12">
           <div class="avatar-container">
@@ -16,7 +19,6 @@
               round
               :size="100"
               :src="data.avatar"
-              fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
               style="margin-top: 10px"
             />
             <upload-button
@@ -25,7 +27,7 @@
               ref="upload"
               @change="clickUploadAvatar"
             >
-              上传组织头像
+              上传组织图标
             </upload-button>
           </div>
         </n-grid-item>
@@ -112,18 +114,21 @@ const upload = ref<InstanceType<typeof UploadButton> | null>(null)
 const data = reactive({
   avatar: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg',
   name: 'Loading...',
-  profile: 'Loading...',
-  teamID: 'Loading...'
+  profile: 'Loading...'
 })
 function clickUploadAvatar() {
   const formData = new FormData()
   formData.append('avatar', upload.value?.file as File)
-  updateOrganization(formData, route.params.id as string)
+  updateOrganization(formData, route.params.id as string).then(() => {
+    upload.value?.clearFile()
+  })
 }
 function reload() {
   getOrganization(route.params.id as string).then((res) => {
     if (res.data.success) {
       data.avatar = res.data.avatar
+        ? 'https://phoenix.matrix53.top/api/v1/' + res.data.avatar
+        : 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
       data.name = res.data.name
       data.profile = res.data.profile
       isAdmin.value = res.data.isAdmin
