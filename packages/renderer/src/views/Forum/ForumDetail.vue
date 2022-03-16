@@ -1,7 +1,7 @@
 <template>
   <n-modal v-model:show="showModal">
     <n-card
-      style="width: 900px"
+      style="width: 700px"
       :title="ModalTitle"
       :bordered="false"
       size="huge"
@@ -54,7 +54,9 @@
           <n-avatar
             round
             size="large"
-            :src="comment.creatorAvatar"
+            :src="
+              'https://phoenix.matrix53.top/api/v1/' + comment.creatorAvatar
+            "
             fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
           />
         </template>
@@ -146,21 +148,21 @@ const toolbars = {
   fullscreen: false, // 全屏编辑
   readmodel: false, // 沉浸式阅读
   htmlcode: false, // 展示html源码
-  help: true, // 帮助
+  help: false, // 帮助
   /* 1.3.5 */
   undo: true, // 上一步
   redo: true, // 下一步
   trash: false, // 清空
   save: false, // 保存（触发events中的save事件）
   /* 1.4.2 */
-  navigation: true, // 导航目录
+  navigation: false, // 导航目录
   /* 2.1.8 */
   alignleft: false, // 左对齐
   aligncenter: false, // 居中
   alignright: false, // 右对齐
   /* 2.2.1 */
   subfield: false, // 单双栏模式
-  preview: true // 预览
+  preview: false // 预览
 }
 
 function clickReturn() {
