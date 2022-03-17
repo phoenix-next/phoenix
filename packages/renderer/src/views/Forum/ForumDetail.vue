@@ -163,13 +163,10 @@ const ModalTitle = ref('')
 const needChange = ref(false)
 const toobarsV3 = ref<Array<ToolbarNames>>([
   'bold',
-  'underline',
   'italic',
   '-',
   'strikeThrough',
   'title',
-  'sub',
-  'sup',
   'quote',
   'unorderedList',
   'orderedList',
