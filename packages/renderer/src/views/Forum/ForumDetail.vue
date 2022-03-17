@@ -25,6 +25,15 @@
             @imgAdd="$imgAdd"
           />
         </n-form-item>
+        <n-form-item label="编辑你的回复内容" path="content">
+          <md-editor
+            v-model="formValue.content"
+            :preview="false"
+            :toolbars="toobarsV3"
+            preview-theme="github"
+            v-on:upload-img="onUploadImg"
+          />
+        </n-form-item>
         <n-space justify="end">
           <n-button attr-type="button" @click="handleValidateClick">
             发布
@@ -107,6 +116,9 @@
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowBackCircleOutline } from '@vicons/ionicons5'
 import { onMounted, ref, watch } from 'vue'
+import MdEditor from 'md-editor-v3'
+import { ToolbarNames } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
 import {
   createComments,
   deleteComment,
@@ -194,9 +206,56 @@ const toolbars = {
   subfield: false, // 单双栏模式
   preview: false // 预览
 }
+const toobarsV3 = ref<Array<ToolbarNames>>([
+  'bold',
+  'underline',
+  'italic',
+  '-',
+  'strikeThrough',
+  'title',
+  'sub',
+  'sup',
+  'quote',
+  'unorderedList',
+  'orderedList',
+  '-',
+  'code',
+  'link',
+  'image',
+  'table',
+  'katex',
+  '-',
+  'preview',
+  'catalog'
+])
 
 function clickReturn() {
   router.back()
+}
+
+async function onUploadImg(
+  files: FileList,
+  callback: (urls: string[]) => void
+) {
+  const res = await Promise.all(
+    Array.from(files).map((file) => {
+      return new Promise((rev, rej) => {
+        const form = new FormData()
+        form.append('image', file)
+
+        uploadImage(form)
+          .then((res: any) => rev(res))
+          .catch((error: any) => rej(error))
+      })
+    })
+  )
+
+  callback(
+    res.map(
+      (item: any) =>
+        'https://phoenix.matrix53.top/api/v1/' + item.data.imagePath
+    )
+  )
 }
 
 const editor = ref<any>(null)
@@ -213,7 +272,10 @@ function $imgAdd(pos: any, $file: File) {
      * 2. 通过$refs获取: html声明ref : `<mavon-editor ref=md ></mavon-editor>，`$vm`为 `this.$refs.md`
      */
     console.log(editor.value)
-    editor.value.$img2Url(pos, res.data.imagePath)
+    editor.value.$img2Url(
+      pos,
+      'https://phoenix.matrix53.top/api/v1/' + res.data.imagePath
+    )
   })
 }
 
