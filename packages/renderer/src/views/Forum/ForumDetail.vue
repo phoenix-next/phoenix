@@ -16,16 +16,6 @@
         size="large"
       >
         <n-form-item label="编辑你的回复内容" path="content">
-          <mavon-editor
-            ref="editor"
-            v-model="formValue.content"
-            :subfield="false"
-            :toolbars="toolbars"
-            style="width: 100%"
-            @imgAdd="$imgAdd"
-          />
-        </n-form-item>
-        <n-form-item label="编辑你的回复内容" path="content">
           <md-editor
             v-model="formValue.content"
             :preview="false"
@@ -171,41 +161,6 @@ const comments = ref<Array<any>>([])
 const commentID = ref(-1)
 const ModalTitle = ref('')
 const needChange = ref(false)
-const toolbars = {
-  bold: true, // 粗体
-  italic: true, // 斜体
-  header: true, // 标题
-  underline: true, // 下划线
-  strikethrough: true, // 中划线
-  mark: true, // 标记
-  superscript: false, // 上角标
-  subscript: false, // 下角标
-  quote: true, // 引用
-  ol: true, // 有序列表
-  ul: true, // 无序列表
-  link: true, // 链接
-  imagelink: true, // 图片链接
-  code: true, // code
-  table: true, // 表格
-  fullscreen: false, // 全屏编辑
-  readmodel: false, // 沉浸式阅读
-  htmlcode: false, // 展示html源码
-  help: false, // 帮助
-  /* 1.3.5 */
-  undo: false, // 上一步
-  redo: false, // 下一步
-  trash: false, // 清空
-  save: false, // 保存（触发events中的save事件）
-  /* 1.4.2 */
-  navigation: false, // 导航目录
-  /* 2.1.8 */
-  alignleft: false, // 左对齐
-  aligncenter: false, // 居中
-  alignright: false, // 右对齐
-  /* 2.2.1 */
-  subfield: false, // 单双栏模式
-  preview: false // 预览
-}
 const toobarsV3 = ref<Array<ToolbarNames>>([
   'bold',
   'underline',
@@ -256,27 +211,6 @@ async function onUploadImg(
         'https://phoenix.matrix53.top/api/v1/' + item.data.imagePath
     )
   )
-}
-
-const editor = ref<any>(null)
-
-function $imgAdd(pos: any, $file: File) {
-  // 第一步.将图片上传到服务器.
-  var formdata = new FormData()
-  formdata.append('image', $file)
-  uploadImage(formdata).then((res) => {
-    // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
-    /**
-     * $vm 指为mavonEditor实例，可以通过如下两种方式获取
-     * 1. 通过引入对象获取: `import {mavonEditor} from ...` 等方式引入后，`$vm`为`mavonEditor`
-     * 2. 通过$refs获取: html声明ref : `<mavon-editor ref=md ></mavon-editor>，`$vm`为 `this.$refs.md`
-     */
-    console.log(editor.value)
-    editor.value.$img2Url(
-      pos,
-      'https://phoenix.matrix53.top/api/v1/' + res.data.imagePath
-    )
-  })
 }
 
 function handleReply(init: string) {

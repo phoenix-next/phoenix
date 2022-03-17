@@ -19,20 +19,12 @@
           <n-input v-model:value="formValue.title" placeholder="输入标题" />
         </n-form-item>
         <n-form-item label="内容" path="content">
-          <!-- <n-input
-            v-model:value="formValue.content"
-            type="textarea"
-            :autosize="{
-              minRows: 3,
-              maxRows: 7
-            }"
-            placeholder="输入内容"
-          /> -->
-          <mavon-editor
+          <md-editor
             v-model="formValue.content"
-            :subfield="false"
-            :toolbars="toolbars"
-            style="width: 100%"
+            :preview="false"
+            :toolbars="toobarsV3"
+            preview-theme="github"
+            v-on:upload-img="onUploadImg"
           />
         </n-form-item>
         <n-space justify="end">
@@ -234,6 +226,10 @@ import { useRouter } from 'vue-router'
 import { getUserOrganization } from '../../api/user'
 import { createPosts, deletePosts, getAllPosts } from '../../api/forum'
 import { getOrganization } from '../../api/social'
+import MdEditor from 'md-editor-v3'
+import { ToolbarNames } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
+import { uploadImage } from '../../api/user'
 
 const router = useRouter()
 
@@ -258,41 +254,29 @@ const rules = {
     trigger: 'blur'
   }
 }
-const toolbars = {
-  bold: true, // 粗体
-  italic: true, // 斜体
-  header: true, // 标题
-  underline: true, // 下划线
-  strikethrough: true, // 中划线
-  mark: true, // 标记
-  superscript: false, // 上角标
-  subscript: false, // 下角标
-  quote: true, // 引用
-  ol: true, // 有序列表
-  ul: true, // 无序列表
-  link: true, // 链接
-  imagelink: true, // 图片链接
-  code: true, // code
-  table: true, // 表格
-  fullscreen: false, // 全屏编辑
-  readmodel: false, // 沉浸式阅读
-  htmlcode: false, // 展示html源码
-  help: false, // 帮助
-  /* 1.3.5 */
-  undo: false, // 上一步
-  redo: false, // 下一步
-  trash: false, // 清空
-  save: false, // 保存（触发events中的save事件）
-  /* 1.4.2 */
-  navigation: false, // 导航目录
-  /* 2.1.8 */
-  alignleft: false, // 左对齐
-  aligncenter: false, // 居中
-  alignright: false, // 右对齐
-  /* 2.2.1 */
-  subfield: false, // 单双栏模式
-  preview: false // 预览
-}
+
+const toobarsV3 = ref<Array<ToolbarNames>>([
+  'bold',
+  'underline',
+  'italic',
+  '-',
+  'strikeThrough',
+  'title',
+  'sub',
+  'sup',
+  'quote',
+  'unorderedList',
+  'orderedList',
+  '-',
+  'code',
+  'link',
+  'image',
+  'table',
+  'katex',
+  '-',
+  'preview',
+  'catalog'
+])
 
 const posts = ref<Array<any>>([])
 const needChange = ref(false)
@@ -306,6 +290,31 @@ function handleSwitch(number: any) {
   keyWord.value = ''
   type.value = number
   page.value = 1
+}
+
+async function onUploadImg(
+  files: FileList,
+  callback: (urls: string[]) => void
+) {
+  const res = await Promise.all(
+    Array.from(files).map((file) => {
+      return new Promise((rev, rej) => {
+        const form = new FormData()
+        form.append('image', file)
+
+        uploadImage(form)
+          .then((res: any) => rev(res))
+          .catch((error: any) => rej(error))
+      })
+    })
+  )
+
+  callback(
+    res.map(
+      (item: any) =>
+        'https://phoenix.matrix53.top/api/v1/' + item.data.imagePath
+    )
+  )
 }
 
 function handleValidateClick(e: MouseEvent) {
