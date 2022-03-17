@@ -40,14 +40,34 @@
     <n-space justify="center">
       <n-h1 class="title"> {{ title }} </n-h1>
     </n-space>
-    <n-space justify="end">
-      <n-button @click="handleDel" v-if="canDelPost()">删除</n-button>
-      <n-button @click="handleReply">回复</n-button>
-    </n-space>
-    <n-space justify="center">
-      <n-h5 class="title"> {{ content }} </n-h5>
-    </n-space>
+    <n-space justify="end"> </n-space>
     <n-divider />
+    <n-card style="margin-top: 20px" hoverable>
+      <n-thing content-indented>
+        <template #avatar>
+          <n-avatar
+            round
+            size="large"
+            :src="'https://phoenix.matrix53.top/api/v1/' + creatorAvatar"
+            fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          />
+        </template>
+        <template #header>
+          <n-space>
+            <n-text>{{ creatorName }}</n-text>
+            <n-tag type="info"> 楼主 </n-tag>
+          </n-space>
+        </template>
+        <template #header-extra>
+          <n-space>
+            <n-button @click="handleReply('')">回复</n-button>
+            <n-button @click="handleDel" v-if="canDelPost()">删除该帖</n-button>
+          </n-space>
+        </template>
+        <template #description> 最后一次编辑于：{{ updatedAt }} </template>
+        <div v-html="content"></div>
+      </n-thing>
+    </n-card>
     <n-card v-for="comment in comments" style="margin-top: 20px" hoverable>
       <n-thing content-indented>
         <template #avatar>
@@ -65,6 +85,9 @@
           <n-space>
             <n-button @click="handleUpdateComment(comment.id, comment.origin)">
               编辑
+            </n-button>
+            <n-button @click="handleReply('@' + comment.creatorName + '\n')">
+              回复
             </n-button>
             <n-button @click="handleDeleteComment(comment.id)"> 删除 </n-button>
           </n-space>
@@ -102,7 +125,9 @@ import {
   NFormItem,
   NForm,
   NAvatar,
-  NThing
+  NThing,
+  NTag,
+  NText
 } from 'naive-ui'
 
 const router = useRouter()
@@ -125,6 +150,8 @@ const title = ref('')
 const content = ref('')
 const creatorID = ref(0)
 const creatorName = ref('')
+const creatorAvatar = ref('')
+const updatedAt = ref('')
 const comments = ref<Array<any>>([])
 const commentID = ref(-1)
 const ModalTitle = ref('')
@@ -169,9 +196,9 @@ function clickReturn() {
   router.back()
 }
 
-function handleReply() {
+function handleReply(init: string) {
   ModalTitle.value = '回复帖子'
-  formValue.value.content = ''
+  formValue.value.content = init
   commentID.value = -1
   showModal.value = true
 }
@@ -257,6 +284,11 @@ onMounted(() => {
       content.value = res.data.content
       creatorID.value = res.data.creatorID
       creatorName.value = res.data.creatorName
+      creatorAvatar.value = res.data.creatorAvatar
+      updatedAt.value = res.data.updatedAt
+      window.utilsBridge.markdownToHTML(content.value).then((res) => {
+        content.value = res
+      })
     }
   })
 })
