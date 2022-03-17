@@ -36,3 +36,7 @@ export function quitOrganization(data: { id: string }) {
 export function getUserInvitation() {
   return backend.get('users/invitations')
 }
+
+export function uploadImage(data: FormData) {
+  return backend.post('/resource/image', data)
+}

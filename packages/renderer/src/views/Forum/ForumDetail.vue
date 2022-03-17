@@ -17,10 +17,12 @@
       >
         <n-form-item label="编辑你的回复内容" path="content">
           <mavon-editor
+            ref="editor"
             v-model="formValue.content"
             :subfield="false"
             :toolbars="toolbars"
             style="width: 100%"
+            @imgAdd="$imgAdd"
           />
         </n-form-item>
         <n-space justify="end">
@@ -129,6 +131,7 @@ import {
   NTag,
   NText
 } from 'naive-ui'
+import { uploadImage } from '../../api/user'
 
 const router = useRouter()
 const route = useRoute()
@@ -194,6 +197,24 @@ const toolbars = {
 
 function clickReturn() {
   router.back()
+}
+
+const editor = ref<any>(null)
+
+function $imgAdd(pos: any, $file: File) {
+  // 第一步.将图片上传到服务器.
+  var formdata = new FormData()
+  formdata.append('image', $file)
+  uploadImage(formdata).then((res) => {
+    // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
+    /**
+     * $vm 指为mavonEditor实例，可以通过如下两种方式获取
+     * 1. 通过引入对象获取: `import {mavonEditor} from ...` 等方式引入后，`$vm`为`mavonEditor`
+     * 2. 通过$refs获取: html声明ref : `<mavon-editor ref=md ></mavon-editor>，`$vm`为 `this.$refs.md`
+     */
+    console.log(editor.value)
+    editor.value.$img2Url(pos, res.data.imagePath)
+  })
 }
 
 function handleReply(init: string) {
