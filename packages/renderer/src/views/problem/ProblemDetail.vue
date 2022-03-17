@@ -132,10 +132,6 @@ onMounted(() => {
         if (item.className.includes('editor')) {
           ;(item.parentElement as HTMLElement).style.width = '100%'
           const editor = createEditor(item, item.className.substring(16))
-          if (editor && 'function' == typeof define && define.amd) {
-            undefined
-            delete define.amd
-          }
           addEditorAction(editor)
         }
       })
