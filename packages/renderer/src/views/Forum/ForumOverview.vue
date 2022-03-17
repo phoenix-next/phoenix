@@ -257,13 +257,10 @@ const rules = {
 
 const toobarsV3 = ref<Array<ToolbarNames>>([
   'bold',
-  'underline',
   'italic',
   '-',
   'strikeThrough',
   'title',
-  'sub',
-  'sup',
   'quote',
   'unorderedList',
   'orderedList',
