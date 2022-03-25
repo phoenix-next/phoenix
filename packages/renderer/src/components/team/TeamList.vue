@@ -10,7 +10,7 @@
   </n-button>
 
   <n-scrollbar style="max-height: 620px">
-    <div v-for="(item, index) in data">
+    <div v-for="(item, index) in data" style="margin-top: 4px">
       <n-card>
         <n-thing>
           <template #avatar>
@@ -48,15 +48,7 @@
 </template>
 
 <script setup lang="tsx">
-import {
-  NButton,
-  NThing,
-  NScrollbar,
-  NCard,
-  NDivider,
-  NEmpty,
-  NAvatar
-} from 'naive-ui'
+import { NButton, NThing, NScrollbar, NCard, NEmpty, NAvatar } from 'naive-ui'
 import { ref, onMounted } from 'vue'
 import TeamAdd from './modal/TeamAdd.vue'
 import { getUserOrganization } from '../../api/user'

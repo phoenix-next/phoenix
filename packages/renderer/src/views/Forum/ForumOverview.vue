@@ -218,7 +218,9 @@ import {
   NFormItem,
   NPagination,
   NEmpty,
-  NTag
+  NTag,
+  NIcon,
+  NA
 } from 'naive-ui'
 import { Airplane } from '@vicons/ionicons5'
 import { onMounted, ref, watch } from 'vue'
