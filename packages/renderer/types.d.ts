@@ -21,5 +21,6 @@ declare global {
     // Expose some Api through preload script
     utilsBridge: typeof import('../preload/utils').default
     $message: MessageApi
+    MonacoEnvironment: any
   }
 }
