@@ -327,7 +327,6 @@ function handleValidateClick(e: MouseEvent) {
         title: formValue.value.title,
         type: type.value
       }).then((res) => {
-        if (res.data.success) window.$message.success('发帖成功')
         formValue.value.content = ''
         formValue.value.title = ''
         showModal.value = false
@@ -368,16 +367,14 @@ watch(
       page: page,
       keyWord: keyWord.value
     }).then((res) => {
-      posts.value = res.data.posts
-      posts.value = []
-      res.data.posts.forEach((post: any) => {
-        posts.value.push({
+      posts.value = res.data.posts.map((post: any) => {
+        return {
           ...post,
           title:
             post.title.length > 15
               ? post.title.slice(0, 13) + '...'
               : post.title
-        })
+        }
       })
       total.value = res.data.total
     })
