@@ -22,7 +22,7 @@
       </n-tooltip>
     </div>
     <div class="table-toolbar-right">
-      <n-space justify="space-between">
+      <n-space justify="space-between" align="center" style="margin-right: 5px">
         <n-input-group>
           <n-input
             style="width: 100%"
