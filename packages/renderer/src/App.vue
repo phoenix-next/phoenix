@@ -2,10 +2,22 @@
   <n-layout has-sider position="absolute">
     <n-layout-sider collapsed collapse-mode="width" bordered>
       <n-layout-header position="absolute">
-        <n-menu collapsed :options="topMenuOptions" class="top-menu" />
+        <n-menu
+          collapsed
+          :options="topMenuOptions"
+          class="top-menu"
+          :value="topValue"
+          @update-value="handleTopUpdate"
+        />
       </n-layout-header>
       <n-layout-footer position="absolute">
-        <n-menu collapsed :options="bottomMenuOptions" class="bottom-menu" />
+        <n-menu
+          collapsed
+          :options="bottomMenuOptions"
+          class="bottom-menu"
+          :value="bottomValue"
+          @update-value="handleBottomUpdate"
+        />
       </n-layout-footer>
     </n-layout-sider>
     <n-layout-content class="content">
@@ -34,8 +46,21 @@ import {
   NLayoutContent,
   NMenu
 } from 'naive-ui'
+import { ref } from 'vue'
 
 window.$message = useMessage()
+
+const topValue = ref<string | null>(null)
+const bottomValue = ref<string | null>(null)
+
+function handleTopUpdate(key: string) {
+  bottomValue.value = null
+  topValue.value = key
+}
+function handleBottomUpdate(key: string) {
+  topValue.value = null
+  bottomValue.value = key
+}
 
 const topMenuOptions = createMenuOptions([
   { path: '/tutorial', name: '教程', icon: BookOutline },
