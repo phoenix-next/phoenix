@@ -105,6 +105,9 @@ function handleProgramChange(data: { fileList: UploadFileInfo[] }) {
           program.value = []
           pending.value = false
         })
+        .catch(() => {
+          window.$message.error('运行环境配置错误')
+        })
     }
   }
 }

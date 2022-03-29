@@ -162,6 +162,7 @@ export function handleUtils() {
             windowsHide: true
           })
           break
+        // TODO conda
         case 'python':
           runner = await spawn('python', [srcFilePath], {
             stdio,
