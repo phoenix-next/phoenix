@@ -21,7 +21,7 @@
     "@vitejs/plugin-vue": "^2.2.4",
     "@vitejs/plugin-vue-jsx": "^1.3.8",
     "axios": "^0.26.1",
-    "electron": "^17.1.2",
+    "electron": "17.3.0",
     "electron-builder": "^22.14.13",
     "md-editor-v3": "^1.11.2",
     "monaco-editor": "^0.33.0",

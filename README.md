@@ -31,20 +31,26 @@ npm run build
 
 若由于 GFW 等原因无法构建项目，以下是解决方案：
 
-首先，使用如下命令更换 npm 源：
+若 Naive-UI 等依赖库下载失败，则可使用如下命令更换 npm 源：
 
 ```bash
 npm config set registry https://registry.npmmirror.com/
 ```
 
-其次，对于 Electron 镜像源，需要单独设置：
+若 Electron 下载失败，则可设置 Electron 的镜像源：
 
 ```bash
 npm config set ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
 npm config set ELECTRON_CUSTOM_DIR="v{{ version }}"
 ```
 
-最后，若 Electron-Builder 的依赖下载失败，则需配置 Electron-Builder 源：
+若设置 Electron 镜像源后仍有报错`Electron failed to install correctly, please delete node_modules/electron and try installing again`，则可进行如下操作手动安装 Electron：
+
+1. 前往淘宝镜像https://npmmirror.com/mirrors/electron/手动下载对应版本的electron包
+2. 在 node_modules\electron\下创建 dist 文件夹，将下载的压缩包解压进刚刚创建的 dist 目录
+3. 在 node_modules\electron\中创建 path.txt，内容为 electron.exe(根据平台而定，Windows 下后缀为 exe)
+
+若 Electron-Builder 下载失败，则可设置 Electron-Builder 的镜像源：
 
 ```bash
 npm config set ELECTRON_BUILDER_BINARIES_MIRROR="https://npmmirror.com/mirrors/electron-builder-binaries/"
