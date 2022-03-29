@@ -44,9 +44,9 @@ npm config set ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
 npm config set ELECTRON_CUSTOM_DIR="v{{ version }}"
 ```
 
-若设置 Electron 镜像源后仍有报错`Electron failed to install correctly, please delete node_modules/electron and try installing again`，则可进行如下操作手动安装 Electron：
+若设置 Electron 镜像源后仍有报错 `Electron failed to install correctly, please delete node_modules/electron and try installing again`，则可进行如下操作手动安装 Electron：
 
-1. 前往淘宝镜像https://npmmirror.com/mirrors/electron/手动下载对应版本的electron包
+1. 前往淘宝镜像 https://npmmirror.com/mirrors/electron/ 手动下载对应版本的 electron 包
 2. 在 node_modules\electron\下创建 dist 文件夹，将下载的压缩包解压进刚刚创建的 dist 目录
 3. 在 node_modules\electron\中创建 path.txt，内容为 electron.exe(根据平台而定，Windows 下后缀为 exe)
 
