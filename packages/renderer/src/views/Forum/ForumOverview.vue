@@ -25,6 +25,7 @@
             :toolbars="toobarsV3"
             preview-theme="github"
             v-on:upload-img="onUploadImg"
+            iconfont-js="https://at.alicdn.com/t/font_2605852_pqekijay2ij.js"
           />
         </n-form-item>
         <n-space justify="end">
