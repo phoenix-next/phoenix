@@ -26,7 +26,7 @@
     "md-editor-v3": "^1.11.2",
     "monaco-editor": "^0.33.0",
     "naive-ui": "^2.27.0",
-    "pinia": "^2.0.12",
+    "pinia": "^2.0.13",
     "typescript": "^4.6.2",
     "vite": "^2.8.6",
     "vue": "^3.2.31",
