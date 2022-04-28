@@ -186,10 +186,7 @@ function clickReturn() {
   router.back()
 }
 
-async function onUploadImg(
-  files: FileList,
-  callback: (urls: string[]) => void
-) {
+async function onUploadImg(files: File[], callback: (urls: string[]) => void) {
   const res = await Promise.all(
     Array.from(files).map((file) => {
       return new Promise((rev, rej) => {
