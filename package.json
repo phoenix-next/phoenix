@@ -50,7 +50,7 @@
     "markdown-it-prism": "^2.2.3",
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
-    "markdown-it-texmath": "^0.9.7",
+    "markdown-it-texmath": "^1.0.0",
     "node-downloader-helper": "^2.1.0"
   }
 }
