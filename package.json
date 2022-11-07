@@ -23,7 +23,7 @@
     "axios": "^0.27.2",
     "electron": "^17.4.0",
     "electron-builder": "^23.0.3",
-    "md-editor-v3": "^1.11.2",
+    "md-editor-v3": "^2.4.1",
     "monaco-editor": "^0.33.0",
     "naive-ui": "^2.27.0",
     "pinia": "^2.0.12",
