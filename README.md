@@ -6,6 +6,8 @@
 - 拥抱 Typescript，使用 Vue3 作为前端框架，NaiveUI 作为组件库，xicons 作为图标库
 - 本项目为桌面客户端，而服务端位于[这里](https://github.com/phoenix-next/phoenix-server)
 
+![评测历史记录](./JudgeHistory.png)
+
 ## Development
 
 为了开发本项目，需要 Node 14 及以上(推荐使用最新 LTS 版本的 Node)，执行以下命令即可运行客户端：
