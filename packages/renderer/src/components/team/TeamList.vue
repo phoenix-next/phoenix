@@ -79,7 +79,7 @@ function reload() {
     data.value = res.data.organization
     data.value?.forEach((element) => {
       element.avatar = element.avatar
-        ? 'https://phoenix.matrix53.top/api/v1/' + element.avatar
+        ? 'http://43.143.161.129:8083/api/v1/' + element.avatar
         : 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
     })
     teamsNum.value = res.data.organization.length

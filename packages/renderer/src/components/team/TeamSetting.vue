@@ -127,7 +127,7 @@ function reload() {
   getOrganization(route.params.id as string).then((res) => {
     if (res.data.success) {
       data.avatar = res.data.avatar
-        ? 'https://phoenix.matrix53.top/api/v1/' + res.data.avatar
+        ? 'http://43.143.161.129:8083/api/v1/' + res.data.avatar
         : 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
       data.name = res.data.name
       data.profile = res.data.profile

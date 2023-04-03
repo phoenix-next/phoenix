@@ -18,7 +18,7 @@ const markdown = new MarkdownIt()
 const configPath = app.getPath('userData')
 const tmpPath = app.getPath('temp')
 const dataPath = join(configPath, 'data')
-const remote = 'https://phoenix.matrix53.top/api/v1/'
+const remote = 'http://43.143.161.129:8083/api/v1/'
 
 // 获取题面、输入、输出的本地存储位置，以及临时程序、临时输出文件的本地存储位置
 function getProblemPath(problemID: string) {

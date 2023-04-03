@@ -118,7 +118,7 @@ function updateData() {
   getProfile({ id: localStorage.getItem('userID') as string }).then((res) => {
     data.name = res.data.name
     data.avatar = res.data.avatar
-      ? 'https://phoenix.matrix53.top/api/v1/' + res.data.avatar
+      ? 'http://43.143.161.129:8083/api/v1/' + res.data.avatar
       : 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
     data.email = res.data.email
     data.profile = res.data.profile

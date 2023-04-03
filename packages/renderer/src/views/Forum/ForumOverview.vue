@@ -93,7 +93,7 @@
                   round
                   :size="48"
                   :src="
-                    'https://phoenix.matrix53.top/api/v1/' + post.creatorAvatar
+                    'http://43.143.161.129:8083/api/v1/' + post.creatorAvatar
                   "
                 />
                 <n-space align="start" vertical size="small" :wrap="false">
@@ -311,8 +311,7 @@ async function onUploadImg(
 
   callback(
     res.map(
-      (item: any) =>
-        'https://phoenix.matrix53.top/api/v1/' + item.data.imagePath
+      (item: any) => 'http://43.143.161.129:8083/api/v1/' + item.data.imagePath
     )
   )
 }

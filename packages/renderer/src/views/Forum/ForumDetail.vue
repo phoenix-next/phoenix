@@ -50,7 +50,7 @@
           <n-avatar
             round
             size="large"
-            :src="'https://phoenix.matrix53.top/api/v1/' + creatorAvatar"
+            :src="'http://43.143.161.129:8083/api/v1/' + creatorAvatar"
             fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
           />
         </template>
@@ -76,9 +76,7 @@
           <n-avatar
             round
             size="large"
-            :src="
-              'https://phoenix.matrix53.top/api/v1/' + comment.creatorAvatar
-            "
+            :src="'http://43.143.161.129:8083/api/v1/' + comment.creatorAvatar"
             fallback-src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
           />
         </template>
@@ -205,8 +203,7 @@ async function onUploadImg(
 
   callback(
     res.map(
-      (item: any) =>
-        'https://phoenix.matrix53.top/api/v1/' + item.data.imagePath
+      (item: any) => 'http://43.143.161.129:8083/api/v1/' + item.data.imagePath
     )
   )
 }

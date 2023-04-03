@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const backend = axios.create({
-  baseURL: 'https://phoenix.matrix53.top/api/v1/'
+  baseURL: 'http://43.143.161.129:8083/api/v1/'
 })
 
 backend.interceptors.request.use((config) => {
